@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const authRoutes = require("./routes/authRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
+const providerRoutes = require("./routes/providerRoutes");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
@@ -14,6 +16,8 @@ app.get("/", (req, res) => {
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api", categoryRoutes);
+app.use("/api", providerRoutes);
 
 // Global error handler (must be last)
 app.use(errorHandler);
