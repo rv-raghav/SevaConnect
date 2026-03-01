@@ -99,6 +99,42 @@ const rescheduleBooking = asyncHandler(async (req, res) => {
   });
 });
 
+const getMyBookings = asyncHandler(async (req, res) => {
+  const { status, page, limit } = req.query;
+
+  const data = await bookingService.getCustomerBookings(
+    req.user.userId,
+    {
+      status,
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
+
+const getProviderBookings = asyncHandler(async (req, res) => {
+  const { status, page, limit } = req.query;
+
+  const data = await bookingService.getProviderBookings(
+    req.user.userId,
+    {
+      status,
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
+
 module.exports = {
   createBooking,
   cancelBooking,
@@ -106,4 +142,6 @@ module.exports = {
   startBooking,
   completeBooking,
   rescheduleBooking,
+  getMyBookings,
+  getProviderBookings,
 };

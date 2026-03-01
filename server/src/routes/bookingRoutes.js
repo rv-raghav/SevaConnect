@@ -6,6 +6,8 @@ const {
   startBooking,
   completeBooking,
   rescheduleBooking,
+  getMyBookings,
+  getProviderBookings,
 } = require("../controllers/bookingController");
 
 const authMiddleware = require("../middlewares/authMiddleware");
@@ -59,6 +61,20 @@ router.patch(
   authMiddleware,
   roleMiddleware("provider"),
   completeBooking
+);
+
+router.get(
+  "/bookings/my",
+  authMiddleware,
+  roleMiddleware("customer"),
+  getMyBookings
+);
+
+router.get(
+  "/provider/bookings",
+  authMiddleware,
+  roleMiddleware("provider"),
+  getProviderBookings
 );
 
 module.exports = router;
