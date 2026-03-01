@@ -6,6 +6,8 @@ const AppError = require("../utils/AppError");
 const cloudinary = require("../config/cloudinary");
 const { validateTransition } = require("../utils/bookingTransitions");
 
+const MAX_IMAGES_PER_REQUEST = 5;
+
 /**
  * Check scheduling conflict for provider.
  */
@@ -21,6 +23,63 @@ const checkConflict = async (providerId, scheduledDateTime) => {
       "Provider already has a booking at this time",
       400
     );
+  }
+};
+
+const uploadImageBuffer = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: "seva-bookings" },
+      (error, result) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve(result);
+      }
+    );
+
+    stream.end(fileBuffer);
+  });
+};
+
+const uploadImages = async (files = []) => {
+  if (!Array.isArray(files) || files.length === 0) {
+    return [];
+  }
+
+  if (files.length > MAX_IMAGES_PER_REQUEST) {
+    throw new AppError("Maximum 5 images are allowed per request", 400);
+  }
+
+  const uploadedImages = [];
+
+  try {
+    for (const file of files) {
+      if (!file || !file.buffer) {
+        throw new AppError("Invalid image file", 400);
+      }
+
+      const result = await uploadImageBuffer(file.buffer);
+
+      uploadedImages.push({
+        publicId: result.public_id,
+        url: result.secure_url,
+      });
+    }
+
+    return uploadedImages;
+  } catch (error) {
+    await Promise.allSettled(
+      uploadedImages.map((image) => cloudinary.uploader.destroy(image.publicId))
+    );
+
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    throw new AppError("Failed to upload images. Please try again.", 500);
   }
 };
 
@@ -260,6 +319,30 @@ const getProviderBookings = async (providerId, { status, page = 1, limit = 10 })
   };
 };
 
+const getBookingById = async (bookingId, actorId, actorRole) => {
+  const booking = await Booking.findById(bookingId)
+    .populate("customerId", "name")
+    .populate("providerId", "name")
+    .populate("categoryId", "name")
+    .select("-__v");
+
+  if (!booking) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  const isCustomerOwner =
+    actorRole === "customer" && booking.customerId._id.toString() === actorId;
+  const isProviderOwner =
+    actorRole === "provider" && booking.providerId._id.toString() === actorId;
+  const isAdmin = actorRole === "admin";
+
+  if (!isCustomerOwner && !isProviderOwner && !isAdmin) {
+    throw new AppError("Not authorized to view this booking", 403);
+  }
+
+  return booking;
+};
+
 const addWorkUpdate = async ({
   bookingId,
   providerId,
@@ -277,6 +360,13 @@ const addWorkUpdate = async ({
     throw new AppError("Not authorized for this booking", 403);
   }
 
+  if (!["before", "after"].includes(type)) {
+    throw new AppError(
+      "Query parameter 'type' must be either before or after",
+      400
+    );
+  }
+
   if (type === "before" && booking.status !== "in-progress") {
     throw new AppError("Before images allowed only in-progress", 400);
   }
@@ -285,39 +375,10 @@ const addWorkUpdate = async ({
     throw new AppError("After images allowed only after completion", 400);
   }
 
+  const uploadedImages = await uploadImages(files || []);
+
   if (notes) {
     booking.workNotes = notes;
-  }
-
-  if (files && files.length > 0) {
-    const uploads = await Promise.all(
-      files.map((file) =>
-        cloudinary.uploader.upload_stream({
-          folder: "seva-bookings",
-        })
-      )
-    );
-  }
-
-  // Real upload logic:
-  const uploadedImages = [];
-
-  for (const file of files || []) {
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: "seva-bookings" },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      stream.end(file.buffer);
-    });
-
-    uploadedImages.push({
-      publicId: result.public_id,
-      url: result.secure_url,
-    });
   }
 
   if (type === "before") {
@@ -342,5 +403,6 @@ module.exports = {
   rescheduleBooking,
   getCustomerBookings,
   getProviderBookings,
+  getBookingById,
   addWorkUpdate,
 };

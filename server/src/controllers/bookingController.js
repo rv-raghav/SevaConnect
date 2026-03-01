@@ -135,6 +135,19 @@ const getProviderBookings = asyncHandler(async (req, res) => {
   });
 });
 
+const getBookingById = asyncHandler(async (req, res) => {
+  const booking = await bookingService.getBookingById(
+    req.params.id,
+    req.user.userId,
+    req.user.role
+  );
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
 const addWorkUpdate = asyncHandler(async (req, res) => {
   const { type } = req.query;
 
@@ -161,5 +174,6 @@ module.exports = {
   rescheduleBooking,
   getMyBookings,
   getProviderBookings,
+  getBookingById,
   addWorkUpdate,
 };

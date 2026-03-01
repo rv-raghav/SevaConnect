@@ -3,6 +3,39 @@ const Booking = require("../models/Booking");
 const ProviderProfile = require("../models/ProviderProfile");
 const AppError = require("../utils/AppError");
 
+const recalculateProviderRating = async (providerId) => {
+  const profile = await ProviderProfile.findOne({ userId: providerId });
+
+  if (!profile) {
+    throw new AppError("Provider profile not found", 404);
+  }
+
+  const stats = await Review.aggregate([
+    {
+      $match: {
+        providerId,
+      },
+    },
+    {
+      $group: {
+        _id: "$providerId",
+        totalReviews: { $sum: 1 },
+        ratingAverage: { $avg: "$rating" },
+      },
+    },
+  ]);
+
+  if (stats.length === 0) {
+    profile.totalReviews = 0;
+    profile.ratingAverage = 0;
+  } else {
+    profile.totalReviews = stats[0].totalReviews;
+    profile.ratingAverage = Number(stats[0].ratingAverage.toFixed(2));
+  }
+
+  await profile.save();
+};
+
 /**
  * Create review (customer only)
  */
@@ -42,24 +75,7 @@ const createReview = async ({
     comment,
   });
 
-  // Update provider rating
-  const profile = await ProviderProfile.findOne({
-    userId: booking.providerId,
-  });
-
-  if (!profile) {
-    throw new AppError("Provider profile not found", 404);
-  }
-
-  const newTotal = profile.totalReviews + 1;
-  const newAvg =
-    (profile.ratingAverage * profile.totalReviews + rating) /
-    newTotal;
-
-  profile.totalReviews = newTotal;
-  profile.ratingAverage = Number(newAvg.toFixed(2));
-
-  await profile.save();
+  await recalculateProviderRating(booking.providerId);
 
   return review;
 };
@@ -75,6 +91,7 @@ const deleteReview = async (reviewId) => {
   }
 
   await review.deleteOne();
+  await recalculateProviderRating(review.providerId);
 
   return { message: "Review deleted successfully" };
 };

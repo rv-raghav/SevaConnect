@@ -1,15 +1,31 @@
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const env = require("./config/env");
 const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const providerRoutes = require("./routes/providerRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const { authRateLimiter } = require("./middlewares/rateLimiters");
+const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = env.CORS_ORIGIN
+  ? env.CORS_ORIGIN.split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  : [];
+
+const corsOptions = {
+  origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+};
+
+app.use(helmet());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -17,11 +33,14 @@ app.get("/", (req, res) => {
 });
 
 // Routes
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRateLimiter, authRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", providerRoutes);
 app.use("/api", bookingRoutes);
 app.use("/api", reviewRoutes);
+app.use("/api", adminRoutes);
+
+app.use(notFound);
 
 // Global error handler (must be last)
 app.use(errorHandler);

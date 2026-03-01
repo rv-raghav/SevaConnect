@@ -9,10 +9,16 @@ const {
   getMyBookings,
   getProviderBookings,
   addWorkUpdate,
+  getBookingById,
 } = require("../controllers/bookingController");
 
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
+const validateRequest = require("../middlewares/validateRequest");
+const {
+  createBookingBodySchema,
+  mongoIdParamSchema,
+} = require("../validators/requestSchemas");
 
 const upload = require("../middlewares/uploadMiddleware");
 
@@ -25,6 +31,7 @@ router.post(
   "/bookings",
   authMiddleware,
   roleMiddleware("customer"),
+  validateRequest({ body: createBookingBodySchema }),
   createBooking
 );
 
@@ -79,6 +86,14 @@ router.get(
   authMiddleware,
   roleMiddleware("customer"),
   getMyBookings
+);
+
+router.get(
+  "/bookings/:id",
+  authMiddleware,
+  roleMiddleware("customer", "provider", "admin"),
+  validateRequest({ params: mongoIdParamSchema }),
+  getBookingById
 );
 
 router.get(
