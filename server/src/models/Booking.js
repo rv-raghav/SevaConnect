@@ -76,6 +76,22 @@ const bookingSchema = new mongoose.Schema(
         },
       },
     ],
+
+    workNotes: String,
+
+beforeImages: [
+  {
+    publicId: String,
+    url: String
+  }
+],
+
+afterImages: [
+  {
+    publicId: String,
+    url: String
+  }
+]
   },
   { timestamps: true }
 );

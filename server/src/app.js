@@ -4,6 +4,7 @@ const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const providerRoutes = require("./routes/providerRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
@@ -20,6 +21,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", categoryRoutes);
 app.use("/api", providerRoutes);
 app.use("/api", bookingRoutes);
+app.use("/api", reviewRoutes);
 
 // Global error handler (must be last)
 app.use(errorHandler);

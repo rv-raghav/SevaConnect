@@ -135,6 +135,23 @@ const getProviderBookings = asyncHandler(async (req, res) => {
   });
 });
 
+const addWorkUpdate = asyncHandler(async (req, res) => {
+  const { type } = req.query;
+
+  const booking = await bookingService.addWorkUpdate({
+    bookingId: req.params.id,
+    providerId: req.user.userId,
+    notes: req.body.notes,
+    files: req.files,
+    type,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
 module.exports = {
   createBooking,
   cancelBooking,
@@ -144,4 +161,5 @@ module.exports = {
   rescheduleBooking,
   getMyBookings,
   getProviderBookings,
+  addWorkUpdate,
 };

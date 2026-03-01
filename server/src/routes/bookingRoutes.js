@@ -8,10 +8,13 @@ const {
   rescheduleBooking,
   getMyBookings,
   getProviderBookings,
+  addWorkUpdate,
 } = require("../controllers/bookingController");
 
 const authMiddleware = require("../middlewares/authMiddleware");
 const roleMiddleware = require("../middlewares/roleMiddleware");
+
+const upload = require("../middlewares/uploadMiddleware");
 
 const router = express.Router();
 
@@ -23,6 +26,14 @@ router.post(
   authMiddleware,
   roleMiddleware("customer"),
   createBooking
+);
+
+router.post(
+  "/bookings/:id/work",
+  authMiddleware,
+  roleMiddleware("provider"),
+  upload.array("images", 5),
+  addWorkUpdate
 );
 
 router.patch(

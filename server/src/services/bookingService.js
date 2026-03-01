@@ -3,6 +3,7 @@ const User = require("../models/User");
 const ServiceCategory = require("../models/ServiceCategory");
 const ProviderProfile = require("../models/ProviderProfile");
 const AppError = require("../utils/AppError");
+const cloudinary = require("../config/cloudinary");
 const { validateTransition } = require("../utils/bookingTransitions");
 
 /**
@@ -259,6 +260,79 @@ const getProviderBookings = async (providerId, { status, page = 1, limit = 10 })
   };
 };
 
+const addWorkUpdate = async ({
+  bookingId,
+  providerId,
+  notes,
+  files,
+  type, // "before" or "after"
+}) => {
+  const booking = await Booking.findById(bookingId);
+
+  if (!booking) {
+    throw new AppError("Booking not found", 404);
+  }
+
+  if (booking.providerId.toString() !== providerId) {
+    throw new AppError("Not authorized for this booking", 403);
+  }
+
+  if (type === "before" && booking.status !== "in-progress") {
+    throw new AppError("Before images allowed only in-progress", 400);
+  }
+
+  if (type === "after" && booking.status !== "completed") {
+    throw new AppError("After images allowed only after completion", 400);
+  }
+
+  if (notes) {
+    booking.workNotes = notes;
+  }
+
+  if (files && files.length > 0) {
+    const uploads = await Promise.all(
+      files.map((file) =>
+        cloudinary.uploader.upload_stream({
+          folder: "seva-bookings",
+        })
+      )
+    );
+  }
+
+  // Real upload logic:
+  const uploadedImages = [];
+
+  for (const file of files || []) {
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "seva-bookings" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(file.buffer);
+    });
+
+    uploadedImages.push({
+      publicId: result.public_id,
+      url: result.secure_url,
+    });
+  }
+
+  if (type === "before") {
+    booking.beforeImages.push(...uploadedImages);
+  }
+
+  if (type === "after") {
+    booking.afterImages.push(...uploadedImages);
+  }
+
+  await booking.save();
+
+  return booking;
+};
+
 module.exports = {
   createBooking,
   cancelBooking,
@@ -268,4 +342,5 @@ module.exports = {
   rescheduleBooking,
   getCustomerBookings,
   getProviderBookings,
+  addWorkUpdate,
 };
