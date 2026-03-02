@@ -22,6 +22,10 @@ const serviceCategorySchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    icon: {
+      type: String,
+      trim: true,
+    },
   },
   { timestamps: true }
 );

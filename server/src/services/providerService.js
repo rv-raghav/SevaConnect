@@ -74,7 +74,10 @@ const getProviders = async ({ city, category }) => {
   // Build user filter: must be approved provider
   const userFilter = {
     role: "provider",
-    isApproved: true,
+    $or: [
+      { approvalStatus: "approved" },
+      { isApproved: true },
+    ],
   };
   if (city) {
     userFilter.city = { $regex: new RegExp(`^${city}$`, "i") };

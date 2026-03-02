@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SevaConnect - Provider Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4f46e5", 
+                        "primary-content": "#ffffff",
+                        "primary-light": "#e0e7ff",
+                        "primary-dark": "#3730a3",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f172a",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1e293b",
+                        "text-light": "#0f172a",
+                        "text-dark": "#f8fafc",
+                        "text-secondary-light": "#64748b",
+                        "text-secondary-dark": "#94a3b8",
+                        "border-light": "#e2e8f0",
+                        "border-dark": "#334155",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark min-h-screen">
+<div class="relative flex min-h-screen w-full flex-row overflow-x-hidden">
+<!-- Side Navigation -->
+<aside class="w-72 bg-surface-light dark:bg-surface-dark border-r border-border-light dark:border-border-dark flex-col hidden lg:flex fixed h-full z-20">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary/10 rounded-xl p-2 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-3xl">handyman</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-lg font-bold text-text-light dark:text-text-dark leading-tight">SevaConnect</h1>
+<p class="text-xs font-medium text-text-secondary-light dark:text-text-secondary-dark">Provider Portal</p>
+</div>
+</div>
+<nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl bg-primary/10 text-primary dark:text-primary-light font-medium group transition-colors" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-primary/5 hover:text-primary dark:hover:text-primary-light font-medium group transition-colors" href="#">
+<span class="material-symbols-outlined">calendar_month</span>
+<span>Bookings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-primary/5 hover:text-primary dark:hover:text-primary-light font-medium group transition-colors" href="#">
+<span class="material-symbols-outlined">chat</span>
+<span>Messages</span>
+<span class="ml-auto bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-primary/5 hover:text-primary dark:hover:text-primary-light font-medium group transition-colors" href="#">
+<span class="material-symbols-outlined">build</span>
+<span>Services</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-primary/5 hover:text-primary dark:hover:text-primary-light font-medium group transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Earnings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-primary/5 hover:text-primary dark:hover:text-primary-light font-medium group transition-colors" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Profile</span>
+</a>
+</nav>
+<div class="p-4 border-t border-border-light dark:border-border-dark">
+<div class="flex items-center gap-3 p-2 rounded-xl hover:bg-primary/5 transition-colors cursor-pointer">
+<div class="h-10 w-10 rounded-full bg-gray-200 bg-cover bg-center" data-alt="Profile picture of provider" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBccIvRCyQyRdGGOd_dwMJV_sWElZ8oXQDaTq9JWvEUWYDWgvp2UjxQpF7XCz562cWoxgeKOAsFJbhuPWrvNEqgETzYn5U1TP9SAQI9kFZSEc4_N5CsQhvaFLQlZyqu_gZ61nDrA0Apy0W78gOtEzHEyEdJxRSSBWiVJd_iyU1FU4Qhg5Yd2bW1t9bs_OpGsHKgOhhJ6P3dKeRJa6WTQTr4HQ6Gq5PNVjfeb7zkOdjnfbqq7inY0aWLgFBLYbHea_HmPmV2hyLXRPfs");'></div>
+<div class="flex flex-col flex-1 min-w-0">
+<p class="text-sm font-bold text-text-light dark:text-text-dark truncate">Alex Morgan</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark truncate">Plumbing Expert</p>
+</div>
+<span class="material-symbols-outlined text-text-secondary-light">expand_more</span>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 lg:ml-72 flex flex-col min-h-screen">
+<!-- Mobile Header -->
+<div class="lg:hidden flex items-center justify-between p-4 bg-surface-light dark:bg-surface-dark border-b border-border-light dark:border-border-dark sticky top-0 z-30">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-2xl">handyman</span>
+<span class="font-bold text-lg">SevaConnect</span>
+</div>
+<button class="p-2 rounded-lg bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<div class="p-6 md:p-10 max-w-7xl mx-auto w-full flex flex-col gap-8">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h1 class="text-3xl font-bold text-text-light dark:text-text-dark">Dashboard</h1>
+<p class="text-text-secondary-light dark:text-text-secondary-dark mt-1">Welcome back, Alex! Here's what's happening today.</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2.5 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl font-medium text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[20px]">calendar_clock</span>
+                            Manage Availability
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl font-medium text-sm hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+                            Update Profile
+                        </button>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Stat Card 1 -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex items-start justify-between mb-4">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="flex items-center text-xs font-medium text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span>
+                                +12%
+                            </span>
+</div>
+<p class="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Monthly Earnings</p>
+<h3 class="text-2xl font-bold text-text-light dark:text-text-dark mt-1">$3,240</h3>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex items-start justify-between mb-4">
+<div class="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<span class="flex items-center text-xs font-medium text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span>
+                                +2%
+                            </span>
+</div>
+<p class="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Completion Rate</p>
+<h3 class="text-2xl font-bold text-text-light dark:text-text-dark mt-1">98%</h3>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex items-start justify-between mb-4">
+<div class="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined">work</span>
+</div>
+<span class="flex items-center text-xs font-medium text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span>
+                                +5
+                            </span>
+</div>
+<p class="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Total Jobs</p>
+<h3 class="text-2xl font-bold text-text-light dark:text-text-dark mt-1">42</h3>
+</div>
+<!-- Stat Card 4 -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
+<div class="flex items-start justify-between mb-4">
+<div class="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined">star</span>
+</div>
+<span class="flex items-center text-xs font-medium text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-full">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span>
+                                +0.1
+                            </span>
+</div>
+<p class="text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">Rating</p>
+<h3 class="text-2xl font-bold text-text-light dark:text-text-dark mt-1">4.9</h3>
+</div>
+</div>
+<!-- Main Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Upcoming Bookings (Takes up 2 columns on large screens) -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h2 class="text-xl font-bold text-text-light dark:text-text-dark">Upcoming Bookings</h2>
+<a class="text-sm font-medium text-primary hover:text-primary-dark transition-colors" href="#">View All</a>
+</div>
+<!-- Booking Item 1 -->
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl border border-border-light dark:border-border-dark shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row gap-4">
+<div class="flex-shrink-0 relative">
+<div class="w-16 h-16 rounded-xl bg-gray-200 overflow-hidden">
+<img alt="Customer home interior" class="w-full h-full object-cover" data-alt="Modern bathroom sink needing repair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALZ0cDv_j1eAHOfrtfOfDYhwubgyEmYSLl8y8hm8Au9oBsZJLG2PcofIjQqKLg8oThpZrF3SAU-5_rJi1nLkH2cZibJwxfxwnvHWg3HjlB9l9sr0_uvtyKJ-woGonH5NPAih4V5iB2CmsjG-NWCyowrnKQszgSeFrPxpEtKyBnG4OnCKV9zo0hS0gp_YerhDPFh8RouanOxHL_CN8LS0uv03WmWthhJl_7dA2clbx-E3si8M1l3Hckt2AzgCrk-Qg0mSq2sBjyPKIR"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-white dark:bg-surface-dark p-1 rounded-full border border-border-light dark:border-border-dark">
+<div class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 p-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">plumbing</span>
+</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-text-light dark:text-text-dark text-lg">Leaky Faucet Repair</h3>
+<span class="bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-lg uppercase tracking-wide">Today</span>
+</div>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark mt-1">Sarah Johnson • 123 Maple Avenue, Westside</p>
+<div class="flex items-center gap-4 mt-3 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+                                        2:00 PM - 3:30 PM
+                                    </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">attach_money</span>
+                                        $85.00
+                                    </span>
+</div>
+</div>
+<div class="flex sm:flex-col justify-center gap-2 mt-2 sm:mt-0">
+<button class="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-dark transition-colors shadow-sm w-full sm:w-auto">Start Job</button>
+<button class="px-4 py-2 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-text-secondary-light dark:text-text-secondary-dark text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors w-full sm:w-auto">Details</button>
+</div>
+</div>
+<!-- Booking Item 2 -->
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl border border-border-light dark:border-border-dark shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row gap-4">
+<div class="flex-shrink-0 relative">
+<div class="w-16 h-16 rounded-xl bg-gray-200 overflow-hidden">
+<img alt="Kitchen sink area" class="w-full h-full object-cover" data-alt="Kitchen pipe installation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAdYfsP5-uw8HLm4WeAVPIoxqETfZe5o8iK3mbYZZMCwHzOG7BVfxTn6TowDm7xYT0M9VaW6HXjbAGmtjLFYKaMsbwXjHjjpgOBdezbNapJTyYla9_q6XzL8NrZV4UtPVLlgKk6kld8QjLsvr017M6xCmX0ivL55WE2NzjcMYS5nKeBIqeaVrH7YtKlpKQS5OQWX9NXdTwS_eoXAhsVj2cAN4oqnosZgk_-j_D5SMxvi5TsM6lilWaLNhtQMIFyWsG2T5bK7pYxQHv"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-white dark:bg-surface-dark p-1 rounded-full border border-border-light dark:border-border-dark">
+<div class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 p-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">plumbing</span>
+</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-text-light dark:text-text-dark text-lg">Pipe Installation</h3>
+<span class="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-bold px-2.5 py-1 rounded-lg uppercase tracking-wide">Tomorrow</span>
+</div>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark mt-1">Mike Chen • 456 Oak Drive, Downtown</p>
+<div class="flex items-center gap-4 mt-3 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+                                        10:00 AM - 12:00 PM
+                                    </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">attach_money</span>
+                                        $150.00
+                                    </span>
+</div>
+</div>
+<div class="flex sm:flex-col justify-center gap-2 mt-2 sm:mt-0">
+<button class="px-4 py-2 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-text-secondary-light dark:text-text-secondary-dark text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors w-full sm:w-auto">Reschedule</button>
+<button class="px-4 py-2 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-text-secondary-light dark:text-text-secondary-dark text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors w-full sm:w-auto">Details</button>
+</div>
+</div>
+<!-- Booking Item 3 -->
+<div class="bg-surface-light dark:bg-surface-dark p-5 rounded-2xl border border-border-light dark:border-border-dark shadow-sm hover:shadow-md transition-shadow flex flex-col sm:flex-row gap-4 opacity-75">
+<div class="flex-shrink-0 relative">
+<div class="w-16 h-16 rounded-xl bg-gray-200 overflow-hidden">
+<img alt="Exterior house view" class="w-full h-full object-cover" data-alt="Outdoor drainage system" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1xanDJvjPLxRDfQ6CaMDOyR1-SQNBQMNhEd84r853zmkohDFWv-V5qtCCWKfinJD5ZaYws2uO04zYMa0448cxsGhSxeDD5BeeNikotrs1ThJEv33GeATH6Ey_cGNGV6I0btFUM6sRrfCys4vyfEevGPblvskl3iSO5Zo3vMy79QLOKnNLd8J1PatBBKKZFo56C11RiAwDK3hWStf3twNFsug2huiXM6Ut19G1lvgHZxTqt4TMP7xjvAY-pGlsIUPM9CPv9YdppI0x"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-white dark:bg-surface-dark p-1 rounded-full border border-border-light dark:border-border-dark">
+<div class="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 p-1 rounded-full">
+<span class="material-symbols-outlined text-[16px]">plumbing</span>
+</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col justify-center">
+<div class="flex justify-between items-start">
+<h3 class="font-bold text-text-light dark:text-text-dark text-lg">Drain Cleaning</h3>
+<span class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-bold px-2.5 py-1 rounded-lg uppercase tracking-wide">Oct 24</span>
+</div>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark mt-1">Emily Davis • 789 Pine Street, Suburbia</p>
+<div class="flex items-center gap-4 mt-3 text-sm text-text-secondary-light dark:text-text-secondary-dark">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+                                        9:00 AM - 10:30 AM
+                                    </span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">attach_money</span>
+                                        $120.00
+                                    </span>
+</div>
+</div>
+<div class="flex sm:flex-col justify-center gap-2 mt-2 sm:mt-0">
+<button class="px-4 py-2 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark text-text-secondary-light dark:text-text-secondary-dark text-sm font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors w-full sm:w-auto">Details</button>
+</div>
+</div>
+</div>
+<!-- Right Column (Reviews & Quick Stats) -->
+<div class="flex flex-col gap-6">
+<!-- Recent Activity / Reviews -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl border border-border-light dark:border-border-dark shadow-sm flex flex-col flex-1">
+<h2 class="text-xl font-bold text-text-light dark:text-text-dark mb-4">Recent Reviews</h2>
+<div class="space-y-6">
+<div class="border-b border-border-light dark:border-border-dark pb-4 last:border-0 last:pb-0">
+<div class="flex justify-between mb-2">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full bg-gray-200 bg-cover" data-alt="Reviewer profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCc_eneQzqPAeKzyv_sGRmMQ016yZ4rXmUzyDmznLxhumWQdc5LpydCxqJzM_ox6Bo2q183X6I0EUt66AO8W76CyFh1fwVi1_h4_WJAa8CfWxhGk66OmGxC09gSVjKNlwMeGU0LUqGEnnybVfwDqt0ZvYmC-yh9oxG8DX9XYH5l-pzEu75dc1IV5fvPFNu9bBywgxKNy6qSdF92TVj2Fxdb51V7DymrsjRE_VDNpjse8QTm6ImwC939d1ktjpbJPyrCF5pqM6qPrAdL");'></div>
+<span class="text-sm font-bold text-text-light dark:text-text-dark">Alice K.</span>
+</div>
+<div class="flex text-yellow-400 text-sm">
+<span class="material-symbols-outlined text-[16px] fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark italic">"Alex was prompt and fixed the issue quickly. Highly recommended!"</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-2 text-right">2 days ago</p>
+</div>
+<div class="border-b border-border-light dark:border-border-dark pb-4 last:border-0 last:pb-0">
+<div class="flex justify-between mb-2">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full bg-gray-200 bg-cover" data-alt="Reviewer profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB0fPAC-_KB4aMwH2WgQxmgUkrw3CHt2yq2X3KIFa9PjVhf-KTqjmy4aii7z0SEX39jBbnsiVGmZLhmS793Z5Iu5F_wp2BGuiInA2rEIDsngRLauCpZQtApiDd9vtRNmidLOp70D8Fc7BwN_t6bO_vuCGTZ8q_kClrgByxcR9SkQLJgM1Hv5BcZ1sbn1-Kht2_KZMmUVGZMk9T135ODKvtNqKUQVgHHgrXASHp9ibehHRQqc6KPp2vHjSeaj5JMrRxUpEVa5u12I6nL");'></div>
+<span class="text-sm font-bold text-text-light dark:text-text-dark">Robert M.</span>
+</div>
+<div class="flex text-yellow-400 text-sm">
+<span class="material-symbols-outlined text-[16px] fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px] fill-current" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-[16px]">star</span>
+</div>
+</div>
+<p class="text-sm text-text-secondary-light dark:text-text-secondary-dark italic">"Good service, but arrived a bit late due to traffic."</p>
+<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark mt-2 text-right">5 days ago</p>
+</div>
+</div>
+<button class="w-full mt-6 py-2 border border-border-light dark:border-border-dark rounded-lg text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">View All Reviews</button>
+</div>
+<!-- Map Preview -->
+<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl border border-border-light dark:border-border-dark shadow-sm">
+<h2 class="text-lg font-bold text-text-light dark:text-text-dark mb-4">Service Area</h2>
+<div class="w-full h-48 bg-gray-200 rounded-xl overflow-hidden relative">
+<img alt="Map of service area" class="w-full h-full object-cover opacity-80" data-location="Los Angeles, CA" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLgxwD1E8VmPJBdMSbLF8-rXOUo5Cu3GEwJd0xn3bQNldKBcE0W2a2qVgdhldqYDahbi-Ca8VxAusgyLWiW018paQSS3a8fPb9zM5mh5o6V2trP2hALh0YReiCWLzvMKS9Eta1-txojbe2wgIzy7EQ63ja1HcV3qiVcey-iKBEqy_0-ic0C_3e6K3EyPgMBNYYPqVobmkuGEpfM8H_vDE-Cdvp9STFoLMeGC0Fp-XMRO2dfU_amzNaHawvKB5D6gNEfnepVnpY-mmY"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-surface-light/90 dark:bg-surface-dark/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-sm border border-border-light dark:border-border-dark">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<span class="text-sm font-bold text-text-light dark:text-text-dark">Los Angeles, CA</span>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-4 flex items-center justify-between text-sm">
+<span class="text-text-secondary-light dark:text-text-secondary-dark">Radius</span>
+<span class="font-bold text-text-light dark:text-text-dark">15 Miles</span>
+</div>
+<div class="mt-2 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+<div class="bg-primary h-2 rounded-full" style="width: 75%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -11,6 +11,7 @@ const {
   approveProvider,
   rejectProvider,
   getAnalytics,
+  listReviews,
 } = require("../controllers/adminController");
 
 const router = express.Router();
@@ -36,5 +37,7 @@ router.patch(
 );
 
 router.get("/admin/analytics", getAnalytics);
+
+router.get("/admin/reviews", listReviews);
 
 module.exports = router;
