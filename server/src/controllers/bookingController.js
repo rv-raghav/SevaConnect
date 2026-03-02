@@ -1,0 +1,179 @@
+const asyncHandler = require("../utils/asyncHandler");
+const bookingService = require("../services/bookingService");
+
+/**
+ * POST /api/bookings
+ * Customer creates booking
+ */
+const createBooking = asyncHandler(async (req, res) => {
+  const booking = await bookingService.createBooking({
+    customerId: req.user.userId,
+    providerId: req.body.providerId,
+    categoryId: req.body.categoryId,
+    address: req.body.address,
+    city: req.body.city,
+    scheduledDateTime: req.body.scheduledDateTime,
+    notes: req.body.notes,
+  });
+
+  res.status(201).json({
+    success: true,
+    data: booking,
+  });
+});
+
+/**
+ * PATCH /api/bookings/:id/cancel
+ */
+const cancelBooking = asyncHandler(async (req, res) => {
+  const booking = await bookingService.cancelBooking(
+    req.params.id,
+    req.user.userId,
+    req.user.role
+  );
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
+/**
+ * PATCH /api/bookings/:id/accept
+ */
+const acceptBooking = asyncHandler(async (req, res) => {
+  const booking = await bookingService.acceptBooking(
+    req.params.id,
+    req.user.userId
+  );
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
+/**
+ * PATCH /api/bookings/:id/start
+ */
+const startBooking = asyncHandler(async (req, res) => {
+  const booking = await bookingService.startBooking(
+    req.params.id,
+    req.user.userId
+  );
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
+/**
+ * PATCH /api/bookings/:id/complete
+ */
+const completeBooking = asyncHandler(async (req, res) => {
+  const booking = await bookingService.completeBooking(
+    req.params.id,
+    req.user.userId
+  );
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
+/**
+ * PATCH /api/bookings/:id/reschedule
+ */
+const rescheduleBooking = asyncHandler(async (req, res) => {
+  const booking = await bookingService.rescheduleBooking(
+    req.params.id,
+    req.user.userId,
+    req.body.scheduledDateTime
+  );
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
+const getMyBookings = asyncHandler(async (req, res) => {
+  const { status, page, limit } = req.query;
+
+  const data = await bookingService.getCustomerBookings(
+    req.user.userId,
+    {
+      status,
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
+
+const getProviderBookings = asyncHandler(async (req, res) => {
+  const { status, page, limit } = req.query;
+
+  const data = await bookingService.getProviderBookings(
+    req.user.userId,
+    {
+      status,
+      page: Number(page) || 1,
+      limit: Number(limit) || 10,
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
+
+const getBookingById = asyncHandler(async (req, res) => {
+  const booking = await bookingService.getBookingById(
+    req.params.id,
+    req.user.userId,
+    req.user.role
+  );
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
+const addWorkUpdate = asyncHandler(async (req, res) => {
+  const { type } = req.query;
+
+  const booking = await bookingService.addWorkUpdate({
+    bookingId: req.params.id,
+    providerId: req.user.userId,
+    notes: req.body.notes,
+    files: req.files,
+    type,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: booking,
+  });
+});
+
+module.exports = {
+  createBooking,
+  cancelBooking,
+  acceptBooking,
+  startBooking,
+  completeBooking,
+  rescheduleBooking,
+  getMyBookings,
+  getProviderBookings,
+  getBookingById,
+  addWorkUpdate,
+};
