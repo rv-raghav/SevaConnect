@@ -36,7 +36,7 @@ const updateCategoryBodySchema = Joi.object({
 }).min(1);
 
 const adminProvidersQuerySchema = Joi.object({
-  approved: Joi.boolean().truthy("true").falsy("false").optional(),
+  status: Joi.string().valid("pending", "approved", "rejected").optional(),
 });
 
 module.exports = {

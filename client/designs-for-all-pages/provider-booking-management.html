@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SevaConnect - Provider Booking Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1121d4",
+                        "primary-content": "#ffffff",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101222",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1a1d33",
+                        "text-main": "#0d0f1b",
+                        "text-muted": "#4c529a",
+                    },
+                    fontFamily: {
+                        display: ["Manrope", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                        lg: "1rem",
+                        xl: "1.5rem",
+                        full: "9999px",
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main antialiased">
+<div class="flex h-screen w-full overflow-hidden bg-background-light dark:bg-background-dark">
+<!-- Sidebar -->
+<aside class="hidden w-64 flex-col border-r border-slate-200 bg-surface-light dark:border-slate-800 dark:bg-surface-dark lg:flex">
+<div class="flex h-full flex-col justify-between p-4">
+<div class="flex flex-col gap-6">
+<!-- User Profile Snippet -->
+<div class="flex items-center gap-3 rounded-xl bg-slate-50 p-3 dark:bg-slate-800/50">
+<div class="h-12 w-12 rounded-full bg-cover bg-center ring-2 ring-primary/20" data-alt="Portrait of a professional plumber" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBRxvSeRqCaLsq2PXPP1oeca3ZuYSnS0Bi2D7gkMuLYyr6YweaCPKkWUNPmDvU_Ked2Y98kqqRZZe8F7kYq05NwueatAsvTRpFxeesgNtc64WPxWlk8z4T8OUguILAvauBCxDOJ4upepClIpqCsE_81wEJmQf_VcSqIr2KLMlk1lo4ucoUohfH4AYknLAImG7717GN6mC7B_16Uq82w28z-tZ_1Yh5wpbTpa-AUo4iJPgwjNVDyinzkYiZlyJPjLHRQOOH_KVWF3qln");'></div>
+<div class="flex flex-col">
+<h1 class="text-base font-semibold text-text-main dark:text-slate-100">John Doe</h1>
+<p class="text-sm text-text-muted dark:text-slate-400">Plumber</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-text-main transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 rounded-lg bg-primary/10 px-3 py-2 text-primary dark:bg-primary/20 dark:text-blue-300" href="#">
+<span class="material-symbols-outlined fill-1">calendar_today</span>
+<span class="text-sm font-medium">My Bookings</span>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-text-main transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">work</span>
+<span class="text-sm font-medium">Services</span>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-text-main transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">payments</span>
+<span class="text-sm font-medium">Earnings</span>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-text-main transition-colors hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">person</span>
+<span class="text-sm font-medium">Profile</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Actions -->
+<div class="flex flex-col gap-4">
+<button class="flex h-10 w-full items-center justify-center rounded-xl bg-primary px-4 text-sm font-bold text-white shadow-lg shadow-primary/30 transition-transform hover:scale-[1.02] active:scale-95">
+                        Switch to Customer
+                    </button>
+<div class="flex flex-col gap-1 border-t border-slate-100 pt-4 dark:border-slate-800">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-text-main hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span class="text-sm font-medium">Log Out</span>
+</a>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto bg-background-light p-4 dark:bg-background-dark md:p-8">
+<div class="mx-auto flex max-w-5xl flex-col gap-8">
+<!-- Header Section -->
+<div class="flex flex-col justify-between gap-4 md:flex-row md:items-end">
+<div>
+<h1 class="text-3xl font-bold text-text-main dark:text-slate-100">My Bookings</h1>
+<p class="mt-1 text-text-muted dark:text-slate-400">Manage your upcoming jobs and track your progress.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 rounded-xl border border-slate-200 bg-surface-light px-4 py-2.5 text-sm font-semibold text-text-main shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-surface-dark dark:text-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-[20px]">filter_list</span>
+                            Filter
+                        </button>
+<button class="flex items-center gap-2 rounded-xl bg-surface-light px-4 py-2.5 text-sm font-semibold text-primary shadow-sm transition-colors hover:bg-blue-50 dark:bg-surface-dark dark:text-blue-300 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-[20px] filled">add</span>
+                            Add Work Update
+                        </button>
+</div>
+</div>
+<!-- Search Bar -->
+<div class="relative w-full">
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-text-muted dark:text-slate-500">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="h-12 w-full rounded-xl border-none bg-white py-2 pl-12 pr-4 text-base shadow-sm ring-1 ring-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-primary dark:bg-surface-dark dark:text-slate-200 dark:ring-slate-700 dark:placeholder:text-slate-600 dark:focus:ring-blue-500" placeholder="Search by customer name, address or booking ID..." type="text"/>
+</div>
+<!-- Tabs Navigation -->
+<div class="border-b border-slate-200 dark:border-slate-700">
+<nav aria-label="Tabs" class="-mb-px flex gap-8 overflow-x-auto">
+<a class="group inline-flex flex-col items-center border-b-[3px] border-primary px-1 pb-3 pt-4 text-sm font-bold text-primary dark:text-blue-400" href="#">
+                            Pending
+                            <span class="mt-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 text-xs text-primary dark:bg-blue-900/30 dark:text-blue-300">3</span>
+</a>
+<a class="group inline-flex flex-col items-center border-b-[3px] border-transparent px-1 pb-3 pt-4 text-sm font-medium text-text-muted hover:border-slate-300 hover:text-text-main dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-slate-200" href="#">
+                            Upcoming
+                             <span class="mt-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-slate-100 px-1.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400">5</span>
+</a>
+<a class="group inline-flex flex-col items-center border-b-[3px] border-transparent px-1 pb-3 pt-4 text-sm font-medium text-text-muted hover:border-slate-300 hover:text-text-main dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-slate-200" href="#">
+                            In Progress
+                             <span class="mt-1 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-slate-100 px-1.5 text-xs text-slate-500 dark:bg-slate-800 dark:text-slate-400">1</span>
+</a>
+<a class="group inline-flex flex-col items-center border-b-[3px] border-transparent px-1 pb-3 pt-4 text-sm font-medium text-text-muted hover:border-slate-300 hover:text-text-main dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-slate-200" href="#">
+                            Completed
+                        </a>
+<a class="group inline-flex flex-col items-center border-b-[3px] border-transparent px-1 pb-3 pt-4 text-sm font-medium text-text-muted hover:border-slate-300 hover:text-text-main dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-slate-200" href="#">
+                            Cancelled
+                        </a>
+</nav>
+</div>
+<!-- Booking Cards Grid -->
+<div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+<!-- Card 1: Urgent Request -->
+<article class="flex flex-col overflow-hidden rounded-xl bg-surface-light shadow-sm ring-1 ring-slate-200 transition-all hover:shadow-md dark:bg-surface-dark dark:ring-slate-800">
+<div class="flex items-center justify-between border-b border-slate-100 bg-red-50/50 px-5 py-3 dark:border-slate-800 dark:bg-red-900/10">
+<div class="flex items-center gap-2">
+<span class="flex h-2 w-2 rounded-full bg-red-500"></span>
+<span class="text-xs font-bold uppercase tracking-wider text-red-600 dark:text-red-400">Action Required</span>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Received 2h ago</span>
+</div>
+<div class="flex flex-col gap-4 p-5 sm:flex-row">
+<div class="h-32 w-full flex-shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:h-full sm:w-32">
+<div class="h-full w-full bg-cover bg-center" data-alt="Close up of pipes under a sink needing repair" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAaYzGguocy6NuDaLFh-242ak9lRFUIPKBYtFrtnTepsZ3D_veZ9dbD2-Xhq_hrjVlyJT2JmuH9LKhiUtl1sAcmlf-FM5sCfuNGB7jL256UalwsCKgNuiW8qpMpfYHALRStFfm8LZVnqj1mw5xcptqYzNJH0HW-edHHRz7-axiL2TM_IUvH7Mzt6O6CU0gl3lx-oheo28bCAa-AA8gJNI_nE2XHkvOL4H-PUh-MDRSVktH1mTJ-H6DzFG5CnH6NLk52qlhtAam9QmsH");'></div>
+</div>
+<div class="flex flex-1 flex-col justify-between gap-3">
+<div>
+<h3 class="text-lg font-bold text-text-main dark:text-slate-100">Emergency Pipe Leak Repair</h3>
+<div class="mt-2 flex flex-col gap-1 text-sm text-text-muted dark:text-slate-400">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span>Sarah Smith</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>123 Maple Avenue, Downtown</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span>Today, 2:00 PM - 4:00 PM</span>
+</div>
+</div>
+</div>
+<div class="mt-2 flex gap-3 pt-2">
+<button class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">check</span>
+                                        Accept
+                                    </button>
+<button class="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-text-main hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+                                        Decline
+                                    </button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2: Pending Approval -->
+<article class="flex flex-col overflow-hidden rounded-xl bg-surface-light shadow-sm ring-1 ring-slate-200 transition-all hover:shadow-md dark:bg-surface-dark dark:ring-slate-800">
+<div class="flex items-center justify-between border-b border-slate-100 px-5 py-3 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<span class="flex h-2 w-2 rounded-full bg-amber-400"></span>
+<span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">Pending Approval</span>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Received 5h ago</span>
+</div>
+<div class="flex flex-col gap-4 p-5 sm:flex-row">
+<div class="h-32 w-full flex-shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:h-full sm:w-32">
+<div class="h-full w-full bg-cover bg-center" data-alt="Modern kitchen faucet installation" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAWr3_QZT_IgJ74l6YqXyIem7AtncwI-EZemUpFEVopwWCmFYPX4ceZSz_R907kSKoADqzX5NBf78P7_47uAFwML7x1jqqa1jY3m6hM6ARpXi-vjRJmCNPhY3coDJqe3c00mPFWI6Ezait6Hk3TD-2ZvTAOcFfbBbYx7I5O_OWonPX5LWTKZlmE_k4X6w5zftq1R3cZcRlEC8vT_wGcTU88LbvmrOEDVh2KhkjDKGVFh8NpYKgRVNimlC1-_rpD6-SXzcktLav2EIoE");'></div>
+</div>
+<div class="flex flex-1 flex-col justify-between gap-3">
+<div>
+<h3 class="text-lg font-bold text-text-main dark:text-slate-100">Kitchen Faucet Installation</h3>
+<div class="mt-2 flex flex-col gap-1 text-sm text-text-muted dark:text-slate-400">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span>Michael Johnson</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>45 Westside Blvd, Apt 4B</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+<span>Tomorrow, 10:00 AM</span>
+</div>
+</div>
+</div>
+<div class="mt-2 flex gap-3 pt-2">
+<button class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">check</span>
+                                        Accept
+                                    </button>
+<button class="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-text-main hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+                                        Decline
+                                    </button>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3: Standard Request -->
+<article class="flex flex-col overflow-hidden rounded-xl bg-surface-light shadow-sm ring-1 ring-slate-200 transition-all hover:shadow-md dark:bg-surface-dark dark:ring-slate-800">
+<div class="flex items-center justify-between border-b border-slate-100 px-5 py-3 dark:border-slate-800">
+<div class="flex items-center gap-2">
+<span class="flex h-2 w-2 rounded-full bg-slate-400"></span>
+<span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">New Request</span>
+</div>
+<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Received 1d ago</span>
+</div>
+<div class="flex flex-col gap-4 p-5 sm:flex-row">
+<div class="h-32 w-full flex-shrink-0 overflow-hidden rounded-lg bg-slate-100 sm:h-full sm:w-32">
+<div class="h-full w-full bg-cover bg-center" data-alt="Bathroom shower repair scene" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA_EujHU2R5wIby-IMMtEelqGgEEyKSsNg3X4m-1wBcFWkYwUAWYxASdP663D3XGuTapl-zDEhttV8Jv0_etOOE7TpTuFKZiHEMB2TauJHmN5z6ISibixI6XQc5_2Ahzkx9iOj7y56Xy3THUt9k9kQTrHQAJxwd_snXiJhreOA3v-X954CO2XydM6hvDdEVi9Ykrq6uFaSCXtd5b6ACpcM3d79YYPYkTCknmlMWL-PjIR4vIOUVrnujXZhnKiQfqTz62f1NYkEPFzfC");'></div>
+</div>
+<div class="flex flex-1 flex-col justify-between gap-3">
+<div>
+<h3 class="text-lg font-bold text-text-main dark:text-slate-100">Shower Valve Replacement</h3>
+<div class="mt-2 flex flex-col gap-1 text-sm text-text-muted dark:text-slate-400">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">person</span>
+<span>Emily Davis</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span>88 Oak Street, Suburbs</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+<span>Wed, Oct 25, 11:30 AM</span>
+</div>
+</div>
+</div>
+<div class="mt-2 flex gap-3 pt-2">
+<button class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-md shadow-primary/20 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-[18px]">check</span>
+                                        Accept
+                                    </button>
+<button class="flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-text-main hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700">
+                                        Decline
+                                    </button>
+</div>
+</div>
+</div>
+</article>
+</div>
+<!-- Pagination / Footer of Content -->
+<div class="flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-700">
+<p class="text-sm text-text-muted dark:text-slate-400">Showing <span class="font-bold text-text-main dark:text-slate-200">3</span> of <span class="font-bold text-text-main dark:text-slate-200">8</span> pending requests</p>
+<div class="flex gap-2">
+<button class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800" disabled="">
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</button>
+<button class="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

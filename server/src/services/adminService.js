@@ -3,11 +3,15 @@ const Booking = require("../models/Booking");
 const Review = require("../models/Review");
 const AppError = require("../utils/AppError");
 
-const listProviders = async ({ approved }) => {
+const listProviders = async ({ status }) => {
   const filter = { role: "provider" };
 
-  if (approved !== undefined) {
-    filter.isApproved = approved;
+  if (status === "approved") {
+    filter.approvalStatus = "approved";
+  } else if (status === "pending") {
+    filter.approvalStatus = { $in: ["pending", undefined] };
+  } else if (status === "rejected") {
+    filter.approvalStatus = "rejected";
   }
 
   const providers = await User.find(filter)
@@ -29,43 +33,112 @@ const updateProviderApproval = async (providerId, isApproved) => {
   }
 
   provider.isApproved = isApproved;
+  provider.approvalStatus = isApproved ? "approved" : "rejected";
   await provider.save();
 
   return provider;
 };
 
 const getAnalytics = async () => {
-  const [totalUsers, totalProviders, totalReviews, bookingStats] =
-    await Promise.all([
-      User.countDocuments(),
-      User.countDocuments({ role: "provider" }),
-      Review.countDocuments(),
-      Booking.aggregate([
-        {
-          $group: {
-            _id: null,
-            totalBookings: { $sum: 1 },
-            completedBookings: {
-              $sum: {
-                $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
-              },
+  const now = new Date();
+  const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+
+  const [
+    totalUsers,
+    totalProviders,
+    totalReviews,
+    bookingStats,
+    monthlyBookings,
+    monthlyRevenue,
+    statusDistribution,
+    monthlyUsers,
+  ] = await Promise.all([
+    User.countDocuments(),
+    User.countDocuments({ role: "provider" }),
+    Review.countDocuments(),
+    Booking.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalBookings: { $sum: 1 },
+          completedBookings: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "completed"] }, 1, 0],
             },
-            cancelledBookings: {
-              $sum: {
-                $cond: [{ $eq: ["$status", "cancelled"] }, 1, 0],
-              },
+          },
+          cancelledBookings: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "cancelled"] }, 1, 0],
             },
-            averageBookingPrice: { $avg: "$priceSnapshot" },
+          },
+          averageBookingPrice: { $avg: "$priceSnapshot" },
+          totalRevenue: {
+            $sum: {
+              $cond: [{ $eq: ["$status", "completed"] }, "$priceSnapshot", 0],
+            },
           },
         },
-      ]),
-    ]);
+      },
+    ]),
+    // Monthly bookings (last 12 months)
+    Booking.aggregate([
+      { $match: { createdAt: { $gte: twelveMonthsAgo } } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]),
+    // Monthly revenue from completed bookings (last 12 months)
+    Booking.aggregate([
+      {
+        $match: {
+          status: "completed",
+          createdAt: { $gte: twelveMonthsAgo },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          revenue: { $sum: "$priceSnapshot" },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]),
+    // Booking status distribution
+    Booking.aggregate([
+      { $group: { _id: "$status", count: { $sum: 1 } } },
+    ]),
+    // Monthly user registrations (last 12 months)
+    User.aggregate([
+      { $match: { createdAt: { $gte: twelveMonthsAgo } } },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { "_id.year": 1, "_id.month": 1 } },
+    ]),
+  ]);
 
   const aggregatedStats = bookingStats[0] || {
     totalBookings: 0,
     completedBookings: 0,
     cancelledBookings: 0,
     averageBookingPrice: 0,
+    totalRevenue: 0,
   };
 
   const averageBookingPrice = Number(
@@ -79,12 +152,47 @@ const getAnalytics = async () => {
     completedBookings: aggregatedStats.completedBookings,
     cancelledBookings: aggregatedStats.cancelledBookings,
     averageBookingPrice,
+    totalRevenue: aggregatedStats.totalRevenue,
     totalReviews,
+    monthlyBookings: monthlyBookings.map((m) => ({
+      year: m._id.year,
+      month: m._id.month,
+      count: m.count,
+    })),
+    monthlyRevenue: monthlyRevenue.map((m) => ({
+      year: m._id.year,
+      month: m._id.month,
+      revenue: m.revenue,
+    })),
+    statusDistribution: statusDistribution.map((s) => ({
+      status: s._id,
+      count: s.count,
+    })),
+    monthlyUsers: monthlyUsers.map((m) => ({
+      year: m._id.year,
+      month: m._id.month,
+      count: m.count,
+    })),
   };
+};
+
+const listReviews = async () => {
+  const reviews = await Review.find()
+    .populate("customerId", "name email")
+    .populate("providerId", "name email")
+    .populate({
+      path: "bookingId",
+      select: "categoryId",
+      populate: { path: "categoryId", select: "name" },
+    })
+    .sort({ createdAt: -1 });
+
+  return reviews;
 };
 
 module.exports = {
   listProviders,
   updateProviderApproval,
   getAnalytics,
+  listReviews,
 };

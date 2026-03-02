@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SevaConnect - Service Categories</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1121d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101222",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light text-[#0d0f1b] font-display antialiased min-h-screen flex">
+<!-- Sidebar -->
+<aside class="w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col flex-shrink-0 h-screen sticky top-0 overflow-y-auto">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary/10 rounded-full h-10 w-10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-2xl">grid_view</span>
+</div>
+<div>
+<h1 class="text-slate-900 font-bold text-lg leading-tight">SevaConnect</h1>
+<p class="text-slate-500 text-xs font-medium">Admin Portal</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary text-slate-400">dashboard</span>
+<span class="font-medium text-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-medium" href="#">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">category</span>
+<span class="text-sm">Service Categories</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary text-slate-400">engineering</span>
+<span class="font-medium text-sm">Professionals</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary text-slate-400">group</span>
+<span class="font-medium text-sm">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary text-slate-400">payments</span>
+<span class="font-medium text-sm">Transactions</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary text-slate-400">settings</span>
+<span class="font-medium text-sm">Settings</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-slate-100">
+<button class="flex w-full items-center justify-center gap-2 rounded-xl h-10 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-lg">logout</span>
+<span>Logout</span>
+</button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+<!-- Mobile Header -->
+<header class="lg:hidden bg-white border-b border-slate-200 p-4 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary/10 rounded-full h-8 w-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">grid_view</span>
+</div>
+<h1 class="font-bold text-slate-900">SevaConnect</h1>
+</div>
+<button class="text-slate-500 hover:text-slate-800">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<div class="flex-1 overflow-y-auto bg-background-light p-4 md:p-8 lg:p-12">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Page Header -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">Service Categories</h2>
+<p class="text-slate-500 mt-1 text-sm md:text-base">Manage the list of services offered on the platform</p>
+</div>
+<button class="bg-primary hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-primary/20 transition-all active:scale-95">
+<span class="material-symbols-outlined text-xl">add</span>
+                        Add Category
+                    </button>
+</div>
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+<div>
+<p class="text-slate-500 text-sm font-medium mb-1">Total Categories</p>
+<h3 class="text-2xl font-bold text-slate-900">24</h3>
+</div>
+<div class="bg-blue-50 text-blue-600 p-2 rounded-lg">
+<span class="material-symbols-outlined">category</span>
+</div>
+</div>
+<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+<div>
+<p class="text-slate-500 text-sm font-medium mb-1">Active Services</p>
+<h3 class="text-2xl font-bold text-slate-900">18</h3>
+</div>
+<div class="bg-green-50 text-green-600 p-2 rounded-lg">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+</div>
+<div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-start justify-between">
+<div>
+<p class="text-slate-500 text-sm font-medium mb-1">Pending Review</p>
+<h3 class="text-2xl font-bold text-slate-900">3</h3>
+</div>
+<div class="bg-orange-50 text-orange-600 p-2 rounded-lg">
+<span class="material-symbols-outlined">pending</span>
+</div>
+</div>
+</div>
+<!-- Filters & Search -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col sm:flex-row gap-4 justify-between items-center">
+<div class="relative w-full sm:w-96">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2.5 border-slate-200 rounded-xl leading-5 bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-all" placeholder="Search categories..." type="text"/>
+</div>
+<div class="flex items-center gap-3 w-full sm:w-auto">
+<button class="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                            Filter
+                        </button>
+<button class="flex-1 sm:flex-none items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+                            Export
+                        </button>
+</div>
+</div>
+<!-- Table -->
+<div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-slate-200 bg-slate-50/50">
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-1/4">Category Name</th>
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider w-1/3">Description</th>
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Active Pros</th>
+<th class="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined">cleaning_services</span>
+</div>
+<div>
+<div class="font-bold text-slate-900 text-sm">Home Cleaning</div>
+<div class="text-xs text-slate-400">ID: #CAT-001</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-600 line-clamp-2">Standard house cleaning services including dusting, vacuuming, and mopping.</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>
+                                            Active
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2 overflow-hidden">
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-200 bg-center bg-cover" data-alt="Portrait of a female cleaner" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBxWtM4quzPBwHjAMwRchBrgzRMYapjskDWmSgVz6WVUoPtAD3xF7pJ7NK-fiUwPlIDqRIqAB6ROJL33JzUDk8YEiHWRY7VrBYv9H6Ns85Jq4RdlRifdzcjSDw2MGQ3_AmDwEp4WPPWTn7ZxHb5YBtR7zlKHtz6UfzHGohJVPIEYUUXX-_afbwxUnD-jarcMGlUxhgNypVp-9a7LiFaZHMLjLWPusD3tnJ3MIWAMuNIZ3E5cw2cbiRwa98NRasMfC03paGjR7od9Oh')"></div>
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-200 bg-center bg-cover" data-alt="Portrait of a male cleaner" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBdDb2iI2yIyq_HczKjp6BSHgjLLfh0_AIm8poExf2leM5Ybwehf6IrQiIDzdZI2lmciNY5ocPUBYPNcDNuycQKLcvlogQdHerPWYa4JkEqb3p50R-JO-VI88_JkWuWrXaH6wejC5us-UswFkMdkImsH6-kZ9VCkx0uq6Qhvgolpog04DW2-CMzUFZoX4ICshzpX3-daeFoNWUQhT1kpLszYcx6tgf_02l-TZadN1mymCzaoxruUnS9vwk8wKx1KOVB3iPecfFy_mhh')"></div>
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-200 bg-center bg-cover" data-alt="Portrait of a male professional" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDToIgmnzKOaso7hHO7ZXEIyCP__MbYwnINfhNGfshcp1Wj_Ghs3kfeIWgKMvuGEqjVCgcBBd3dvSHNXuYuiU5Z6P-NudNaLddNg8b_RC2vqD__BCpURlhTW7uivsuR3r-QedzsUVDGUCsrjYvTo3OmUS0PveApVlJ5KlM2d5ucd1t1TrQBIXqQ6eSa6a1B0Hj_clj7t_1OIURsONrWh7_Gqj_avWIEwivtQWdcbKR-VLZiM-dkB5YFwd_a18a74LRRL-XmC7hK4tGt')"></div>
+</div>
+<span class="text-sm text-slate-600 font-medium">145</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-lg">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600 flex-shrink-0">
+<span class="material-symbols-outlined">plumbing</span>
+</div>
+<div>
+<div class="font-bold text-slate-900 text-sm">Plumbing</div>
+<div class="text-xs text-slate-400">ID: #CAT-002</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-600 line-clamp-2">Pipe repair, installation, and maintenance for residential properties.</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>
+                                            Active
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2 overflow-hidden">
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-200 bg-center bg-cover" data-alt="Portrait of a plumber" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZsrO8bAr6WCRrZdFCzxaLYtKyfqkBWf8dd6n0riH3quO2q4HCAFeeLbb1akyo3sIJKvKtfTzNzOyK7B9BLbX6g0vYrzij4280lT6tVZx6FKRXYmCWy4oN1UgC7U9UqTmJX2hC58xsj2qVza06Xv27gdr7vrqvPaphF_s77vhy2-t8FDHjiJyoKsyQEs6pUCW_sNjIdr3E_f66HvKm0PAj30e273uX1G97e2Z9k_Y5H9QXGPZlGjBRkAjtbCPmgv-8leWsWdPSVMqk')"></div>
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-200 bg-center bg-cover" data-alt="Portrait of a male plumber" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwdlEz8C9c-s8OwhNv1pwp0v6IpmyWo8jeJul1CWy4t84vf8tMIGNBdVv8MgeHB3WTe1uynFxEOyeUNW4jD1g4LlcPxZRKkLeGSC78Gl9A1pDZwzEO5Q81RZyLRVinsd-dCNRdQw3nMaQkCBapxwLkHLB0666Yu3ntnPxJ6xbcTeELMNRY9LB7IYvc1SxlFtwWPz7fzuqLvrTVSSkHtgVnkGDvDAnH2Jm6Q3xssW0moEH1tfaidIRcc-3mntmFPZF-xZOq7qRVnr6z')"></div>
+</div>
+<span class="text-sm text-slate-600 font-medium">89</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-lg">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-yellow-100 flex items-center justify-center text-yellow-600 flex-shrink-0">
+<span class="material-symbols-outlined">electrical_services</span>
+</div>
+<div>
+<div class="font-bold text-slate-900 text-sm">Electrical</div>
+<div class="text-xs text-slate-400">ID: #CAT-003</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-600 line-clamp-2">Wiring, electrical repairs, and fixture installations by certified electricians.</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>
+                                            Active
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2 overflow-hidden">
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-200 bg-center bg-cover" data-alt="Portrait of an electrician" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCCkhjOliQhj9u0oNwOM0JIyTmna-XlYzkkQxFUu-uhFwJOjOwrMTn8UQS8w1RsykQ_LzsetGQSM2Wltb8DShEOZQTkLt3tqpVavcxS-OFAQvvSRqKE1IxXEytuOdPGdNdkHT9omVkA4YuyOg8RbGjpke2qzX9xBBqjHWShJpZHnav_JjNRfaCzrftjYxIXv5qlNPf61aHy2MVGGG0TZRML-756IrERDRyHUjWAWiXhucToOqHZ2A7sWrIX0NfskwZEuO-G-Y8XiWlq')"></div>
+</div>
+<span class="text-sm text-slate-600 font-medium">62</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-lg">block</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0">
+<span class="material-symbols-outlined">yard</span>
+</div>
+<div>
+<div class="font-bold text-slate-900 text-sm">Gardening</div>
+<div class="text-xs text-slate-400">ID: #CAT-004</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-600 line-clamp-2">Lawn care, landscaping, and garden maintenance services.</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
+<span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>
+                                            Inactive
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<span class="text-sm text-slate-400 italic">No active pros</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Activate">
+<span class="material-symbols-outlined text-lg">check_circle</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-slate-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0">
+<span class="material-symbols-outlined">local_shipping</span>
+</div>
+<div>
+<div class="font-bold text-slate-900 text-sm">Moving</div>
+<div class="text-xs text-slate-400">ID: #CAT-005</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-sm text-slate-600 line-clamp-2">Local and long-distance moving services with truck and labor.</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>
+                                            Active
+                                        </span>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2 overflow-hidden">
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-200 bg-center bg-cover" data-alt="Portrait of a mover" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDTHBwJDINT8M59_SYJh-ss9KJ-px3sZYTi8RNdg0URmKNAt0Z3q6t5CtBIfbwRgfRjKqBWsKBapKNABg5ImOGGn22x3EGoXcbacJy6ufLyTgTHil6dVz5_5015oVAvublWQIP8BWu6EH5DlpdDRFG942ck8d2N-TrkP0KVc8JJA-G038SQgp9wr078x6bG1lDivSHEs79-fiquleo_BlAMmMJTsbYW5tKKALG13rKazx4n6juBFxaENOb80tMWaLEjnOWR6ugUungr')"></div>
+<div class="inline-block h-6 w-6 rounded-full ring-2 ring-white bg-slate-200 bg-center bg-cover" data-alt="Portrait of a moving professional" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDeqqfO93Bin8CGOdr6Zm779rN_SF47vnRgOBJh3reLmt3dAd9UqP97SLusUWufWY5UQPqJHV8PMoK0FUcHfdztkbKDFbrTucqhayS7iAM_oOxoj0c_DoSDcHkXsg5E-Y6BsRpkB5ei7JTYjLPz6R9LMCrXUp-WqsdC_KssGntoKS5gRR70h0Taop_p6sFkDR-RAvWnsnWGuy6SJ0MhjbqYy1skxuqsivbz4L8YFF1gm-PEizyfsKanmlG4ZkJst3mQD_Ju_QLEzcWX')"></div>
+</div>
+<span class="text-sm text-slate-600 font-medium">34</span>
+</div>
+</td>
+<td class="px-6 py-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-colors" title="Edit">
+<span class="material-symbols-outlined text-lg">edit</span>
+</button>
+<button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Deactivate">
+<span class="material-symbols-outlined text-lg">block</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="border-t border-slate-200 px-6 py-4 flex items-center justify-between">
+<p class="text-sm text-slate-500">Showing <span class="font-bold text-slate-900">1</span> to <span class="font-bold text-slate-900">5</span> of <span class="font-bold text-slate-900">24</span> results</p>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-sm rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 disabled:opacity-50">Previous</button>
+<button class="px-3 py-1 text-sm rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50">Next</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

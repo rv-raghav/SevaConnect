@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SevaConnect - Find Local Professionals</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1121d4",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101222",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display antialiased selection:bg-primary/20">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-10 py-3">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">SevaConnect</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-8">
+<div class="flex items-center gap-6">
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-semibold" href="#">Find Services</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-semibold" href="#">How it Works</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary transition-colors text-sm font-semibold" href="#">Become a Pro</a>
+</div>
+<div class="flex items-center gap-3">
+<a class="text-slate-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors text-sm font-bold" href="#">Log In</a>
+<button class="flex cursor-pointer items-center justify-center rounded-xl h-10 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-sm font-bold shadow-lg shadow-primary/20">
+<span>Sign Up</span>
+</button>
+</div>
+</div>
+<button class="md:hidden text-slate-900 dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+<main class="flex-1">
+<!-- Hero Section -->
+<div class="px-4 py-6 md:px-10 lg:px-40">
+<div class="rounded-3xl overflow-hidden relative min-h-[520px] flex items-center justify-center bg-cover bg-center" data-alt="Modern living room being cleaned by a professional" style='background-image: linear-gradient(rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuA3hTMdsQYMUouskcR_OqognOm1zecl-EytDeybmSZ6Xv620H_cpen7aXoFEMEv3KKs9Cyiq1TY8Iwumj2y1zlsXonpJYi6Rjx0Fn_erHZElVFoFxg5gDCxga0Di5TEqAcRmILoqMmSyzglYlfCxv-NHkUZ55GrK9nQjk1x53EXvkBTDGqncRDZo5A4HR5Hi9LAWU6BKiJsGFYJqqnEXkh4mCqui3qRqEzQ3b_sOr-9wSLv3sUWUYtX1xrrRAqflAsV9QOtozG95v1L");'>
+<div class="relative z-10 w-full max-w-4xl px-4 flex flex-col items-center gap-8 text-center">
+<div class="space-y-4">
+<h1 class="text-white text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1]">
+                                Expert help for your<br/><span class="text-blue-300">everyday needs</span>
+</h1>
+<p class="text-slate-200 text-lg md:text-xl max-w-2xl mx-auto font-medium">
+                                Connect with top-rated local professionals for home cleaning, repairs, plumbing, and more.
+                            </p>
+</div>
+<!-- Search Box -->
+<div class="w-full max-w-3xl bg-white dark:bg-slate-800 p-2 rounded-2xl shadow-xl flex flex-col md:flex-row gap-2">
+<div class="relative flex-1 group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="block w-full h-12 pl-10 pr-3 rounded-xl border-transparent bg-transparent text-slate-900 dark:text-white placeholder-slate-500 focus:border-transparent focus:bg-slate-50 dark:focus:bg-slate-700/50 focus:ring-0 sm:text-sm font-medium" placeholder="What service do you need? (e.g. Plumber)" type="text"/>
+</div>
+<div class="relative w-full md:w-64 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700 group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-slate-400 group-focus-within:text-primary transition-colors">location_on</span>
+</div>
+<input class="block w-full h-12 pl-10 pr-3 rounded-xl border-transparent bg-transparent text-slate-900 dark:text-white placeholder-slate-500 focus:border-transparent focus:bg-slate-50 dark:focus:bg-slate-700/50 focus:ring-0 sm:text-sm font-medium" placeholder="Zip code or City" type="text"/>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-primary/25 md:w-auto w-full">
+                                Search
+                            </button>
+</div>
+<!-- Popular Tags -->
+<div class="flex flex-wrap justify-center gap-2">
+<span class="text-white/80 text-sm font-medium mr-2">Popular:</span>
+<button class="px-3 py-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold transition-colors border border-white/10">House Cleaning</button>
+<button class="px-3 py-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold transition-colors border border-white/10">Handyman</button>
+<button class="px-3 py-1 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-full text-white text-xs font-semibold transition-colors border border-white/10">Plumbing</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Categories Section -->
+<section class="layout-container px-4 md:px-10 lg:px-40 py-12">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-slate-900 dark:text-white text-2xl font-bold tracking-tight">Browse Categories</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Find the right professional for any job</p>
+</div>
+<a class="text-primary font-bold text-sm hover:underline hidden sm:block" href="#">View all categories</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+<!-- Category Card 1 -->
+<a class="group flex flex-col gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all" href="#">
+<div class="aspect-square w-full rounded-xl bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
+<img alt="Person cleaning a surface with a yellow cloth" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Close up of cleaning service" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuKMPGdRmdfi7pKM54Z3V2Ec1TpUk20pJAdomk7Ri7R9WO7oaGcQVRlAedvBw1fQWPJDVDh0l_jDNpPa8wf182kXLhsqH6XyUdJ9tq9TMWmrE_vYyFJe9NOhxYfFIUgMnL5I61BQDlFSQOIDXsMZMRZLCGf1QL7XLTea-VbzRha3LArtuaW9ByovAYxa627a59PUoFSYsQ6cLrFR-9w18iFkQjvHfRBfRmYD_lcKTxSGEDCYsyKQfudFw6JNTN_OAQO9EX1MbIj0-D"/>
+<div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="text-center pb-1">
+<h3 class="text-slate-900 dark:text-white font-bold text-sm">Cleaning</h3>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">120+ Pros</p>
+</div>
+</a>
+<!-- Category Card 2 -->
+<a class="group flex flex-col gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all" href="#">
+<div class="aspect-square w-full rounded-xl bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
+<img alt="Electrician fixing a switch board" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Electrician working on panel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgIb-7eJCY42EX9-kFxUEaPQJrJv5owIejJ1-Ddsy8b-AH3pydOxGIbp-Cmw7VgHjbFWjhRIuXuRvqHEmiwMio8LKwfQGVKd9GyF8Z2qPWd3OCTx3pnmIrXPNanrtLq7A8EuBFVsw8zP3GjgmORunA9HsuEPiYFmqdRCFh_PBe8jl0TuI_K_mgHkfHshi47l5BHMGrBNtFfjxHlFkyhisVIfdgKuTgCHbq3VaZgz14dqo0V0L9ge8s8TxVDTKKrY9-BOSIwsIzOXCo"/>
+<div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="text-center pb-1">
+<h3 class="text-slate-900 dark:text-white font-bold text-sm">Electrical</h3>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">85+ Pros</p>
+</div>
+</a>
+<!-- Category Card 3 -->
+<a class="group flex flex-col gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all" href="#">
+<div class="aspect-square w-full rounded-xl bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
+<img alt="Plumber fixing a sink pipe" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Plumber fixing sink" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjV_eyVBNGKcRDShs06RJ2eBudA6W9kGvFy1nGCGrdnjCfho95kslC94T9MCZ1kdpI8F3-X8psgsj5i4NbEDviOG8QHezqOjEctcRwpYue_jkm_j55mrSZJjZCHvdjK-fF0y52Id4jN3UuTGLczDcnDpUjsFzF1gpucPEwQYIs7MiZ_ZYDmiLYBm-fP5OE6IVcWb5XJx_Z7NUHAUClS_sybqC2L69Hs21BYWs2bpTGpFWYZw9InDWTDRxyoIj2Cg5U2GjCvdyJFN7q"/>
+<div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="text-center pb-1">
+<h3 class="text-slate-900 dark:text-white font-bold text-sm">Plumbing</h3>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">92+ Pros</p>
+</div>
+</a>
+<!-- Category Card 4 -->
+<a class="group flex flex-col gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all" href="#">
+<div class="aspect-square w-full rounded-xl bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
+<img alt="Person painting a wall with a roller" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Wall painting service" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL_iIEZUg5tMjYI7ecvqXN60nIsUHpB89SO2jJdK2OG8FM5yqzZ5ggCNzznxP_Dkn2YijD5XVjXPzQ011TCQIj5u9R3KZjuQvjbyftIx9FV3l6ApADdquz7DqIcuUkUiucnbaG43ZyAebJ3TiOxB6au6oyAaKOxJd8Mk4NlNgG2IUEgtpnOHsn-5guLAc4qBKWnFvi8uyawiFsIbRcapgF8mIAltgjHBYMVUVCPgAhYjroz41L-CyezA_S7MplBv2msKbip86vXylr"/>
+<div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="text-center pb-1">
+<h3 class="text-slate-900 dark:text-white font-bold text-sm">Painting</h3>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">64+ Pros</p>
+</div>
+</a>
+<!-- Category Card 5 -->
+<a class="group flex flex-col gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all" href="#">
+<div class="aspect-square w-full rounded-xl bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
+<img alt="Person gardening with plants" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Gardening service" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLtvvaLg3V-FJk0dV-j6CRHm7MvD94xnXtXI2v2vhD38PrKAVmp3eaXkQjV67eXx27L2Bv05YzmXM4szK4zCBq0xDfoDvqwqFbDJTPHr5cC-mwgCpuZuMbZBu2sJInxoCjUpMltUH8BrPsYzruuP3N74LZMjrpiovd4_VK94Zy5SJXItNTuRRXZKWokm6wXcRKY2hr46BnqmE_9yOJ_7jpJdRRy08FcQ_17pZuUrL60AFsm6zbAAR4i4ReVm1tDCL-Rmbkx3pxWtAg"/>
+<div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="text-center pb-1">
+<h3 class="text-slate-900 dark:text-white font-bold text-sm">Gardening</h3>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">45+ Pros</p>
+</div>
+</a>
+<!-- Category Card 6 -->
+<a class="group flex flex-col gap-3 p-3 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all" href="#">
+<div class="aspect-square w-full rounded-xl bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
+<img alt="Movers carrying boxes" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Moving service" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbMCZCagwKIVOT18NxzNr5ByPA7qd54wctEc8Jp3wopCyUgIChPHYx4E8uSOmpXOBXpTFLeTecq4QlmTHcOzLUENU8ozr0faR2Yx6c2r5qKtM1NF3AFhAzweGdBt2upH-ylL1ve5UvwEjI1VVlwJ0YYqEah0V_-J_9M5sO2LsJ5aUvrlMoh_cek1wNpx31tMwkjRLNbqjf1xSDfP101Q0zPG6H1sI3rqi3prti5-YFdpN0ZxVgnp2r1EK4-1PdjHO21yNav9KNkDLK"/>
+<div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+</div>
+<div class="text-center pb-1">
+<h3 class="text-slate-900 dark:text-white font-bold text-sm">Moving</h3>
+<p class="text-slate-500 dark:text-slate-400 text-xs mt-0.5">38+ Pros</p>
+</div>
+</a>
+</div>
+</section>
+<!-- Featured Providers Section -->
+<section class="bg-white dark:bg-slate-900 py-16 border-t border-slate-100 dark:border-slate-800">
+<div class="layout-container px-4 md:px-10 lg:px-40">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
+<div>
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider mb-3">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+                                Top Rated
+                            </div>
+<h2 class="text-slate-900 dark:text-white text-3xl font-bold tracking-tight">Featured Professionals</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-2 max-w-xl">Highly rated providers in your area ready to help with your next project.</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-full border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary dark:hover:text-primary text-slate-400 transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<button class="p-2 rounded-full border border-slate-200 dark:border-slate-700 hover:border-primary hover:text-primary dark:hover:text-primary text-slate-400 transition-colors">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Provider Card 1 -->
+<article class="flex flex-col bg-background-light dark:bg-slate-800 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/20 transition-all group">
+<div class="flex items-start justify-between mb-4">
+<div class="relative">
+<div class="size-16 rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-md">
+<img alt="Portrait of Michael Chen, professional plumber" class="w-full h-full object-cover" data-alt="Portrait of a professional man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCG3FB9ynY7HnfyhA5Sw3m93dBmTdxRlC9xIKJ5DQgRrfDXAQF7AtL9r6BruBTqUkoM8y4FyAbH9wKGQKn4YYc4PnF-IB_TtwVlEyD_cX6s_sH4h6SfMLcYZ1T_rqX3v2o6DRi4Jqk4-tlZ3UyOPiVvSbF6mHXZuYu5IGCtsJObl9mT8uI0urfwG3KcfhbJrmCoe1Xw3GvM7B_ORX0h31Xj62DpOyoPaepfAb2BZ046yjFM0d6NsGsRHTC9oGBQd2niALx3vq450xFR"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-800">ONLINE</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-1 bg-yellow-400/10 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-yellow-500 text-[18px] fill-1">star</span>
+<span class="text-slate-900 dark:text-white font-bold text-sm">4.9</span>
+</div>
+<span class="text-slate-400 text-xs mt-1">(124 reviews)</span>
+</div>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Michael Chen</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Master Plumber &amp; Pipe Fitter</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">Repairs</span>
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">Installation</span>
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">+2</span>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-4">
+<span class="text-slate-900 dark:text-white font-bold text-lg">$45<span class="text-slate-400 text-sm font-normal">/hr</span></span>
+<button class="text-primary font-bold text-sm hover:underline">View Profile</button>
+</div>
+</article>
+<!-- Provider Card 2 -->
+<article class="flex flex-col bg-background-light dark:bg-slate-800 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/20 transition-all group">
+<div class="flex items-start justify-between mb-4">
+<div class="relative">
+<div class="size-16 rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-md">
+<img alt="Portrait of Sarah Johnson, cleaning specialist" class="w-full h-full object-cover" data-alt="Portrait of a professional woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAr7Y8GdQERH-BCfVSgHN-gJDzEyJ1WT59TcNcGL_Q6DlRaVGVyFATXClikjZPU29PS3XdZczaBtKJRWVpBzfyQANJ40qgco34vIqUwSk_K_3VlvEZEIK0WMT4M5WqzTAhhFjfV8wFPeQqoU-HaHQ2EhZ6YljF19DmQZAILyQ7HNsADAri1asiZM8yTp9JNbu6pih15HSgqBcki7PI_WJN_qFC8m5oLNDextUaBV1OljxyiDalEbov_0kX8gtWHmo53L0htLWDaY7W"/>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-1 bg-yellow-400/10 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-yellow-500 text-[18px] fill-1">star</span>
+<span class="text-slate-900 dark:text-white font-bold text-sm">4.8</span>
+</div>
+<span class="text-slate-400 text-xs mt-1">(89 reviews)</span>
+</div>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Sarah Johnson</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Home Cleaning Specialist</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">Deep Clean</span>
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">Organizing</span>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-4">
+<span class="text-slate-900 dark:text-white font-bold text-lg">$35<span class="text-slate-400 text-sm font-normal">/hr</span></span>
+<button class="text-primary font-bold text-sm hover:underline">View Profile</button>
+</div>
+</article>
+<!-- Provider Card 3 -->
+<article class="flex flex-col bg-background-light dark:bg-slate-800 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/20 transition-all group">
+<div class="flex items-start justify-between mb-4">
+<div class="relative">
+<div class="size-16 rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-md">
+<img alt="Portrait of David Miller, electrician" class="w-full h-full object-cover" data-alt="Portrait of a professional man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcTmvqoVf4J20vvMSsEp6zN8Ag-HrkZHFAz828SKbIxwaUYeRX50wa4_khJ2knpbivLoYA5XJ2NE8ynlfKjny9CpKEuV0H91MTmAWIbmt8pcqj-E_NrdB25LdMja12z6RC8d67Ut8xHXCOAkku7HGXvgjIJspsXzXxTK0m1NTYPNa_80bTePDS0DBvi_b0wpNBs5iy7wLaBTNtivtvrtk_kT-LNX0dB4uXvivakplvt9pqSMv0GMXPVtkoVe_yKwCL0ugeHpKO-yMC"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-800">ONLINE</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-1 bg-yellow-400/10 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-yellow-500 text-[18px] fill-1">star</span>
+<span class="text-slate-900 dark:text-white font-bold text-sm">5.0</span>
+</div>
+<span class="text-slate-400 text-xs mt-1">(215 reviews)</span>
+</div>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">David Miller</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Certified Electrician</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">Wiring</span>
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">Lighting</span>
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">Panels</span>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-4">
+<span class="text-slate-900 dark:text-white font-bold text-lg">$60<span class="text-slate-400 text-sm font-normal">/hr</span></span>
+<button class="text-primary font-bold text-sm hover:underline">View Profile</button>
+</div>
+</article>
+<!-- Provider Card 4 -->
+<article class="flex flex-col bg-background-light dark:bg-slate-800 rounded-2xl p-5 border border-slate-100 dark:border-slate-700 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/20 transition-all group">
+<div class="flex items-start justify-between mb-4">
+<div class="relative">
+<div class="size-16 rounded-full overflow-hidden border-2 border-white dark:border-slate-700 shadow-md">
+<img alt="Portrait of Emily Davis, gardener" class="w-full h-full object-cover" data-alt="Portrait of a professional woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjwxfmjilYnhc5ohf8BkRwldjcoMlveIaXbHfDHE93DE8c9jUrWeeijzbshvZbPXcSt_k7sgeL9O6RtWSQkT1AB7uLkN7vnRUs2Pzy5VG1fPurKiT1RExPT8OhmBmZG-BU7akbJdvl2OehWNvEIoSL1ukrX8m2MA6FC81XB3T7MmuX4kv0wKIUke78SeUkKCroIcOUZWEQ69ccBMDQfr5v-mRgDAKTur7i7hrcHOZR_m_NrGFth_pJUFv7fWBlmjeJgOj4iMSLj04a"/>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="flex items-center gap-1 bg-yellow-400/10 px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-yellow-500 text-[18px] fill-1">star</span>
+<span class="text-slate-900 dark:text-white font-bold text-sm">4.7</span>
+</div>
+<span class="text-slate-400 text-xs mt-1">(56 reviews)</span>
+</div>
+</div>
+<h3 class="text-lg font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">Emily Davis</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm mb-4">Landscape &amp; Gardening</p>
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">Design</span>
+<span class="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold">Maintenance</span>
+</div>
+<div class="mt-auto flex items-center justify-between border-t border-slate-200 dark:border-slate-700 pt-4">
+<span class="text-slate-900 dark:text-white font-bold text-lg">$40<span class="text-slate-400 text-sm font-normal">/hr</span></span>
+<button class="text-primary font-bold text-sm hover:underline">View Profile</button>
+</div>
+</article>
+</div>
+</div>
+</section>
+</main>
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 pt-16 pb-8">
+<div class="layout-container px-4 md:px-10 lg:px-40">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-2 text-primary">
+<div class="size-6">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h3 class="text-slate-900 dark:text-white text-lg font-bold">SevaConnect</h3>
+</div>
+<p class="text-slate-500 dark:text-slate-400 text-sm leading-relaxed">Connecting you with the best local professionals for all your home service needs. Trusted, verified, and reliable.</p>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold mb-4">Company</h4>
+<ul class="flex flex-col gap-2 text-sm text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-primary transition-colors" href="#">About Us</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Press</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Blog</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold mb-4">For Customers</h4>
+<ul class="flex flex-col gap-2 text-sm text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-primary transition-colors" href="#">How it Works</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Safety</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Support</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Review Guidelines</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-slate-900 dark:text-white font-bold mb-4">For Professionals</h4>
+<ul class="flex flex-col gap-2 text-sm text-slate-500 dark:text-slate-400">
+<li><a class="hover:text-primary transition-colors" href="#">Become a Pro</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Success Stories</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Community</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Pro Resources</a></li>
+</ul>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-8 gap-4">
+<p class="text-slate-400 text-xs">© 2024 SevaConnect. All rights reserved.</p>
+<div class="flex gap-4">
+<a class="text-slate-400 hover:text-primary transition-colors text-xs" href="#">Privacy Policy</a>
+<a class="text-slate-400 hover:text-primary transition-colors text-xs" href="#">Terms of Service</a>
+<a class="text-slate-400 hover:text-primary transition-colors text-xs" href="#">Cookie Policy</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

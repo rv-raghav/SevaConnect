@@ -3,7 +3,7 @@ const adminService = require("../services/adminService");
 
 const listProviders = asyncHandler(async (req, res) => {
   const providers = await adminService.listProviders({
-    approved: req.query.approved,
+    status: req.query.status,
   });
 
   res.status(200).json({
@@ -39,9 +39,19 @@ const getAnalytics = asyncHandler(async (req, res) => {
   });
 });
 
+const listReviews = asyncHandler(async (req, res) => {
+  const reviews = await adminService.listReviews();
+
+  res.status(200).json({
+    success: true,
+    data: reviews,
+  });
+});
+
 module.exports = {
   listProviders,
   approveProvider,
   rejectProvider,
   getAnalytics,
+  listReviews,
 };
