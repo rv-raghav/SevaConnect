@@ -1,302 +1,128 @@
-# SevaConnect Backend API
+## SevaConnect – Local Services Platform
 
-A MERN-based backend for a local services booking platform.
+SevaConnect is a local services booking platform (e.g., plumbers, electricians, home services) with a Node.js/Express backend and MongoDB persistence.
 
-## Features
-
-- **Authentication**: JWT-based with roles (customer, provider, admin)
-- **Service Categories**: Admin-managed categories with pricing
-- **Provider Profiles**: Profiles with categories, availability, and ratings
-- **Booking Workflow**: State machine enforced transitions (requested → confirmed → in-progress → completed)
-- **Conflict Detection**: Prevents double-booking
-- **Review System**: Customer reviews with rating aggregation
-- **Work Notes & Images**: Before/after photo uploads via Cloudinary
-- **Admin Provider Approval**: Admin controls provider onboarding
-- **Analytics**: Dashboard statistics for admins
-
-## Tech Stack
-
-- Node.js + Express
-- MongoDB + Mongoose
-- JWT Authentication
-- Cloudinary (image uploads)
-- Helmet (security headers)
-- Express Rate Limit (rate limiting)
-- Joi (validation)
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- MongoDB (local or Atlas)
-
-### Installation
-
-```bash
-cd server
-npm install
-```
-
-### Environment Variables
-
-Create a `.env` file:
-
-```env
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/seva-connect
-JWT_SECRET=your-secret-key
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-CORS_ORIGIN=http://localhost:3000
-NODE_ENV=development
-```
-
-### Run Development
-
-```bash
-npm run dev
-```
-
-### Run Production
-
-```bash
-npm start
-```
+This repository currently contains the **backend API** under the `server` directory.
 
 ---
 
-## API Endpoints
+## Project Structure
 
-### Authentication
+- **`server/`**: SevaConnect backend API
+  - `src/`: Express app, routes, controllers, services, models, middlewares, utils
+  - `docs/`: Backend documentation set (architecture, APIs, database, security, testing, etc.)
 
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/api/auth/register` | Register new user | Public |
-| POST | `/api/auth/login` | Login user | Public |
-| GET | `/api/auth/me` | Get current user | Bearer Token |
-
-**Register Payload:**
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "role": "customer", // or "provider"
-  "city": "Mumbai"
-}
-```
-
-**Login Payload:**
-```json
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-```
-
-### Categories
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/categories` | List all active categories | Public |
-| POST | `/api/admin/categories` | Create category | Admin |
-| PATCH | `/api/admin/categories/:id` | Update category | Admin |
-
-### Providers
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/providers` | List available providers | Public |
-| POST | `/api/provider/profile` | Create/update profile | Provider |
-| GET | `/api/provider/profile` | Get own profile | Provider |
-
-**List Providers Query:**
-```
-GET /api/providers?city=Mumbai&category=categoryId
-```
-
-### Bookings
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/api/bookings` | Create booking | Customer |
-| GET | `/api/bookings/:id` | Get booking by ID | Owner/Admin |
-| GET | `/api/bookings/my` | My bookings | Customer |
-| GET | `/api/provider/bookings` | Provider bookings | Provider |
-| PATCH | `/api/bookings/:id/accept` | Accept booking | Provider |
-| PATCH | `/api/bookings/:id/start` | Start work | Provider |
-| PATCH | `/api/bookings/:id/complete` | Complete booking | Provider |
-| PATCH | `/api/bookings/:id/cancel` | Cancel booking | Customer/Provider |
-| PATCH | `/api/bookings/:id/reschedule` | Reschedule | Customer |
-| POST | `/api/bookings/:id/work` | Add work notes/images | Provider |
-
-**Create Booking:**
-```json
-{
-  "providerId": "provider-user-id",
-  "categoryId": "category-id",
-  "address": "123 Street, Area",
-  "city": "Mumbai",
-  "scheduledDateTime": "2024-12-25T10:00:00.000Z",
-  "notes": "Need service ASAP"
-}
-```
-
-**Work Update:**
-```
-POST /api/bookings/:id/work?type=before
-Content-Type: multipart/form-data
-
-fields:
-- notes: "Started work"
-- images: [file1.jpg, file2.jpg]
-```
-
-### Reviews
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/api/reviews` | Submit review | Customer |
-| DELETE | `/api/admin/reviews/:id` | Delete review | Admin |
-
-**Create Review:**
-```json
-{
-  "bookingId": "booking-id",
-  "rating": 5,
-  "comment": "Excellent service!"
-}
-```
-
-### Admin
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/api/admin/providers` | List all providers | Admin |
-| GET | `/api/admin/providers?approved=true` | Filter by approval | Admin |
-| PATCH | `/api/admin/providers/:id/approve` | Approve provider | Admin |
-| PATCH | `/api/admin/providers/:id/reject` | Reject provider | Admin |
-| GET | `/api/admin/analytics` | Get platform analytics | Admin |
-| DELETE | `/api/admin/reviews/:id` | Delete review | Admin |
-
-**Analytics Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "totalUsers": 100,
-    "totalProviders": 25,
-    "totalBookings": 150,
-    "completedBookings": 120,
-    "cancelledBookings": 10,
-    "averageBookingPrice": 550.00,
-    "totalReviews": 95
-  }
-}
-```
+If/when a frontend is added, it can live alongside `server/` (e.g., `client/`).
 
 ---
 
-## Example cURL Commands
+## Quick Start (Backend)
 
-### Register Customer
-```bash
-curl -X POST http://localhost:5000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"John","email":"john@test.com","password":"pass123","city":"Mumbai"}'
-```
+- **Prerequisites**
+  - **Node.js** 18+
+  - **MongoDB** (local instance or Atlas)
 
-### Login
-```bash
-curl -X POST http://localhost:5000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"john@test.com","password":"pass123"}'
-```
+- **Install dependencies**
 
-### Get Categories
-```bash
-curl http://localhost:5000/api/categories
-```
+  ```bash
+  cd server
+  npm install
+  ```
 
-### List Providers
-```bash
-curl "http://localhost:5000/api/providers?city=Mumbai"
-```
+- **Configure environment**
 
-### Create Booking (Customer)
-```bash
-curl -X POST http://localhost:5000/api/bookings \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"providerId":"...","categoryId":"...","address":"123 St","city":"Mumbai","scheduledDateTime":"2024-12-25T10:00:00.000Z"}'
-```
+  Create `server/.env` (see detailed guide in `server/docs/configuration.md`):
 
-### Provider Accepts Booking
-```bash
-curl -X PATCH http://localhost:5000/api/bookings/BOOKING_ID/accept \
-  -H "Authorization: Bearer PROVIDER_TOKEN"
-```
+  ```env
+  PORT=5000
+  MONGO_URI=mongodb://localhost:27017/seva-connect
+  JWT_SECRET=your-secret-key
+  CLOUDINARY_CLOUD_NAME=your-cloud-name
+  CLOUDINARY_API_KEY=your-api-key
+  CLOUDINARY_API_SECRET=your-api-secret
+  CORS_ORIGIN=http://localhost:3000
+  NODE_ENV=development
+  ```
 
-### Submit Review
-```bash
-curl -X POST http://localhost:5000/api/reviews \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer CUSTOMER_TOKEN" \
-  -d '{"bookingId":"...","rating":5,"comment":"Great service!"}'
-```
+- **Run in development**
 
-### Admin Analytics
-```bash
-curl http://localhost:5000/api/admin/analytics \
-  -H "Authorization: Bearer ADMIN_TOKEN"
-```
+  ```bash
+  cd server
+  npm run dev
+  ```
+
+- **Run in production**
+
+  ```bash
+  cd server
+  npm start
+  ```
+
+---
+
+## Backend Documentation Set (Reading Order)
+
+All backend docs live under `server/docs/`. Recommended reading order:
+
+1. **Overview** – high-level product and backend capabilities  
+   - `server/docs/overview.md`
+
+2. **Architecture** – folder layout, layers, and request flow  
+   - `server/docs/architecture.md`
+
+3. **Configuration & Environment** – `.env`, MongoDB, Cloudinary, CORS, logging  
+   - `server/docs/configuration.md`
+
+4. **Database Model** – conceptual schema for users, categories, providers, bookings, reviews  
+   - `server/docs/database.md`
+
+5. **API Reference** – endpoints, payloads, and behavior  
+   - `server/docs/api-reference.md`
+
+6. **API Usage Examples** – cURL-based workflows for auth, marketplace, bookings, reviews, admin  
+   - `server/docs/api-usage-examples.md`
+
+7. **Security Model** – auth, roles, rate limiting, validation, hardening  
+   - `server/docs/security.md`
+
+8. **Testing & Quality** – test phases, coverage, and how to run/extending tests  
+   - `server/docs/testing.md`
+
+Use this root README as the entry point, then follow the docs above for deeper detail.
+
+---
+
+## Backend Tech Stack (Server)
+
+- **Runtime**: Node.js + Express
+- **Database**: MongoDB + Mongoose
+- **Auth**: JWT-based with role-based access control
+- **Storage**: Cloudinary (image uploads)
+- **Security**:
+  - Helmet (security headers)
+  - CORS (origin restriction)
+  - Express Rate Limit (rate limiting)
+  - Joi (input validation)
+  - bcrypt (password hashing)
 
 ---
 
 ## Testing
 
-Run tests:
+From `server/` you can run:
 
 ```bash
-# Phase 1 - Auth
+# Individual test phases
 node test-auth.js
-
-# Phase 2 - Marketplace
 node test-phase2.js
-
-# Phase 3-4 - E2E Workflow
 node test-phase3-e2e.js
-
-# Phase 6-7 - Admin & Hardening
 node test-phase6-7.js
+
+# Or, once npm test is configured:
+npm test
 ```
 
----
-
-## Security Features
-
-- **Helmet**: HTTP security headers
-- **CORS**: Configurable origin restriction
-- **Rate Limiting**: 100 requests/15min on auth routes
-- **Input Validation**: Joi schema validation
-- **Password Hashing**: bcrypt
-- **JWT Tokens**: 7-day expiry
-- **Role-based Access Control**: Routes protected by role middleware
-
----
-
-## Architecture
-
-```
-Routes → Controllers → Services → Models
-```
-
-- **Routes**: Define endpoints and middleware chain
-- **Controllers**: Thin, handle request/response only
-- **Services**: Business logic, DB operations
-- **Models**: Mongoose schemas
+For full details on what each phase covers and how to extend tests, see `server/docs/testing.md`.
 
 ---
 
