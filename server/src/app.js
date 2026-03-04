@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const mongoose = require("mongoose");
 const env = require("./config/env");
 const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
@@ -30,6 +31,30 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "API is running" });
+});
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    status: "ok",
+    service: "sevaconnect-api",
+    uptimeSeconds: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get("/api/ready", (req, res) => {
+  const dbConnected = mongoose.connection.readyState === 1;
+  const payload = {
+    success: dbConnected,
+    status: dbConnected ? "ready" : "not_ready",
+    checks: {
+      database: dbConnected ? "up" : "down",
+    },
+    timestamp: new Date().toISOString(),
+  };
+
+  res.status(dbConnected ? 200 : 503).json(payload);
 });
 
 // Routes

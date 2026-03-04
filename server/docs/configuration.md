@@ -174,7 +174,26 @@ Important:
 
 ---
 
-## 12) Related Docs
+## 12) Health and Readiness Endpoints
+
+Operational probe routes:
+
+- `GET /api/health`
+  - Returns `200` when API process is alive.
+- `GET /api/ready`
+  - Returns `200` when MongoDB connection state is ready.
+  - Returns `503` when database dependency is not ready.
+
+Example:
+
+```bash
+curl -i http://localhost:5000/api/health
+curl -i http://localhost:5000/api/ready
+```
+
+---
+
+## 13) Related Docs
 
 - [Architecture](./architecture.md)
 - [Security](./security.md)

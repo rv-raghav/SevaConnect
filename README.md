@@ -262,6 +262,8 @@ Cancellation rules are role and state dependent (documented in backend docs).
 - [Project README](./README.md)
 - [Frontend App README](./client/README.md)
 - [Backend App README](./server/README.md)
+- [Render Blueprint](./render.yaml)
+- [Vercel Frontend Config](./client/vercel.json)
 
 ### Frontend Docs (`client/docs`)
 
@@ -321,5 +323,97 @@ Cancellation rules are role and state dependent (documented in backend docs).
 - Auth routes are rate-limited.
 
 For full details, see [server/docs/security.md](./server/docs/security.md).
+
+---
+
+## 15) Deployment (Render + Vercel)
+
+Target production topology:
+
+- Frontend: Vercel (`client/`)
+- Backend: Render Web Service (`server/`)
+- Database: MongoDB Atlas
+- Media: Cloudinary
+
+Deployment config files included:
+
+- Backend blueprint: [render.yaml](./render.yaml)
+- Frontend config: [client/vercel.json](./client/vercel.json)
+
+### Backend deployment (Render)
+
+Option A (Render dashboard + Blueprint):
+
+1. Push repository to GitHub.
+2. In Render, choose **New + -> Blueprint**.
+3. Select repository containing `render.yaml`.
+4. Set secret env values:
+   - `MONGO_URI`
+   - `JWT_SECRET`
+   - `CLOUDINARY_CLOUD_NAME`
+   - `CLOUDINARY_API_KEY`
+   - `CLOUDINARY_API_SECRET`
+   - `CORS_ORIGIN` (set this to your Vercel production URL)
+5. Deploy.
+
+Option B (manual Render Web Service settings):
+
+- Root directory: `server`
+- Build command: `npm install`
+- Start command: `npm start`
+- Health check path: `/api/health`
+
+### Frontend deployment (Vercel)
+
+Option A (Vercel dashboard):
+
+1. Import GitHub repo into Vercel.
+2. Set project root directory to `client`.
+3. Vercel detects `vercel.json` and applies:
+   - build command `npm run build`
+   - output directory `dist`
+   - SPA rewrites to `index.html`
+4. Set env:
+   - `VITE_API_URL=https://<your-render-service>/api`
+5. Deploy.
+
+Option B (Vercel CLI):
+
+```bash
+npm i -g vercel
+cd client
+vercel
+vercel --prod
+```
+
+### Production health and readiness endpoints
+
+Backend probes:
+
+- `GET /api/health` -> liveliness (`200` when process is up)
+- `GET /api/ready` -> readiness (`200` when MongoDB is connected, else `503`)
+
+Smoke test commands:
+
+```bash
+curl -i https://<your-render-service>/api/health
+curl -i https://<your-render-service>/api/ready
+curl -i https://<your-render-service>/api/categories
+```
+
+### Rollout checklist
+
+1. MongoDB Atlas user/database created and reachable.
+2. Cloudinary production keys configured in Render.
+3. Render backend deployed successfully with passing `/api/health`.
+4. Vercel frontend deployed with `VITE_API_URL` pointing to Render `/api`.
+5. `CORS_ORIGIN` on backend exactly matches Vercel production domain.
+6. `/api/ready` returns `200` in production.
+7. Full auth flow validated (`/register -> /login -> /auth/me`).
+8. Booking lifecycle smoke-tested (`create -> accept -> start -> complete`).
+9. Image upload verified end-to-end (provider work update).
+10. Admin routes verified with admin token (`/api/admin/analytics`).
+11. Browser console checked for runtime and CORS errors.
+12. Rollback plan available (previous deploy version on Render/Vercel).
 
 ---
