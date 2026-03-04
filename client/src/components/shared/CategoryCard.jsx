@@ -12,14 +12,14 @@ const CATEGORY_ICONS = {
 };
 
 const CATEGORY_COLORS = {
-  Plumbing: "bg-blue-50 text-blue-600",
-  Cleaning: "bg-emerald-50 text-emerald-600",
-  Electrical: "bg-amber-50 text-amber-600",
-  Handyman: "bg-orange-50 text-orange-600",
-  Gardening: "bg-green-50 text-green-600",
-  Moving: "bg-violet-50 text-violet-600",
-  Painting: "bg-pink-50 text-pink-600",
-  Carpentry: "bg-yellow-50 text-yellow-700",
+  Plumbing: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
+  Cleaning: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400",
+  Electrical: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400",
+  Handyman: "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400",
+  Gardening: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
+  Moving: "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400",
+  Painting: "bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400",
+  Carpentry: "bg-yellow-50 text-yellow-700 dark:bg-yellow-500/10 dark:text-yellow-400",
 };
 
 export default function CategoryCard({ category, onClick }) {

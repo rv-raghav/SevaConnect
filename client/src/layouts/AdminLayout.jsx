@@ -34,7 +34,10 @@ export default function AdminLayout() {
         <div className="h-full flex flex-col">
           <div className="px-4 py-5 border-b [border-color:var(--border)] space-y-2">
             <BrandMark to="/admin" />
-            <span className="chip">Admin control center</span>
+            <span className="chip flex items-center gap-1.5 w-fit">
+              <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ background: "var(--error-500)" }} />
+              Admin control center
+            </span>
           </div>
 
           <nav className="p-3 flex-1 space-y-1">
@@ -92,7 +95,7 @@ export default function AdminLayout() {
             >
               <span className="material-symbols-outlined">menu</span>
             </button>
-            <p className="section-title text-base">Administration</p>
+            <p className="section-title text-base gradient-text font-semibold">Administration</p>
             <div className="ml-auto flex items-center gap-2">
               <ThemeToggle compact />
             </div>

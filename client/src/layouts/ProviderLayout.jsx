@@ -32,7 +32,10 @@ export default function ProviderLayout() {
         <div className="h-full flex flex-col">
           <div className="px-4 py-5 border-b [border-color:var(--border)]">
             <BrandMark to="/provider/dashboard" />
-            <p className="caption-text mt-2">Provider workspace</p>
+            <p className="caption-text mt-2 flex items-center gap-1.5">
+              <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ background: "var(--success-500)" }} />
+              Provider workspace
+            </p>
           </div>
 
           <nav className="p-3 flex-1 space-y-1">
@@ -97,7 +100,7 @@ export default function ProviderLayout() {
             >
               <span className="material-symbols-outlined">menu</span>
             </button>
-            <p className="section-title text-base">Provider Portal</p>
+            <p className="section-title text-base gradient-text font-semibold">Provider Portal</p>
             <div className="ml-auto flex items-center gap-2">
               <ThemeToggle compact />
               <span className="chip hidden sm:inline-flex">

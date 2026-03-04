@@ -58,7 +58,7 @@ export default function RegisterPage() {
   return (
     <div className="animate-fade-up">
       <div className="mb-6">
-        <h1 className="page-title !text-3xl">Create account</h1>
+        <h1 className="page-title !text-3xl">Create <span className="gradient-text">account</span></h1>
         <p className="body-text mt-2">
           Join SevaConnect as a customer or service provider.
         </p>
@@ -73,11 +73,12 @@ export default function RegisterPage() {
             key={item.value}
             type="button"
             onClick={() => setField("role", item.value)}
-            className={`h-10 rounded-[10px] text-sm font-semibold transition-colors ${
+            className={`h-10 rounded-[10px] text-sm font-semibold transition-all ${
               form.role === item.value
-                ? "bg-[color:var(--surface)] [color:var(--primary-500)]"
+                ? "text-white shadow-sm"
                 : "[color:var(--text-muted)]"
             }`}
+            style={form.role === item.value ? { background: "var(--primary-gradient)" } : {}}
           >
             {item.label}
           </button>

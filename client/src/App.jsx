@@ -22,12 +22,13 @@ function AppContent() {
         toastOptions={{
           duration: 4000,
           style: {
-            fontFamily: "Manrope, sans-serif",
+            fontFamily: "Inter, sans-serif",
             fontSize: "14px",
-            borderRadius: "14px",
-            border: isDark ? "1px solid #334155" : "1px solid #e2e8f0",
-            background: isDark ? "#1f2937" : "#ffffff",
-            color: isDark ? "#e2e8f0" : "#0f172a",
+            borderRadius: "12px",
+            border: isDark ? "1px solid rgba(148,163,184,0.1)" : "1px solid #e2e8f0",
+            background: isDark ? "rgba(30,41,59,0.9)" : "#ffffff",
+            color: isDark ? "#f1f5f9" : "#0f172a",
+            backdropFilter: "blur(12px)",
           },
           success: { iconTheme: { primary: "#10b981", secondary: "#fff" } },
           error: { iconTheme: { primary: "#ef4444", secondary: "#fff" } },

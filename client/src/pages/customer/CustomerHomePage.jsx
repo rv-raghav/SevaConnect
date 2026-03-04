@@ -43,29 +43,37 @@ export default function CustomerHomePage() {
 
   return (
     <div className="page-shell">
-      <section className="surface-card-static p-6 md:p-8">
-        <p className="caption-text">Welcome back</p>
-        <h1 className="page-title mt-1">
-          {user?.name?.split(" ")[0] || "Customer"}, what service do you need today?
-        </h1>
-        <p className="body-text mt-3 max-w-2xl">
-          Discover trusted providers, compare ratings, and book a time slot in
-          a few clicks.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
-          <Button variant="primary" size="lg" onClick={() => navigate("/providers")}>
-            Find providers
-          </Button>
-          <Button variant="outline" size="lg" onClick={() => navigate("/bookings")}>
-            View bookings
-          </Button>
+      <section className="surface-card-static p-6 md:p-8 relative overflow-hidden">
+        {/* Decorative background */}
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full opacity-[0.06]"
+            style={{ background: "radial-gradient(circle, var(--primary-500), transparent 70%)" }} />
+        </div>
+        <div className="relative">
+          <p className="caption-text">Welcome back</p>
+          <h1 className="page-title mt-1">
+            {user?.name?.split(" ")[0] || "Customer"}, what service do you need <span className="gradient-text">today?</span>
+          </h1>
+          <p className="body-text mt-3 max-w-2xl">
+            Discover trusted providers, compare ratings, and book a time slot in
+            a few clicks.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button variant="primary" size="lg" onClick={() => navigate("/providers")}>
+              Find providers
+            </Button>
+            <Button variant="outline" size="lg" onClick={() => navigate("/bookings")}>
+              View bookings
+            </Button>
+          </div>
         </div>
       </section>
 
       <section className="mt-6 grid sm:grid-cols-3 gap-4">
         {QUICK_ACTIONS.map((action) => (
-          <Link key={action.to} to={action.to} className="surface-card">
-            <span className="inline-flex size-10 rounded-[12px] items-center justify-center bg-[color:var(--primary-100)] text-[color:var(--primary-500)]">
+          <Link key={action.to} to={action.to} className="surface-card group">
+            <span className="inline-flex size-10 rounded-[12px] items-center justify-center text-white"
+              style={{ background: "var(--primary-gradient)", boxShadow: "0 4px 12px color-mix(in srgb, var(--primary-500) 20%, transparent)" }}>
               <span className="material-symbols-outlined text-[20px]">{action.icon}</span>
             </span>
             <h2 className="card-title mt-3">{action.title}</h2>

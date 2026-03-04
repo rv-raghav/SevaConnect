@@ -129,12 +129,21 @@ export default function LandingPage() {
       </header>
 
       <main>
-        <section className="page-shell pt-10 lg:pt-14">
-          <div className="grid lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-8 items-start">
+        <section className="page-shell pt-10 lg:pt-14 relative">
+          {/* Decorative background elements */}
+          <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+            <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full opacity-[0.06]"
+              style={{ background: "radial-gradient(circle, var(--primary-500), transparent 70%)" }} />
+            <div className="absolute top-60 -left-40 w-[400px] h-[400px] rounded-full opacity-[0.04]"
+              style={{ background: "radial-gradient(circle, #8B5CF6, transparent 70%)" }} />
+          </div>
+
+          <div className="relative grid lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-8 items-start">
             <div className="surface-card-static p-6 md:p-8">
               <span className="chip mb-4">Trusted local service marketplace</span>
               <h1 className="page-title max-w-2xl">
-                Book verified home professionals with confidence.
+                Book verified home professionals{" "}
+                <span className="gradient-text">with confidence.</span>
               </h1>
               <p className="body-text mt-4 max-w-2xl">
                 SevaConnect helps you discover trusted providers for cleaning,
@@ -159,9 +168,9 @@ export default function LandingPage() {
 
               <div className="grid sm:grid-cols-3 gap-3 mt-8">
                 {STATS.map((item) => (
-                  <div key={item.label} className="surface-card-static p-4">
-                    <p className="text-xl font-semibold [color:var(--text)]">{item.value}</p>
-                    <p className="caption-text">{item.label}</p>
+                  <div key={item.label} className="surface-card-static p-4 text-center">
+                    <p className="text-xl font-bold gradient-text">{item.value}</p>
+                    <p className="caption-text mt-0.5">{item.label}</p>
                   </div>
                 ))}
               </div>
@@ -231,7 +240,8 @@ export default function LandingPage() {
             <div className="grid md:grid-cols-3 gap-4 mt-6">
               {TRUST_ITEMS.map((item) => (
                 <article key={item.title} className="surface-card-static p-4">
-                  <span className="inline-flex size-10 items-center justify-center rounded-[12px] bg-[color:var(--primary-100)] text-[color:var(--primary-500)]">
+                  <span className="inline-flex size-10 items-center justify-center rounded-[12px] text-white"
+                    style={{ background: "var(--primary-gradient)", boxShadow: "0 4px 12px color-mix(in srgb, var(--primary-500) 25%, transparent)" }}>
                     <span className="material-symbols-outlined text-[20px]">{item.icon}</span>
                   </span>
                   <h3 className="card-title mt-3">{item.title}</h3>
@@ -242,6 +252,25 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t [border-color:var(--border)] mt-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <BrandMark />
+            </div>
+            <p className="caption-text text-center">
+              Built for reliability. Designed for everyday needs.
+            </p>
+            <div className="flex items-center gap-4">
+              <a href="#categories" className="caption-text hover:underline">Categories</a>
+              <a href="#trust" className="caption-text hover:underline">Trust</a>
+              {!token && <Link to="/register" className="caption-text hover:underline">Register</Link>}
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

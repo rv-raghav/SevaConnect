@@ -43,7 +43,7 @@ export default function LoginPage() {
   return (
     <div className="animate-fade-up">
       <div className="mb-6">
-        <h1 className="page-title !text-3xl">Welcome back</h1>
+        <h1 className="page-title !text-3xl">Welcome <span className="gradient-text">back</span></h1>
         <p className="body-text mt-2">Sign in to manage bookings and profile settings.</p>
       </div>
 

@@ -79,11 +79,17 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="page-shell">
-      <section className="surface-card-static p-5 md:p-6">
-        <h1 className="page-title !text-3xl">Admin dashboard</h1>
-        <p className="caption-text mt-1">
-          Monitor platform health, growth, and operational metrics.
-        </p>
+      <section className="surface-card-static p-5 md:p-6 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full opacity-[0.06]"
+            style={{ background: "radial-gradient(circle, var(--primary-500), transparent 70%)" }} />
+        </div>
+        <div className="relative">
+          <h1 className="page-title !text-3xl">Admin <span className="gradient-text">dashboard</span></h1>
+          <p className="caption-text mt-1">
+            Monitor platform health, growth, and operational metrics.
+          </p>
+        </div>
       </section>
 
       <section className="mt-6 grid sm:grid-cols-2 xl:grid-cols-4 gap-4">

@@ -45,13 +45,19 @@ export default function ProviderDashboardPage() {
 
   return (
     <div className="page-shell">
-      <section className="surface-card-static p-5 md:p-6">
-        <h1 className="page-title !text-3xl">
-          Welcome back, {user?.name?.split(" ")[0] || "Provider"}
-        </h1>
-        <p className="caption-text mt-1">
-          Track bookings, performance, and revenue from one dashboard.
-        </p>
+      <section className="surface-card-static p-5 md:p-6 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full opacity-[0.06]"
+            style={{ background: "radial-gradient(circle, var(--primary-500), transparent 70%)" }} />
+        </div>
+        <div className="relative">
+          <h1 className="page-title !text-3xl">
+            Welcome back, <span className="gradient-text">{user?.name?.split(" ")[0] || "Provider"}</span>
+          </h1>
+          <p className="caption-text mt-1">
+            Track bookings, performance, and revenue from one dashboard.
+          </p>
+        </div>
       </section>
 
       <section className="mt-6 grid sm:grid-cols-2 xl:grid-cols-4 gap-4">

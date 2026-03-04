@@ -36,8 +36,11 @@ export default function ProviderCard({ provider, onBook }) {
     >
       {/* Header */}
       <div className="flex items-start gap-3.5">
-        <div className="w-12 h-12 rounded-[14px] flex items-center justify-center text-white font-semibold text-lg shrink-0 bg-[color:var(--primary-500)]">
-          {user.name?.charAt(0)?.toUpperCase() || "P"}
+        <div className="relative shrink-0">
+          <div className="w-12 h-12 rounded-[14px] flex items-center justify-center text-white font-semibold text-lg"
+            style={{ background: "var(--primary-gradient)" }}>
+            {user.name?.charAt(0)?.toUpperCase() || "P"}
+          </div>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">

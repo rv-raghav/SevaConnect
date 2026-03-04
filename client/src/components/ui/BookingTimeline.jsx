@@ -24,7 +24,7 @@ export default function BookingTimeline({ status }) {
       {STEPS.map((step, idx) => (
         <div
           key={step.key}
-          className={`timeline-step ${idx <= activeIndex ? "active" : ""}`}
+          className={`timeline-step ${idx <= activeIndex ? "active" : ""} ${idx === activeIndex ? "current" : ""}`}
         >
           <span className="timeline-dot" />
           <span>{step.label}</span>

@@ -63,7 +63,8 @@ export default function CustomerLayout() {
                 className="btn btn-ghost btn-sm !px-2.5"
                 onClick={() => setMenuOpen((prev) => !prev)}
               >
-                <span className="inline-flex size-8 items-center justify-center rounded-full bg-[color:var(--primary-500)] text-white text-sm font-semibold">
+                <span className="inline-flex size-8 items-center justify-center rounded-full text-white text-sm font-semibold"
+                  style={{ background: "var(--primary-gradient)" }}>
                   {user?.name?.[0]?.toUpperCase() || "U"}
                 </span>
                 <span className="hidden lg:inline">{user?.name?.split(" ")[0]}</span>
