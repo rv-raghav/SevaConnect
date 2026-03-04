@@ -73,6 +73,20 @@ Seed data:
 
 ---
 
+## Deployment Probes
+
+- `GET /api/health` - liveness probe (process up)
+- `GET /api/ready` - readiness probe (MongoDB connected)
+
+Quick check:
+
+```bash
+curl -i https://<backend-domain>/api/health
+curl -i https://<backend-domain>/api/ready
+```
+
+---
+
 ## Backend Documentation
 
 1. `docs/README.md`
