@@ -6,7 +6,7 @@ import { validateEmail, validatePassword } from "../../utils/validators";
 import Button from "../../components/ui/Button";
 
 export default function LoginPage() {
-  const { login, isLoading, error, clearError, token } = useAuthStore();
+  const { login, isLoading, error, clearError, token, user } = useAuthStore();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -15,7 +15,10 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
 
-  if (token) return <Navigate to={ROLE_HOME.customer} replace />;
+  if (token) {
+    const redirectPath = ROLE_HOME[user?.role] || "/home";
+    return <Navigate to={redirectPath} replace />;
+  }
 
   const validate = () => {
     const next = {};

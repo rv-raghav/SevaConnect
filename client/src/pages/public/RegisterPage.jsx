@@ -10,7 +10,7 @@ import {
 import Button from "../../components/ui/Button";
 
 export default function RegisterPage() {
-  const { register, isLoading, error, clearError, token } = useAuthStore();
+  const { register, isLoading, error, clearError, token, user } = useAuthStore();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -22,7 +22,10 @@ export default function RegisterPage() {
     role: "customer",
   });
 
-  if (token) return <Navigate to={ROLE_HOME.customer} replace />;
+  if (token) {
+    const redirectPath = ROLE_HOME[user?.role] || "/home";
+    return <Navigate to={redirectPath} replace />;
+  }
 
   const setField = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
