@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="760" viewBox="0 0 1600 760" role="img" aria-labelledby="title desc">
+  <title id="title">SevaConnect Backend Request Flow</title>
+  <desc id="desc">Flow diagram for backend request processing through route, middleware, controller, service, model, and response with centralized error handling.</desc>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#475569" />
+    </marker>
+    <marker id="arrowSoft" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#64748b" />
+    </marker>
+    <marker id="arrowError" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#dc2626" />
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { fill: #0f172a; font-family: Arial, sans-serif; font-size: 30px; font-weight: 700; }
+      .subtitle { fill: #334155; font-family: Arial, sans-serif; font-size: 16px; font-weight: 400; }
+      .box { fill: #ffffff; stroke: #cbd5e1; stroke-width: 2; }
+      .box-title { fill: #0f172a; font-family: Arial, sans-serif; font-size: 18px; font-weight: 700; }
+      .box-text { fill: #334155; font-family: Arial, sans-serif; font-size: 14px; font-weight: 400; }
+      .flow { stroke: #475569; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .flow-soft { stroke: #64748b; stroke-width: 2.5; stroke-dasharray: 8 6; fill: none; marker-end: url(#arrowSoft); }
+      .flow-error { stroke: #dc2626; stroke-width: 2.5; stroke-dasharray: 8 6; fill: none; marker-end: url(#arrowError); }
+      .label { fill: #475569; font-family: Arial, sans-serif; font-size: 12px; font-weight: 600; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="760" />
+  <text class="title" x="60" y="64">SevaConnect Backend Request Flow</text>
+  <text class="subtitle" x="60" y="94">Route - Middleware - Controller - Service - Model with global error normalization</text>
+
+  <rect class="box" x="60" y="180" width="190" height="120" rx="16" />
+  <text class="box-title" x="88" y="220">Client</text>
+  <text class="box-text" x="88" y="246">React frontend</text>
+  <text class="box-text" x="88" y="268">or external app</text>
+
+  <rect class="box" x="290" y="180" width="210" height="120" rx="16" />
+  <text class="box-title" x="322" y="220">Route Layer</text>
+  <text class="box-text" x="322" y="246">express routes</text>
+  <text class="box-text" x="322" y="268">endpoint mapping</text>
+
+  <rect class="box" x="540" y="160" width="280" height="160" rx="16" />
+  <text class="box-title" x="572" y="200">Middleware Stack</text>
+  <text class="box-text" x="572" y="226">auth + role checks</text>
+  <text class="box-text" x="572" y="248">Joi request validation</text>
+  <text class="box-text" x="572" y="270">rate limit + upload parser</text>
+
+  <rect class="box" x="860" y="180" width="210" height="120" rx="16" />
+  <text class="box-title" x="892" y="220">Controller</text>
+  <text class="box-text" x="892" y="246">HTTP contract</text>
+  <text class="box-text" x="892" y="268">status + envelope</text>
+
+  <rect class="box" x="1110" y="160" width="300" height="160" rx="16" />
+  <text class="box-title" x="1142" y="200">Service Layer</text>
+  <text class="box-text" x="1142" y="226">business invariants</text>
+  <text class="box-text" x="1142" y="248">booking transitions</text>
+  <text class="box-text" x="1142" y="270">ownership + conflict checks</text>
+
+  <rect class="box" x="1110" y="430" width="250" height="130" rx="16" />
+  <text class="box-title" x="1142" y="470">Data Layer</text>
+  <text class="box-text" x="1142" y="496">Mongoose models</text>
+  <text class="box-text" x="1142" y="518">MongoDB persistence</text>
+
+  <rect class="box" x="1395" y="430" width="155" height="130" rx="16" />
+  <text class="box-title" x="1428" y="470">Cloudinary</text>
+  <text class="box-text" x="1428" y="496">image upload</text>
+  <text class="box-text" x="1428" y="518">asset URLs</text>
+
+  <rect class="box" x="300" y="430" width="260" height="130" rx="16" />
+  <text class="box-title" x="332" y="470">Error Handler</text>
+  <text class="box-text" x="332" y="496">AppError mapping</text>
+  <text class="box-text" x="332" y="518">safe JSON errors</text>
+
+  <rect class="box" x="60" y="430" width="210" height="130" rx="16" />
+  <text class="box-title" x="92" y="470">HTTP Response</text>
+  <text class="box-text" x="92" y="496">success + data</text>
+  <text class="box-text" x="92" y="518">or error + message</text>
+
+  <path class="flow" d="M250 240 L290 240" />
+  <path class="flow" d="M500 240 L540 240" />
+  <path class="flow" d="M820 240 L860 240" />
+  <path class="flow" d="M1070 240 L1110 240" />
+
+  <path class="flow" d="M1235 320 L1235 430" />
+  <path class="flow-soft" d="M1360 320 L1470 430" />
+  <path class="flow-soft" d="M1110 500 L965 500 L965 300" />
+  <text class="label" x="980" y="492">service result to controller</text>
+
+  <path class="flow" d="M900 300 L900 395 L270 395 L270 495 L270 495" />
+  <path class="flow" d="M270 495 L60 495" />
+  <text class="label" x="640" y="385">success response path</text>
+
+  <path class="flow-error" d="M680 320 L680 430 L560 430" />
+  <path class="flow-error" d="M965 300 L965 385 L560 385 L560 430" />
+  <path class="flow-error" d="M1235 320 L1235 360 L560 360 L560 430" />
+  <path class="flow-error" d="M430 560 L430 610 L165 610 L165 560" />
+  <text class="label" x="74" y="638">global handler path for operational errors</text>
+</svg>

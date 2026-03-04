@@ -1,371 +1,457 @@
-## API Reference
+# API Reference
 
-This document summarizes the main HTTP endpoints exposed by the SevaConnect backend.
+Base URL (local):
 
-Base URL (local development):
+`http://localhost:5000`
 
-```text
-http://localhost:5000
-```
+API prefix:
 
-All JSON responses follow a consistent envelope:
+`/api`
+
+---
+
+## 1) Response Format
+
+### Success
 
 ```json
 {
   "success": true,
-  "data": { /* resource payload */ },
-  "message": "Optional human-readable message"
+  "data": {}
 }
 ```
 
-Errors:
+### Error
 
 ```json
 {
   "success": false,
-  "message": "Error description",
-  "errors": { "field": "validation message" } // optional
+  "message": "Error description"
 }
 ```
 
 ---
 
-## Authentication (`/api/auth`)
+## 2) Authentication
 
-### Register
+Bearer token format:
 
-- **POST** `/api/auth/register`
-- **Auth**: Public
+`Authorization: Bearer <jwt>`
+
+Protected routes require valid token; role-gated routes require matching role.
+
+---
+
+## 3) Auth Routes
+
+### POST `/api/auth/register`
+
+Public registration.
 
 Request body:
 
 ```json
 {
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "role": "customer", // or "provider"
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "password": "pass1234",
+  "role": "customer",
   "city": "Mumbai"
 }
 ```
 
 Notes:
-- If `role` is omitted or set to an invalid value, it defaults to `customer`.
-- Attempts to register as `admin` are downgraded to `customer` for security.
+
+- Allowed public roles: `customer`, `provider`.
+- Any other role (including `admin`) is coerced to `customer`.
+- Provider registration creates unapproved account by default.
+
+Response:
+
+- `201 Created`
+- `data` user object + `token`
 
 ---
 
-### Login
-
-- **POST** `/api/auth/login`
-- **Auth**: Public
+### POST `/api/auth/login`
 
 Request body:
 
 ```json
 {
-  "email": "john@example.com",
-  "password": "password123"
+  "email": "jane@example.com",
+  "password": "pass1234"
 }
 ```
 
 Response:
 
-```json
-{
-  "success": true,
-  "token": "JWT_TOKEN_HERE",
-  "data": {
-    "_id": "user-id",
-    "name": "John Doe",
-    "email": "john@example.com",
-    "role": "customer",
-    "city": "Mumbai",
-    "isApproved": true
-  }
-}
-```
+- `200 OK`
+- `data` user object + `token`
 
 ---
 
-### Current User
+### GET `/api/auth/me`
 
-- **GET** `/api/auth/me`
-- **Auth**: Bearer token (`Authorization: Bearer <token>`)
+Auth required.
 
-Returns the current authenticated user profile (without password or internal fields).
+Response:
 
----
-
-## Categories
-
-### List Categories
-
-- **GET** `/api/categories`
-- **Auth**: Public
-
-Returns an array of active service categories.
+- `200 OK`
+- current user object
 
 ---
 
-### Create Category (Admin)
+## 4) Category Routes
 
-- **POST** `/api/admin/categories`
-- **Auth**: Admin
+### GET `/api/categories`
 
-Body:
+Public.
 
-```json
-{
-  "name": "Plumbing",
-  "description": "All plumbing services",
-  "basePrice": 500
-}
-```
-
-Constraints:
-
-- `name` must be unique (case-insensitive).
-- `basePrice` must be a positive number.
+Returns only active categories.
 
 ---
 
-### Update Category (Admin)
+### POST `/api/admin/categories`
 
-- **PATCH** `/api/admin/categories/:id`
-- **Auth**: Admin
+Admin only.
 
-Body (any subset):
+Validated body:
 
-```json
-{
-  "name": "New name",
-  "description": "Updated description",
-  "basePrice": 600,
-  "isActive": true
-}
-```
+- `name` (min 2)
+- `description` (min 5)
+- `basePrice` (>= 0)
+
+Response:
+
+- `201 Created`
 
 ---
 
-## Providers
+### PATCH `/api/admin/categories/:id`
 
-### List Providers (Public)
+Admin only.
 
-- **GET** `/api/providers`
-- **Auth**: Public
+Validated:
 
-Query parameters:
+- `id` must be Mongo ObjectId
+- body must contain at least one updatable field
 
-- `city` – filter by city.
-- `category` – filter by category ID.
+Response:
 
-Example:
-
-```text
-GET /api/providers?city=Mumbai&category=64f2...abc
-```
-
-Only **approved** providers are returned.
+- `200 OK`
 
 ---
 
-### Create / Update Provider Profile
+## 5) Provider Routes
 
-- **POST** `/api/provider/profile`
-- **Auth**: Provider
+### GET `/api/providers`
 
-Body:
+Public listing.
+
+Optional query params:
+
+- `city`
+- `category` (category ObjectId)
+
+Behavior:
+
+- returns providers where:
+  - role is provider
+  - approved (`approvalStatus=approved` or `isApproved=true`)
+  - profile availability is `available`
+
+---
+
+### POST `/api/provider/profile`
+
+Provider only.
+
+Create-or-update profile (upsert behavior).
+
+Body example:
 
 ```json
 {
-  "categories": ["categoryId1", "categoryId2"],
-  "bio": "Expert plumber with 10 years experience",
-  "experienceYears": 10,
+  "categories": ["<categoryId>"],
+  "bio": "Experienced electrician",
+  "experienceYears": 8,
   "availabilityStatus": "available"
 }
 ```
 
 Notes:
 
-- Acts as an upsert: same endpoint for create and update.
-- Category IDs are validated; invalid IDs are rejected.
+- category IDs are validated against active categories.
+- `availabilityStatus` accepted by backend schema: `available | unavailable`.
+
+Response:
+
+- `200 OK`
 
 ---
 
-### Get Own Provider Profile
+### GET `/api/provider/profile`
 
-- **GET** `/api/provider/profile`
-- **Auth**: Provider
+Provider only.
 
-Returns the provider profile with categories populated.
-
----
-
-## Bookings
-
-### Create Booking (Customer)
-
-- **POST** `/api/bookings`
-- **Auth**: Customer
-
-Body:
-
-```json
-{
-  "providerId": "provider-user-id",
-  "categoryId": "category-id",
-  "address": "123 Street, Area",
-  "city": "Mumbai",
-  "scheduledDateTime": "2024-12-25T10:00:00.000Z",
-  "notes": "Need service ASAP"
-}
-```
-
-Behavior:
-
-- Validates that the provider and category are compatible.
-- Checks for conflicting bookings in the same timeslot.
+Returns provider profile with populated category names and user fields.
 
 ---
 
-### Get Booking by ID
+## 6) Booking Routes
 
-- **GET** `/api/bookings/:id`
-- **Auth**: Booking owner (customer or provider) or admin.
+### POST `/api/bookings`
 
----
+Customer only.
 
-### List My Bookings (Customer)
+Validated body:
 
-- **GET** `/api/bookings/my`
-- **Auth**: Customer
+- `providerId` (ObjectId)
+- `categoryId` (ObjectId)
+- `address` (string min 3)
+- `city` (string min 2)
+- `scheduledDateTime` (ISO date > now)
+- `notes` (optional, max 1000)
 
----
+Business validation:
 
-### List Provider Bookings
+- provider must exist and be approved
+- provider profile must exist and be available
+- category must be active
 
-- **GET** `/api/provider/bookings`
-- **Auth**: Provider
+Response:
 
----
-
-### Booking Actions (State Transitions)
-
-All booking actions are subject to state-machine rules.
-
-- **PATCH** `/api/bookings/:id/accept` – Provider accepts booking.
-- **PATCH** `/api/bookings/:id/start` – Provider starts work.
-- **PATCH** `/api/bookings/:id/complete` – Provider marks booking as completed.
-- **PATCH** `/api/bookings/:id/cancel` – Customer or provider cancels.
-- **PATCH** `/api/bookings/:id/reschedule` – Customer requests a new schedule.
-
-Each transition validates:
-
-- Current state vs allowed transitions.
-- Actor permissions (customer vs provider).
+- `201 Created`
 
 ---
 
-### Add Work Notes & Images
+### GET `/api/bookings/my`
 
-- **POST** `/api/bookings/:id/work`
-- **Auth**: Provider
-- **Content-Type**: `multipart/form-data`
-
-Fields:
-
-- `notes` – text description.
-- `images` – one or more image files.
-- Query param `type` – `"before"` or `"after"`.
-
-Example (conceptual):
-
-```text
-POST /api/bookings/:id/work?type=before
-Content-Type: multipart/form-data
-  notes = "Started work"
-  images[] = file1.jpg
-  images[] = file2.jpg
-```
-
-Uploaded images are stored in Cloudinary, and URLs persisted on the booking.
-
----
-
-## Reviews
-
-### Submit Review
-
-- **POST** `/api/reviews`
-- **Auth**: Customer
-
-Body:
-
-```json
-{
-  "bookingId": "booking-id",
-  "rating": 5,
-  "comment": "Excellent service!"
-}
-```
-
-Behavior:
-
-- Ensures the booking belongs to the customer and is completed.
-- Updates aggregate rating for the provider.
-
----
-
-### Delete Review (Admin)
-
-- **DELETE** `/api/admin/reviews/:id`
-- **Auth**: Admin
-
----
-
-## Admin
-
-### List Providers
-
-- **GET** `/api/admin/providers`
-- **Auth**: Admin
+Customer only.
 
 Query:
 
-- `approved=true|false` – filter by approval status.
+- `status` (optional)
+- `page` (default 1)
+- `limit` (default 10)
 
----
-
-### Approve / Reject Provider
-
-- **PATCH** `/api/admin/providers/:id/approve`
-- **PATCH** `/api/admin/providers/:id/reject`
-- **Auth**: Admin
-
----
-
-### Platform Analytics
-
-- **GET** `/api/admin/analytics`
-- **Auth**: Admin
-
-Response (shape may vary):
+Response shape:
 
 ```json
 {
   "success": true,
   "data": {
-    "totalUsers": 100,
-    "totalProviders": 25,
-    "totalBookings": 150,
-    "completedBookings": 120,
-    "cancelledBookings": 10,
-    "averageBookingPrice": 550.0,
-    "totalReviews": 95
+    "total": 0,
+    "page": 1,
+    "pages": 0,
+    "bookings": []
   }
 }
 ```
 
-For example usage and common workflows, see the [API Usage Examples](./api-usage-examples.md).
+---
 
+### GET `/api/provider/bookings`
+
+Provider only.
+
+Same pagination and filter pattern as customer bookings.
+
+---
+
+### GET `/api/bookings/:id`
+
+Roles: `customer`, `provider`, `admin`.
+
+Access control:
+
+- customer can view own booking
+- provider can view assigned booking
+- admin can view any booking
+
+---
+
+### PATCH `/api/bookings/:id/cancel`
+
+Roles: customer/provider.
+
+Transition rules:
+
+- customer can cancel from `requested` and `confirmed`
+- provider can cancel from `requested`
+
+Response:
+
+- `200 OK`
+
+---
+
+### PATCH `/api/bookings/:id/accept`
+
+Provider only.
+
+Transition:
+
+- `requested -> confirmed`
+
+Also checks provider schedule conflict for confirmed/in-progress bookings at same datetime.
+
+---
+
+### PATCH `/api/bookings/:id/start`
+
+Provider only.
+
+Transition:
+
+- `confirmed -> in-progress`
+
+---
+
+### PATCH `/api/bookings/:id/complete`
+
+Provider only.
+
+Transition:
+
+- `in-progress -> completed`
+
+---
+
+### PATCH `/api/bookings/:id/reschedule`
+
+Customer only.
+
+Current business rule:
+
+- only `requested` bookings can be rescheduled
+
+Body:
+
+```json
+{
+  "scheduledDateTime": "2026-06-01T10:00:00.000Z"
+}
+```
+
+---
+
+### POST `/api/bookings/:id/work?type=before|after`
+
+Provider only.
+
+Multipart form data:
+
+- `images` (up to 5 files)
+- `notes` (optional)
+
+Rules:
+
+- `type=before` allowed only when booking status is `in-progress`
+- `type=after` allowed only when booking status is `completed`
+- max 5 images per request
+- each image max 5MB (multer constraint)
+
+Response:
+
+- `200 OK`
+
+---
+
+## 7) Review Routes
+
+### POST `/api/reviews`
+
+Customer only.
+
+Validated body:
+
+- `bookingId` (ObjectId)
+- `rating` (1-5 integer)
+- `comment` (optional, max 1000)
+
+Rules:
+
+- booking must belong to customer
+- booking must be completed
+- one review per booking
+
+Response:
+
+- `201 Created`
+
+---
+
+### DELETE `/api/admin/reviews/:id`
+
+Admin only.
+
+Deletes review and recalculates provider rating aggregates.
+
+---
+
+## 8) Admin Routes
+
+All routes below require admin token.
+
+### GET `/api/admin/providers`
+
+Optional query:
+
+- `status` = `pending | approved | rejected`
+
+---
+
+### PATCH `/api/admin/providers/:id/approve`
+
+Marks provider as approved:
+
+- `isApproved = true`
+- `approvalStatus = approved`
+
+---
+
+### PATCH `/api/admin/providers/:id/reject`
+
+Marks provider as rejected:
+
+- `isApproved = false`
+- `approvalStatus = rejected`
+
+---
+
+### GET `/api/admin/analytics`
+
+Returns:
+
+- user/provider totals
+- booking totals and status stats
+- revenue totals and monthly aggregations
+- monthly user registrations
+- status distribution
+
+---
+
+### GET `/api/admin/reviews`
+
+Returns populated review list for moderation UI.
+
+---
+
+## 9) Common Error Statuses
+
+- `400` validation/business rule violation
+- `401` missing/invalid/expired token
+- `403` role/ownership not allowed
+- `404` resource not found
+- `409` duplicate value (e.g., email/category name)
+- `500` unexpected internal error
+
+---
+
+## 10) Related Docs
+
+- [API Usage Examples](./api-usage-examples.md)
+- [Security](./security.md)
+- [Testing](./testing.md)

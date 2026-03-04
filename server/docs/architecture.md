@@ -1,135 +1,231 @@
-## Architecture
+# Backend Architecture
 
-The SevaConnect backend follows a modular, layered architecture designed for clarity, testability, and separation of concerns.
+This document explains how SevaConnect backend is structured, how requests flow, and where business rules are enforced.
 
-At a high level:
+---
 
-```text
-Client → Routes → Controllers → Services → Models → MongoDB
-                ↓
-           Middlewares & Utils
+## 1) Layered Design
+
+SevaConnect follows a clear layered flow:
+
+`Route -> Middleware -> Controller -> Service -> Model (MongoDB)`
+
+Cross-cutting utilities (errors, logger, transition checks) are consumed by multiple layers.
+
+---
+
+## 2) Folder Responsibilities
+
+`server/src` structure and ownership:
+
+- `index.js`
+  - Loads env (`dotenv` + validated config import).
+  - Connects to MongoDB.
+  - Starts Express server.
+
+- `app.js`
+  - Express initialization.
+  - Global middleware registration (`helmet`, `cors`, `express.json`).
+  - Mounts route modules.
+  - Registers 404 and global error handler.
+
+- `config/`
+  - `env.js`: Joi-based environment validation.
+  - `cloudinary.js`: Cloudinary SDK configuration.
+
+- `routes/`
+  - Route declarations and middleware composition.
+  - Keeps endpoint-to-controller mapping explicit.
+
+- `controllers/`
+  - Thin HTTP handlers.
+  - Extract request values and call services.
+  - Return JSON envelope and HTTP status.
+
+- `services/`
+  - Core business logic and invariants.
+  - Model querying and mutation.
+  - Throws `AppError` for operational failures.
+
+- `models/`
+  - Mongoose schema definitions and indexes.
+
+- `middlewares/`
+  - Authentication, authorization, validation, upload parsing, rate limiting, error handling.
+
+- `validators/`
+  - Joi schemas for body/query/params.
+
+- `utils/`
+  - Shared primitives:
+    - `AppError`
+    - `asyncHandler`
+    - `bookingTransitions`
+    - `logger`
+
+---
+
+## 3) Request Lifecycle
+
+Example flow for protected write endpoint (`PATCH /api/bookings/:id/accept`):
+
+1. Request hits route module (`bookingRoutes.js`).
+2. Middlewares execute in route order:
+   - `authMiddleware`
+   - `roleMiddleware("provider")`
+3. Controller (`bookingController.acceptBooking`) executes.
+4. Controller calls service (`bookingService.acceptBooking`).
+5. Service:
+   - Loads booking
+   - Checks ownership
+   - Validates transition via `validateTransition`
+   - Runs conflict check
+   - Updates status and history
+6. Controller returns `200` with normalized payload.
+7. Errors at any step are propagated to global `errorHandler`.
+
+---
+
+## 4) Middleware Composition Strategy
+
+Global middleware in `app.js`:
+
+- `helmet()`
+- `cors()`
+- `express.json()`
+
+Route-level middleware examples:
+
+- Auth routes: `authRateLimiter`
+- Protected routes: `authMiddleware`
+- Role-guarded routes: `roleMiddleware(...)`
+- Request schema enforcement: `validateRequest(...)`
+- Multipart uploads: `upload.array("images", 5)`
+
+Terminal middleware:
+
+- `notFound`
+- `errorHandler`
+
+---
+
+## 5) Service Layer Domain Rules
+
+Business-critical rules are in services, not controllers:
+
+- `authService`
+  - Prevents admin role assignment during public registration
+  - Password validation and uniqueness checks
+
+- `providerService`
+  - Only providers can upsert profiles
+  - Category ID validity and active-state checks
+
+- `bookingService`
+  - Provider approval and availability checks
+  - Future scheduling validation
+  - State-machine transitions (`bookingTransitions.js`)
+  - Provider conflict checks
+  - Cloudinary upload integration and rollback strategy on upload failure
+
+- `reviewService`
+  - Review only after completion
+  - One review per booking
+  - Rating recalculation via aggregation
+
+- `adminService`
+  - Provider filtering by approval status
+  - Approval/rejection updates
+  - Analytics aggregation pipelines
+
+---
+
+## 6) Error Strategy
+
+Primary path:
+
+- Operational errors are thrown as `AppError(message, statusCode)`.
+- `asyncHandler` wraps controllers and forwards thrown errors.
+- `errorHandler` normalizes:
+  - Mongoose validation errors
+  - Duplicate key errors
+  - Cast errors
+  - JWT errors
+  - Multer errors
+  - Invalid JSON body errors
+
+API response format:
+
+```json
+{
+  "success": false,
+  "message": "Error message"
+}
 ```
 
 ---
 
-## Project Structure
+## 7) Response Envelope
 
-Key backend folders under `server/src`:
+Controllers return consistent structure:
 
-- **`index.js`**: Application entrypoint. Loads environment, connects to MongoDB, starts the HTTP server.
-- **`app.js`**: Express app setup: security middleware, CORS, JSON parsing, routes, and global error handling.
+```json
+{
+  "success": true,
+  "data": {}
+}
+```
 
-- **`config/`**
-  - `env.js`: Loads and validates environment variables used throughout the app.
-  - `cloudinary.js`: Cloudinary client configuration for media uploads.
+For list + pagination endpoints:
 
-- **`routes/`**
-  - `authRoutes.js`: Authentication endpoints (`/api/auth/*`).
-  - `categoryRoutes.js`: Public categories (`/api/categories`).
-  - `providerRoutes.js`: Provider profile and provider-facing booking endpoints.
-  - `bookingRoutes.js`: Customer and provider booking operations.
-  - `reviewRoutes.js`: Review CRUD operations.
-  - `adminRoutes.js`: Admin-only management and analytics.
-
-- **`controllers/`**
-  - `authController.js`, `categoryController.js`, `providerController.js`,
-    `bookingController.js`, `reviewController.js`, `adminController.js`.
-  - Each controller:
-    - Accepts validated request data.
-    - Invokes one or more service methods.
-    - Shapes the HTTP response and status codes.
-
-- **`services/`**
-  - `authService.js`: Registration, login, token generation, and role handling.
-  - `categoryService.js`: Category CRUD with uniqueness and active flags.
-  - `providerService.js`: Provider profile upsert, approval checks, and filtering.
-  - `bookingService.js`: Booking creation, state transitions, conflict checks.
-  - `reviewService.js`: Review creation/deletion and rating aggregation.
-  - `adminService.js`: Admin analytics and provider management helpers.
-
-- **`models/`**
-  - `User.js`: User accounts with fields like `name`, `email`, `passwordHash`, `role`, `city`, `isApproved`.
-  - `ServiceCategory.js`: Service categories with names, descriptions, and `basePrice`.
-  - `ProviderProfile.js`: Provider-specific info (categories, experience, availability, rating).
-  - `Booking.js`: Bookings with references to users, providers, and categories, plus status and scheduling.
-  - `Review.js`: Customer reviews with rating and comment, linked to bookings/providers.
-
-- **`middlewares/`**
-  - `authMiddleware.js`: Verifies JWT tokens and attaches user to `req.user`.
-  - `roleMiddleware.js`: Enforces role-based access control on routes.
-  - `rateLimiters.js`: Rate limiting for sensitive endpoints (e.g., auth).
-  - `uploadMiddleware.js`: Multer-based file parsing for images.
-  - `validateRequest.js`: Validates request bodies/params against Joi schemas.
-  - `notFound.js`: 404 handler.
-  - `errorHandler.js`: Central error formatting and logging.
-
-- **`validators/`**
-  - `requestSchemas.js`: Joi schemas for request validation (auth, bookings, etc.).
-
-- **`utils/`**
-  - `AppError.js`: Custom error class for consistent error handling.
-  - `asyncHandler.js`: Wraps async route handlers to forward errors.
-  - `bookingTransitions.js`: Booking state-machine rules and helpers.
-  - `logger.js`: Centralized logging abstraction.
+- `data.total`
+- `data.page`
+- `data.pages`
+- `data.bookings`
 
 ---
 
-## Request Flow
+## 8) Booking State Machine Location
 
-1. **Incoming HTTP request** hits Express route (e.g., `/api/bookings`).
-2. **Middlewares** run:
-   - Security (`helmet`, CORS).
-   - Parsing (`express.json`).
-   - Auth (`authMiddleware`) and roles (`roleMiddleware`) as needed.
-   - Validation (`validateRequest` with Joi schema).
-3. **Controller** receives a clean, validated `req` object and calls the relevant service.
-4. **Service** executes business logic:
-   - Interacts with one or more Mongoose models.
-   - Enforces invariants (e.g., booking conflict checks, valid state transitions).
-   - Throws `AppError` for controlled error cases.
-5. **Controller** returns normalized JSON response:
-   - `{ success: true, data: ..., message?: string }` on success.
-   - Errors are handled by the global `errorHandler`.
+State graph lives in:
+
+- `server/src/utils/bookingTransitions.js`
+
+Valid transitions are role-aware, e.g.:
+
+- provider: `requested -> confirmed`
+- provider: `confirmed -> in-progress`
+- provider: `in-progress -> completed`
+- customer: `requested|confirmed -> cancelled`
+
+Invalid transitions produce `400`.
 
 ---
 
-## Booking State Machine
+## 9) Performance and Query Patterns
 
-Booking transitions are centralized in `utils/bookingTransitions.js` and enforced by the booking service.
+Notable schema indexes:
 
-- **States**:
-  - `requested`
-  - `confirmed`
-  - `in-progress`
-  - `completed`
-  - `cancelled`
+- `ProviderProfile.categories`
+- `ProviderProfile.availabilityStatus`
+- `Booking.providerId + scheduledDateTime`
+- `Booking.customerId`
+- `Booking.status`
+- `Review.providerId`
 
-- **Allowed transitions** (examples):
-  - `requested → confirmed` (provider accepts).
-  - `confirmed → in-progress` (provider starts work).
-  - `in-progress → completed` (work finished).
-  - `requested/confirmed → cancelled` (customer or provider cancels with rules).
+These support:
 
-Any attempt to perform an invalid transition should result in a 400-level error.
+- Provider filtering
+- Booking lookups by owner and status
+- Conflict checks
+- Rating aggregation
 
 ---
 
-## Cross-Cutting Concerns
+## 10) Related Documentation
 
-- **Error Handling**
-  - All errors are funneled to `errorHandler`, which:
-    - Logs details (via `logger`).
-    - Normalizes error responses.
-    - Hides internal implementation details from API consumers.
-
-- **Logging**
-  - `logger.js` abstracts logging (console today, can be upgraded later).
-  - Logs startup, DB connectivity, and operational errors.
-
-- **Security**
-  - JWTs are validated for protected routes, with roles enforced by `roleMiddleware`.
-  - Rate limiting on auth routes.
-  - Helmet and CORS are applied globally.
-
-For API-by-API details, see the [API Reference](./api-reference.md).
-
+- [Overview](./overview.md)
+- [Configuration](./configuration.md)
+- [Database Model](./database.md)
+- [API Reference](./api-reference.md)
+- [Security](./security.md)

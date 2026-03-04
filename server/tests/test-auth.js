@@ -1,6 +1,6 @@
 /**
  * Phase 1 Auth Tests — includes admin role injection test.
- * Run: node test-auth.js
+ * Run: node tests/test-auth.js
  */
 const http = require("http");
 

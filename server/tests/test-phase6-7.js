@@ -1,14 +1,14 @@
 /**
  * Phase 6 & 7 Test Suite
  * Tests: Admin Provider Approval, Booking GET with ownership, Review deletion recalculation, Analytics
- * Run: node test-phase6-7.js
+ * Run: node tests/test-phase6-7.js
  */
 const http = require("http");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
 
-dotenv.config({ path: path.resolve(__dirname, ".env") });
+dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
 
 const BASE = "http://localhost:5000";
 
@@ -60,9 +60,9 @@ async function run() {
   console.log("=== PHASE 6 & 7 TEST SUITE ===\n");
 
   await mongoose.connect(process.env.MONGO_URI);
-  const User = require("./src/models/User");
-  const ServiceCategory = require("./src/models/ServiceCategory");
-  const ProviderProfile = require("./src/models/ProviderProfile");
+  const User = require("../src/models/User");
+  const ServiceCategory = require("../src/models/ServiceCategory");
+  const ProviderProfile = require("../src/models/ProviderProfile");
 
   // Setup: Create users
   const custEmail = `cust_${ts}@test.com`;

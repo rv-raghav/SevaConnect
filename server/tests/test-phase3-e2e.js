@@ -1,6 +1,6 @@
 /**
  * Phase 3 + 4 E2E Workflow Test
- * Run: node test-phase3-e2e.js
+ * Run: node tests/test-phase3-e2e.js
  */
 
 const http = require("http");
@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
 
-dotenv.config({ path: path.resolve(__dirname, ".env") });
+dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
 
 const BASE = "http://localhost:5000";
 
@@ -69,8 +69,8 @@ async function run() {
 
   // Connect to DB for admin seeding
   await mongoose.connect(process.env.MONGO_URI);
-  const User = require("./src/models/User");
-  const ServiceCategory = require("./src/models/ServiceCategory");
+  const User = require("../src/models/User");
+  const ServiceCategory = require("../src/models/ServiceCategory");
 
   // Register Customer
   const custEmail = `cust_${ts}@test.com`;

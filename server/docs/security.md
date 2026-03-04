@@ -1,110 +1,191 @@
-## Security Model
+# Security Model
 
-This document explains the main security features and guarantees provided by the SevaConnect backend.
-
----
-
-## Authentication
-
-- **JWT-based authentication**:
-  - On successful login or registration, the server returns a signed JWT.
-  - The token is expected in the `Authorization` header as `Bearer <token>`.
-  - Tokens include user ID and role.
-  - Tokens are configured with a finite expiry (e.g., 7 days).
-
-- **Password Security**:
-  - Passwords are hashed using `bcryptjs` before being stored.
-  - Plain-text passwords are never persisted or returned in responses.
+This document describes authentication, authorization, input hardening, and operational security controls in the backend.
 
 ---
 
-## Authorization & Roles
+## 1) Authentication
 
-Supported roles:
+### JWT Token Strategy
+
+- Tokens are generated in `authService.generateToken`.
+- Payload includes:
+  - `userId`
+  - `role`
+- Token expiry: `7d`.
+- Secret key: `JWT_SECRET`.
+
+### Verification
+
+`authMiddleware`:
+
+- reads `Authorization: Bearer <token>`
+- verifies token signature
+- loads user from DB to ensure account still exists
+- attaches `{ userId, role }` to `req.user`
+
+Failure returns:
+
+- `401` for missing/invalid token or missing user.
+
+---
+
+## 2) Authorization
+
+Role guard middleware:
+
+- `roleMiddleware(...roles)`
+
+Behavior:
+
+- if `req.user` missing -> `401`
+- if role not allowed -> `403`
+
+Roles:
 
 - `customer`
 - `provider`
 - `admin`
 
-Enforcement:
+---
 
-- `authMiddleware`:
-  - Parses and verifies JWTs.
-  - Loads the associated user and attaches it to `req.user`.
+## 3) Admin Role Injection Prevention
 
-- `roleMiddleware`:
-  - Validates that `req.user.role` is in the allowed role list.
-  - Returns `403 Forbidden` if role is not allowed.
+Public registration can pass `role`, but service layer enforces:
 
-Route-level usage ensures:
+- only `customer` and `provider` accepted
+- any other value (including `admin`) becomes `customer`
 
-- Admin-only actions (e.g., creating categories, approving providers, viewing analytics) are inaccessible to non-admin users.
-- Provider-only actions (e.g., provider profile, managing bookings) are inaccessible to customers.
-- Customer-only actions (e.g., creating bookings, submitting reviews) are inaccessible to providers/admins where appropriate.
-
-### Admin Role Injection Protection
-
-- During registration, any attempt to set `role: "admin"` is ignored/downgraded to a safe default.
-- Admin accounts should be seeded/managed outside of public registration.
+This prevents admin account creation via public endpoint.
 
 ---
 
-## Input Validation
+## 4) Input Validation
 
-The backend uses **Joi** schemas (`validators/requestSchemas.js`) to validate:
+`validateRequest` middleware applies Joi schemas for:
 
-- Request bodies (e.g., registration, login, bookings, reviews).
-- Parameters such as IDs and query strings where necessary.
+- `params`
+- `query`
+- `body`
 
-Invalid requests result in:
+Validation options:
 
-- `400 Bad Request` status.
-- A clear validation message in the response body.
+- `abortEarly: false`
+- `allowUnknown: false`
+- `stripUnknown: true`
 
-This prevents malformed data from entering the system and reduces risk of injection-style attacks.
+Impact:
 
----
-
-## Rate Limiting
-
-Rate limiting is implemented via `express-rate-limit` in `middlewares/rateLimiters.js`.
-
-- Auth routes (`/api/auth/*`) are protected with stricter limits (e.g., 100 requests per 15 minutes per IP).
-- Limits can be adjusted for production load.
-
-This slows down brute-force login attempts and abusive clients.
+- rejects malformed input early with `400`
+- reduces injection and schema abuse risk
+- ensures controllers/services receive normalized values
 
 ---
 
-## HTTP Hardening
+## 5) Rate Limiting
 
-### Helmet
+Auth routes are protected by `authRateLimiter`:
 
-- `helmet()` is applied globally in `app.js` to add secure HTTP headers:
-  - Disables certain browser features that can be abused.
-  - Helps protect against XSS, clickjacking, and other common attacks.
+- window: 15 minutes
+- max: 100 requests per IP
 
-### CORS
+Applied at route mount:
 
-- CORS is restricted via `CORS_ORIGIN` configuration:
-  - In production, only known front-end origins should be allowed.
-  - In development, all origins can be allowed for convenience.
+- `/api/auth/*`
 
----
-
-## Data Protection & Privacy
-
-- Sensitive fields (e.g., `password`, internal version fields like `__v`) are stripped before sending user objects back to clients.
-- Mongoose schemas and controllers ensure that only intended fields are exposed.
+This mitigates brute force and auth endpoint abuse.
 
 ---
 
-## Error Handling
+## 6) HTTP Security Headers
 
-- All unexpected errors propagate to `errorHandler`:
-  - Logs details via `logger`.
-  - Returns sanitized error messages to clients.
-  - Avoids leaking stack traces or internal implementation details in production.
+`helmet()` is applied globally in `app.js`.
 
-For testing how security protections behave (e.g., blocked admin registration, unauthorized access), see the [Testing & Quality](./testing.md) document and the existing phase test scripts.
+Provides default hardening for common browser and transport attack vectors (header-level protections).
 
+---
+
+## 7) CORS Control
+
+Configured in `app.js` using `CORS_ORIGIN`.
+
+- explicit origin allow-list when configured
+- permissive mode when unset (development convenience)
+
+Production recommendation:
+
+- always set explicit, trusted frontend origins.
+
+---
+
+## 8) Password Security
+
+In `User` model:
+
+- passwords hashed with bcrypt pre-save hook
+- stored hash only
+- password field excluded by default (`select: false`)
+
+Login path explicitly selects password hash for comparison only.
+
+---
+
+## 9) Upload Security Controls
+
+Upload middleware (`multer`) enforces:
+
+- memory storage
+- per-file size max 5MB
+- route-level max files: 5
+
+Business checks enforce:
+
+- provider ownership of booking
+- valid `type` query (`before` or `after`)
+- state constraints (`before` in-progress, `after` completed)
+
+---
+
+## 10) Booking Integrity Controls
+
+Security of booking updates is enforced by:
+
+- ownership checks (customer/provider/admin context)
+- transition validation (`bookingTransitions.js`)
+- provider schedule conflict check at acceptance
+
+This prevents unauthorized state tampering and invalid workflow progression.
+
+---
+
+## 11) Error Handling and Data Leakage Control
+
+Global `errorHandler`:
+
+- normalizes known framework/model/auth/upload errors
+- avoids exposing stack traces/internal details by default
+- returns minimal safe error structure
+
+Sensitive data controls:
+
+- password never returned in API payloads
+- schema/internal fields stripped where needed
+
+---
+
+## 12) Production Hardening Recommendations
+
+- Use strong random `JWT_SECRET`.
+- Restrict `CORS_ORIGIN` to exact frontend hosts.
+- Enable HTTPS and secure proxy config in deployment.
+- Rotate Cloudinary and DB credentials periodically.
+- Add structured audit logs for admin actions.
+- Add IP/device anomaly monitoring for auth endpoints.
+
+---
+
+## 13) Related Docs
+
+- [Configuration](./configuration.md)
+- [Architecture](./architecture.md)
+- [Testing](./testing.md)
