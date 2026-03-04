@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Modal from "../ui/Modal";
+import Button from "../ui/Button";
 import { categoriesApi } from "../../api/categories";
 
 export default function CategoryFormModal({
@@ -63,23 +64,19 @@ export default function CategoryFormModal({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            Name
-          </label>
+          <label className="input-label">Name</label>
           <input
             type="text"
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            className="input-field"
             placeholder="e.g. Plumbing"
             value={form.name}
             onChange={(e) => updateField("name", e.target.value)}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            Description
-          </label>
+          <label className="input-label">Description</label>
           <textarea
-            className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none transition-all"
+            className="input-field !h-auto py-3"
             rows={3}
             placeholder="Service description..."
             value={form.description}
@@ -87,54 +84,42 @@ export default function CategoryFormModal({
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            Base Price (INR)
-          </label>
+          <label className="input-label">Base price (INR)</label>
           <input
             type="number"
             min="0"
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            className="input-field"
             placeholder="e.g. 500"
             value={form.basePrice}
             onChange={(e) => updateField("basePrice", e.target.value)}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            Icon (Material Symbol name)
-          </label>
+          <label className="input-label">Icon (Material symbol)</label>
           <input
             type="text"
-            className="w-full h-11 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            className="input-field"
             placeholder="e.g. plumbing"
             value={form.icon}
             onChange={(e) => updateField("icon", e.target.value)}
           />
           {form.icon && (
             <div className="mt-2 flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">
+              <span className="material-symbols-outlined text-[color:var(--primary-500)]">
                 {form.icon}
               </span>
-              <span className="text-xs text-slate-500">Preview</span>
+              <span className="caption-text">Preview</span>
             </div>
           )}
         </div>
 
         <div className="flex gap-3 pt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 h-11 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition-colors"
-          >
+          <Button type="button" variant="secondary" size="md" className="flex-1" onClick={onClose}>
             Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex-1 h-11 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {saving ? "Saving..." : isEdit ? "Update" : "Create"}
-          </button>
+          </Button>
+          <Button type="submit" variant="primary" size="md" className="flex-1" loading={saving}>
+            {isEdit ? "Update" : "Create"}
+          </Button>
         </div>
       </form>
     </Modal>

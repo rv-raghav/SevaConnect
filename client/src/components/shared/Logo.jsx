@@ -1,6 +1,6 @@
 export default function Logo({ className = "size-8" }) {
   return (
-    <div className={`text-primary ${className}`}>
+    <div className={className} style={{ color: "var(--primary-500)" }}>
       <svg
         fill="currentColor"
         viewBox="0 0 48 48"

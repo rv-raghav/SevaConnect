@@ -1,37 +1,38 @@
+import Button from "./Button";
+
 export default function Pagination({ page, pages, total, onPageChange }) {
   if (pages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-between pt-6">
-      <p className="text-sm text-slate-500">{total} total results</p>
+    <div className="flex flex-wrap items-center justify-between gap-3 pt-6">
+      <p className="caption-text">{total} total results</p>
       <div className="flex items-center gap-2">
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
-          className="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Previous
-        </button>
+        </Button>
         {Array.from({ length: pages }, (_, i) => i + 1).map((p) => (
-          <button
+          <Button
             key={p}
+            variant={p === page ? "primary" : "secondary"}
+            size="sm"
             onClick={() => onPageChange(p)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              p === page
-                ? "bg-primary text-white"
-                : "border border-slate-200 text-slate-700 hover:bg-slate-50"
-            }`}
           >
             {p}
-          </button>
+          </Button>
         ))}
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
           disabled={page >= pages}
           onClick={() => onPageChange(page + 1)}
-          className="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );

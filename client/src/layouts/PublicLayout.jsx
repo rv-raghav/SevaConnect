@@ -1,9 +1,9 @@
-import { Outlet } from "react-router-dom";
+import PageTransitionOutlet from "../components/ui/PageTransitionOutlet";
 
 export default function PublicLayout() {
   return (
-    <div className="min-h-screen bg-background-light text-slate-900 font-display antialiased">
-      <Outlet />
+    <div className="min-h-screen app-bg antialiased">
+      <PageTransitionOutlet />
     </div>
   );
 }

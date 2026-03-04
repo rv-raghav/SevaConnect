@@ -15,7 +15,7 @@ export default function StarRating({
           key={star}
           type="button"
           disabled={readOnly}
-          className={`${size} transition-colors ${readOnly ? "cursor-default" : "cursor-pointer"}`}
+          className={`${size} transition-colors ${readOnly ? "cursor-default" : "cursor-pointer"} ${(hover || value) >= star ? "text-amber-500" : "text-slate-400"}`}
           onClick={() => !readOnly && onChange?.(star)}
           onMouseEnter={() => !readOnly && setHover(star)}
           onMouseLeave={() => !readOnly && setHover(0)}

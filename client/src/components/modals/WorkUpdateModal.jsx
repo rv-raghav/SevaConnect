@@ -1,7 +1,16 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import Modal from "../ui/Modal";
 import { bookingsApi } from "../../api/bookings";
+import Button from "../ui/Button";
+import Modal from "../ui/Modal";
+
+function toPreviewFiles(files) {
+  return files.map((file) => ({
+    file,
+    preview: URL.createObjectURL(file),
+    id: `${file.name}-${file.size}-${file.lastModified}`,
+  }));
+}
 
 export default function WorkUpdateModal({
   isOpen,
@@ -10,144 +19,197 @@ export default function WorkUpdateModal({
   type,
   onSuccess,
 }) {
+  const inputRef = useRef(null);
   const [notes, setNotes] = useState("");
   const [files, setFiles] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const [updateType, setUpdateType] = useState(type || "before");
 
-  const handleFileChange = (e) => {
-    const selected = Array.from(e.target.files);
-    if (selected.length + files.length > 5) {
-      toast.error("Maximum 5 images allowed");
+  useEffect(() => {
+    setUpdateType(type || "before");
+  }, [type, isOpen]);
+
+  useEffect(
+    () => () => {
+      files.forEach((item) => URL.revokeObjectURL(item.preview));
+    },
+    [files],
+  );
+
+  const addFiles = (selectedFiles) => {
+    if (!selectedFiles.length) return;
+
+    if (files.length + selectedFiles.length > 8) {
+      toast.error("You can upload up to 8 images");
       return;
     }
-    const oversized = selected.find((f) => f.size > 5 * 1024 * 1024);
-    if (oversized) {
-      toast.error("Each file must be under 5MB");
+
+    const oversize = selectedFiles.find((file) => file.size > 5 * 1024 * 1024);
+    if (oversize) {
+      toast.error("Each image must be under 5MB");
       return;
     }
-    setFiles((prev) => [...prev, ...selected]);
+
+    const next = toPreviewFiles(selectedFiles);
+    setFiles((prev) => [...prev, ...next]);
   };
 
-  const removeFile = (index) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+  const removeFile = (id) => {
+    setFiles((prev) => {
+      const target = prev.find((item) => item.id === id);
+      if (target) URL.revokeObjectURL(target.preview);
+      return prev.filter((item) => item.id !== id);
+    });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleFileInput = (event) => {
+    const selected = Array.from(event.target.files || []);
+    addFiles(selected);
+    event.target.value = "";
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    setDragOver(false);
+    const selected = Array.from(event.dataTransfer.files || []).filter((file) =>
+      file.type.startsWith("image/"),
+    );
+    addFiles(selected);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     if (files.length === 0) {
-      toast.error("Please select at least one image");
+      toast.error("Please add at least one image");
       return;
     }
+
     setSubmitting(true);
     try {
       const formData = new FormData();
-      files.forEach((f) => formData.append("images", f));
+      files.forEach((item) => formData.append("images", item.file));
       if (notes.trim()) formData.append("notes", notes.trim());
-      await bookingsApi.addWorkUpdate(bookingId, formData, type);
-      onSuccess();
-    } catch (err) {
-      toast.error(
-        err.response?.data?.message || "Failed to upload work update",
-      );
+      await bookingsApi.addWorkUpdate(bookingId, formData, updateType);
+      onSuccess?.();
+      setNotes("");
+      setFiles([]);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to upload work update");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={`Upload ${type === "before" ? "Before" : "After"} Photos`}
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Upload work updates" maxWidth="max-w-2xl">
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <div className="flex items-center gap-3 mb-3">
-            <span
-              className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
-                type === "before"
-                  ? "bg-blue-50 text-blue-600"
-                  : "bg-emerald-50 text-emerald-600"
-              }`}
-            >
-              {type === "before" ? "Before Work" : "After Work"}
-            </span>
+          <label className="input-label">Update category</label>
+          <div className="grid grid-cols-2 gap-2">
+            {["before", "after"].map((option) => (
+              <Button
+                key={option}
+                type="button"
+                variant={updateType === option ? "primary" : "secondary"}
+                size="md"
+                onClick={() => setUpdateType(option)}
+              >
+                {option === "before" ? "Before work" : "After work"}
+              </Button>
+            ))}
           </div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            Photos (max 5)
-          </label>
-          <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary/40 transition-colors">
-            <span className="material-symbols-outlined text-3xl text-slate-300 mb-2 block">
+        </div>
+
+        <div>
+          <label className="input-label">Photos</label>
+          <div
+            className={`rounded-[16px] border-2 border-dashed p-6 text-center transition-colors ${
+              dragOver
+                ? "border-[color:var(--primary-500)] bg-[color:var(--primary-100)]"
+                : "border-[color:var(--border)]"
+            }`}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragOver(true);
+            }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={handleDrop}
+          >
+            <span className="material-symbols-outlined text-4xl [color:var(--primary-500)]">
               cloud_upload
             </span>
-            <p className="text-sm text-slate-500 mb-2">
-              Drag & drop or click to select images
-            </p>
+            <p className="body-text mt-2">Drag and drop images here</p>
+            <p className="caption-text">PNG, JPG up to 5MB each (max 8 files)</p>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="mt-4"
+              onClick={() => inputRef.current?.click()}
+            >
+              Choose files
+            </Button>
             <input
+              ref={inputRef}
               type="file"
               accept="image/*"
               multiple
-              onChange={handleFileChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              style={{ position: "relative" }}
+              className="hidden"
+              onChange={handleFileInput}
             />
           </div>
         </div>
 
-        {files.length > 0 && (
-          <div className="grid grid-cols-3 gap-3">
-            {files.map((file, i) => (
-              <div key={i} className="relative group">
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt={`Preview ${i + 1}`}
-                  className="w-full h-24 object-cover rounded-lg border border-slate-200"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeFile(i)}
-                  className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <span className="material-symbols-outlined text-[14px]">
-                    close
-                  </span>
-                </button>
-                <p className="text-xs text-slate-500 truncate mt-1">
-                  {file.name}
-                </p>
-              </div>
-            ))}
+        {files.length > 0 ? (
+          <div>
+            <p className="input-label">Preview gallery</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {files.map((item) => (
+                <div key={item.id} className="relative">
+                  <img
+                    src={item.preview}
+                    alt={item.file.name}
+                    className="w-full aspect-square object-cover rounded-[12px] border [border-color:var(--border)]"
+                  />
+                  <button
+                    type="button"
+                    className="absolute top-1 right-1 btn btn-danger btn-sm !h-7 !px-2"
+                    onClick={() => removeFile(item.id)}
+                    aria-label={`Remove ${item.file.name}`}
+                  >
+                    <span className="material-symbols-outlined text-[14px]">close</span>
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-        )}
+        ) : null}
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            Notes (optional)
-          </label>
+          <label className="input-label">Notes (optional)</label>
           <textarea
-            className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none transition-all"
             rows={3}
-            placeholder="Add any notes about the work..."
+            className="input-field !h-auto py-3"
+            placeholder="Add notes about work done"
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(event) => setNotes(event.target.value)}
           />
         </div>
 
-        <div className="flex gap-3 pt-2">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 h-11 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-50 transition-colors"
-          >
+        <div className="flex justify-end gap-3 pt-1">
+          <Button type="button" variant="secondary" size="md" onClick={onClose}>
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
-            disabled={submitting || files.length === 0}
-            className="flex-1 h-11 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            variant="primary"
+            size="md"
+            loading={submitting}
+            disabled={files.length === 0}
           >
-            {submitting ? "Uploading..." : "Upload Photos"}
-          </button>
+            Upload update
+          </Button>
         </div>
       </form>
     </Modal>

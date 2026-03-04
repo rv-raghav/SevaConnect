@@ -1,6 +1,7 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Modal from "../ui/Modal";
+import Button from "../ui/Button";
 import { bookingsApi } from "../../api/bookings";
 
 export default function RescheduleModal({
@@ -42,42 +43,36 @@ export default function RescheduleModal({
     <Modal isOpen={isOpen} onClose={onClose} title="Reschedule Booking">
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            New Date
-          </label>
+          <label className="input-label">New date</label>
           <input
             type="date"
-            className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            className="input-field"
             value={date}
             onChange={(e) => setDate(e.target.value)}
             min={new Date().toISOString().split("T")[0]}
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">
-            New Time
-          </label>
+          <label className="input-label">New time</label>
           <input
             type="time"
-            className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+            className="input-field"
             value={time}
             onChange={(e) => setTime(e.target.value)}
           />
         </div>
         <div className="flex justify-end gap-3 pt-2">
-          <button
-            onClick={onClose}
-            className="px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-          >
+          <Button onClick={onClose} variant="secondary" size="md">
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={handleSubmit}
-            disabled={loading}
-            className="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold transition-colors disabled:opacity-60"
+            loading={loading}
+            variant="primary"
+            size="md"
           >
-            {loading ? "Rescheduling..." : "Reschedule"}
-          </button>
+            Reschedule
+          </Button>
         </div>
       </div>
     </Modal>

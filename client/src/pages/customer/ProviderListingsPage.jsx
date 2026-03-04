@@ -3,9 +3,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import useProviderStore from "../../stores/useProviderStore";
 import useCategoryStore from "../../stores/useCategoryStore";
 import ProviderCard from "../../components/shared/ProviderCard";
-import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
 import useDebounce from "../../hooks/useDebounce";
+import Button from "../../components/ui/Button";
 
 export default function ProviderListingsPage() {
   const { providers, fetchProviders, isLoading } = useProviderStore();
@@ -28,66 +28,99 @@ export default function ProviderListingsPage() {
     fetchProviders(params);
   }, [debouncedCity, category, fetchProviders]);
 
+  const hasFilters = Boolean(city || category);
+
   return (
-    <div className="px-4 py-6 md:px-10 lg:px-20">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-          Browse Professionals
-        </h1>
-        <p className="text-slate-500 mt-1">
-          Find the perfect professional for your needs
-        </p>
-      </div>
+    <div className="page-shell">
+      <section className="surface-card-static p-5 md:p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="page-title !text-3xl">Providers</h1>
+            <p className="caption-text mt-1">
+              {isLoading
+                ? "Searching providers..."
+                : `${providers.length} provider${providers.length === 1 ? "" : "s"} found`}
+            </p>
+          </div>
+        </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-8">
-        <div className="relative flex-1">
-          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">
-            search
-          </span>
+        <div className="mt-4 grid sm:grid-cols-[1fr_220px_auto] gap-3">
           <input
-            className="w-full pl-10 pr-4 h-11 rounded-xl border border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm"
-            placeholder="Filter by city..."
+            className="input-field"
+            placeholder="Search by city"
             value={city}
-            onChange={(e) => setCity(e.target.value)}
+            onChange={(event) => setCity(event.target.value)}
           />
+          <select
+            className="input-field"
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+          >
+            <option value="">All categories</option>
+            {categories.map((item) => (
+              <option key={item._id} value={item._id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+          {hasFilters ? (
+            <Button
+              variant="secondary"
+              size="md"
+              onClick={() => {
+                setCity("");
+                setCategory("");
+              }}
+            >
+              Clear filters
+            </Button>
+          ) : null}
         </div>
-        <select
-          className="h-11 px-4 rounded-xl border border-slate-200 bg-white text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="">All Categories</option>
-          {categories.map((cat) => (
-            <option key={cat._id} value={cat._id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      </section>
 
-      {/* Results */}
-      {isLoading ? (
-        <Spinner />
-      ) : providers.length > 0 ? (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {providers.map((p) => (
-            <ProviderCard
-              key={p._id || p.userId?._id}
-              provider={p}
-              onBook={(prov) =>
-                navigate(`/book/${prov.userId?._id || prov._id}`)
-              }
-            />
-          ))}
-        </div>
-      ) : (
-        <EmptyState
-          icon="person_search"
-          title="No providers found"
-          description="Try adjusting your filters or check back later."
-        />
-      )}
+      <section className="mt-6">
+        {isLoading ? (
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {Array.from({ length: 9 }).map((_, idx) => (
+              <div key={idx} className="h-52 rounded-[16px] skeleton" />
+            ))}
+          </div>
+        ) : providers.length > 0 ? (
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {providers.map((provider) => (
+              <ProviderCard
+                key={provider._id || provider.userId?._id}
+                provider={provider}
+                onBook={(item) => navigate(`/book/${item.userId?._id || item._id}`)}
+              />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            icon="person_search"
+            title="No providers available"
+            description={
+              hasFilters
+                ? "Try another city or category."
+                : "No providers are currently listed."
+            }
+            action={
+              hasFilters ? (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => {
+                    setCity("");
+                    setCategory("");
+                  }}
+                >
+                  Reset search
+                </Button>
+              ) : null
+            }
+          />
+        )}
+      </section>
     </div>
   );
 }

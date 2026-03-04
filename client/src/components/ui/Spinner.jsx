@@ -1,14 +1,21 @@
 export default function Spinner({ fullScreen = false }) {
+  const wrapperClass = fullScreen
+    ? "min-h-screen flex flex-col items-center justify-center gap-3 app-bg"
+    : "flex flex-col items-center justify-center py-12 gap-3";
+
   if (fullScreen) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background-light">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+      <div className={wrapperClass}>
+        <div className="size-11 rounded-full border-[3px] border-[color:var(--border)] border-t-[color:var(--primary-500)] spin" />
+        <p className="caption-text">Loading...</p>
       </div>
     );
   }
+
   return (
-    <div className="flex items-center justify-center p-8">
-      <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent"></div>
+    <div className={wrapperClass}>
+      <div className="size-10 rounded-full border-[3px] border-[color:var(--border)] border-t-[color:var(--primary-500)] spin" />
+      <p className="caption-text">Loading...</p>
     </div>
   );
 }

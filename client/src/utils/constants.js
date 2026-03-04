@@ -13,11 +13,11 @@ export const BOOKING_STATUSES = {
 }
 
 export const STATUS_CONFIG = {
-  requested: { label: 'Requested', color: 'bg-blue-50 text-blue-600 border-blue-200' },
-  confirmed: { label: 'Confirmed', color: 'bg-indigo-50 text-primary border-indigo-200' },
-  'in-progress': { label: 'In Progress', color: 'bg-orange-50 text-orange-600 border-orange-200' },
-  completed: { label: 'Completed', color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
-  cancelled: { label: 'Cancelled', color: 'bg-red-50 text-red-600 border-red-200' },
+  requested: { label: 'Requested', tone: 'requested' },
+  confirmed: { label: 'Confirmed', tone: 'confirmed' },
+  'in-progress': { label: 'In Progress', tone: 'in-progress' },
+  completed: { label: 'Completed', tone: 'completed' },
+  cancelled: { label: 'Cancelled', tone: 'cancelled' },
 }
 
 export const ROLE_HOME = {

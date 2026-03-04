@@ -1,121 +1,105 @@
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import useAuthStore from "../stores/useAuthStore";
+import BrandMark from "../components/shared/BrandMark";
+import ThemeToggle from "../components/ui/ThemeToggle";
+import Button from "../components/ui/Button";
+import PageTransitionOutlet from "../components/ui/PageTransitionOutlet";
+
+const NAV_ITEMS = [
+  { to: "/admin", icon: "dashboard", label: "Dashboard", end: true },
+  { to: "/admin/providers", icon: "groups", label: "Providers" },
+  { to: "/admin/categories", icon: "category", label: "Categories" },
+  { to: "/admin/reviews", icon: "reviews", label: "Reviews" },
+  { to: "/admin/analytics", icon: "analytics", label: "Analytics" },
+];
 
 export default function AdminLayout() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
-  const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
-      isActive ? "bg-primary text-white" : "text-slate-600 hover:bg-slate-100"
-    }`;
-
-  const navItems = [
-    { to: "/admin", icon: "dashboard", label: "Dashboard", end: true },
-    { to: "/admin/providers", icon: "groups", label: "Providers" },
-    { to: "/admin/categories", icon: "category", label: "Categories" },
-    { to: "/admin/reviews", icon: "reviews", label: "Reviews" },
-    { to: "/admin/analytics", icon: "analytics", label: "Analytics" },
-  ];
-
-  const sidebar = (
-    <div className="flex flex-col h-full">
-      <div className="p-6 border-b border-slate-200">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <span className="material-symbols-outlined text-white text-[20px]">
-              admin_panel_settings
-            </span>
-          </div>
-          <div>
-            <h2 className="text-slate-900 text-lg font-bold tracking-tight">
-              SevaConnect
-            </h2>
-            <p className="text-xs text-slate-500 font-medium">Admin Panel</p>
-          </div>
-        </div>
-      </div>
-      <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.end}
-            className={linkClass}
-            onClick={() => setSidebarOpen(false)}
-          >
-            <span className="material-symbols-outlined text-[20px]">
-              {item.icon}
-            </span>
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
-      <div className="p-4 border-t border-slate-200">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-            {user?.name?.charAt(0)?.toUpperCase() || "A"}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-slate-900 truncate">
-              {user?.name}
-            </p>
-            <p className="text-xs text-slate-500">Administrator</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="text-slate-400 hover:text-red-500"
-            title="Logout"
-          >
-            <span className="material-symbols-outlined text-[20px]">
-              logout
-            </span>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-background-light font-display">
-      <div className="lg:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-slate-200">
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="text-slate-700"
-        >
-          <span className="material-symbols-outlined">
-            {sidebarOpen ? "close" : "menu"}
-          </span>
-        </button>
-        <h2 className="text-lg font-bold text-slate-900">Admin Panel</h2>
-        <button
-          onClick={handleLogout}
-          className="text-slate-400 hover:text-red-500"
-        >
-          <span className="material-symbols-outlined text-[20px]">logout</span>
-        </button>
-      </div>
+    <div className="min-h-screen app-bg lg:grid lg:grid-cols-[272px_1fr]">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transform transition-transform lg:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`sidebar-shell fixed lg:sticky top-0 left-0 inset-y-0 z-50 w-[272px] transform transition-transform duration-200 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
       >
-        {sidebar}
+        <div className="h-full flex flex-col">
+          <div className="px-4 py-5 border-b [border-color:var(--border)] space-y-2">
+            <BrandMark to="/admin" />
+            <span className="chip">Admin control center</span>
+          </div>
+
+          <nav className="p-3 flex-1 space-y-1">
+            {NAV_ITEMS.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  `sidebar-link ${isActive ? "active" : ""}`
+                }
+              >
+                <span className="material-symbols-outlined text-[18px]">
+                  {item.icon}
+                </span>
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="px-3 pb-4 border-t [border-color:var(--border)] pt-3 space-y-2">
+            <div className="px-2 py-2">
+              <p className="card-title">{user?.name}</p>
+              <p className="caption-text">Administrator</p>
+            </div>
+            <Button
+              variant="danger"
+              size="md"
+              className="w-full justify-start"
+              onClick={handleLogout}
+            >
+              Sign out
+            </Button>
+          </div>
+        </div>
       </aside>
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-30 bg-black/20 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
+
+      {mobileOpen ? (
+        <button
+          type="button"
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+          aria-label="Close sidebar"
         />
-      )}
-      <main className="lg:ml-64 min-h-screen">
-        <Outlet />
-      </main>
+      ) : null}
+
+      <div className="min-h-screen">
+        <header className="navbar-shell lg:sticky">
+          <div className="h-full px-4 md:px-6 flex items-center gap-2">
+            <button
+              className="btn btn-ghost btn-sm lg:hidden !px-2.5"
+              onClick={() => setMobileOpen(true)}
+              aria-label="Open sidebar"
+            >
+              <span className="material-symbols-outlined">menu</span>
+            </button>
+            <p className="section-title text-base">Administration</p>
+            <div className="ml-auto flex items-center gap-2">
+              <ThemeToggle compact />
+            </div>
+          </div>
+        </header>
+        <PageTransitionOutlet />
+      </div>
     </div>
   );
 }
