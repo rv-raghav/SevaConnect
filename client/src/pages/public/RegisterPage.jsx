@@ -120,6 +120,7 @@ export default function RegisterPage() {
           </label>
           <input
             id="name"
+            autoComplete="name"
             value={form.name}
             onChange={(event) => setField("name", event.target.value)}
             className={`input-field ${errors.name ? "is-error" : ""}`}
@@ -135,6 +136,11 @@ export default function RegisterPage() {
           <input
             id="email"
             type="email"
+            inputMode="email"
+            autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             value={form.email}
             onChange={(event) => setField("email", event.target.value)}
             className={`input-field ${errors.email ? "is-error" : ""}`}
@@ -151,6 +157,10 @@ export default function RegisterPage() {
             <input
               id="password"
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
               value={form.password}
               onChange={(event) => setField("password", event.target.value)}
               className={`input-field pr-10 ${errors.password ? "is-error" : ""}`}
@@ -175,6 +185,7 @@ export default function RegisterPage() {
           </label>
           <input
             id="city"
+            autoComplete="address-level2"
             value={form.city}
             onChange={(event) => setField("city", event.target.value)}
             className={`input-field ${errors.city ? "is-error" : ""}`}

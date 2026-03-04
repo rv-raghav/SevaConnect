@@ -15,14 +15,24 @@ const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
+const normalizeOrigin = (origin = "") => origin.trim().replace(/\/+$/, "");
+
 const allowedOrigins = env.CORS_ORIGIN
   ? env.CORS_ORIGIN.split(",")
-      .map((origin) => origin.trim())
+      .map((origin) => normalizeOrigin(origin))
       .filter(Boolean)
   : [];
 
 const corsOptions = {
-  origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.length === 0) {
+      callback(null, true);
+      return;
+    }
+
+    const isAllowed = allowedOrigins.includes(normalizeOrigin(origin));
+    callback(null, isAllowed);
+  },
 };
 
 app.use(helmet());

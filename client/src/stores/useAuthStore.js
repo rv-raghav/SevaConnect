@@ -11,12 +11,15 @@ const useAuthStore = create((set) => ({
   login: async (email, password) => {
     set({ isLoading: true, error: null })
     try {
-      const { data } = await authApi.login({ email, password })
+      const normalizedEmail = email.trim().toLowerCase()
+      const { data } = await authApi.login({ email: normalizedEmail, password })
       setToken(data.token)
       set({ user: data.data, token: data.token, isLoading: false })
       return data.data
     } catch (err) {
-      const message = err.response?.data?.message || 'Login failed'
+      const message =
+        err.response?.data?.message ||
+        (err.request ? 'Unable to reach server. Please try again.' : 'Login failed')
       set({ error: message, isLoading: false })
       throw err
     }
@@ -25,12 +28,22 @@ const useAuthStore = create((set) => ({
   register: async (userData) => {
     set({ isLoading: true, error: null })
     try {
-      const { data } = await authApi.register(userData)
+      const payload = {
+        ...userData,
+        name: userData.name?.trim(),
+        city: userData.city?.trim(),
+        email: userData.email?.trim().toLowerCase(),
+      }
+      const { data } = await authApi.register(payload)
       setToken(data.token)
       set({ user: data.data, token: data.token, isLoading: false })
       return data.data
     } catch (err) {
-      const message = err.response?.data?.message || 'Registration failed'
+      const message =
+        err.response?.data?.message ||
+        (err.request
+          ? 'Unable to reach server. Please try again.'
+          : 'Registration failed')
       set({ error: message, isLoading: false })
       throw err
     }
