@@ -1,8 +1,15 @@
+import { useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import AppRouter from "./routes";
 
 function App() {
+  useEffect(() => {
+    if (typeof window.hideSplashScreen === "function") {
+      window.hideSplashScreen();
+    }
+  }, []);
+
   return (
     <BrowserRouter>
       <AppRouter />

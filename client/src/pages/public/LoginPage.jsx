@@ -35,140 +35,177 @@ export default function LoginPage() {
     try {
       const user = await login(email, password);
       const from = location.state?.from?.pathname;
-      if (from) {
-        navigate(from, { replace: true });
-      } else {
-        navigate(ROLE_HOME[user.role] || "/home", { replace: true });
-      }
+      navigate(from || ROLE_HOME[user.role] || "/home", { replace: true });
     } catch {
-      // Error handled by store
+      // handled by store
     }
   };
 
   return (
-    <div className="w-full max-w-[480px] bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-100">
-      <div className="p-8 sm:p-10">
-        <div className="text-center mb-8">
-          <h1 className="text-slate-900 text-3xl font-bold tracking-tight mb-2">
-            Welcome Back
-          </h1>
-          <p className="text-slate-500 text-base">
-            Log in to manage your bookings and profile
-          </p>
+    <div className="w-full animate-fade-in-up">
+      {/* Heading */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-1.5">
+          Welcome back
+        </h1>
+        <p className="text-slate-500 text-base font-medium">
+          Log in to manage your bookings and profile
+        </p>
+      </div>
+
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        {/* API Error */}
+        {error && (
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-100">
+            <span className="material-symbols-outlined text-red-500 text-[18px] mt-0.5 shrink-0">
+              error
+            </span>
+            <p className="text-red-600 text-sm font-medium">{error}</p>
+          </div>
+        )}
+
+        {/* Email */}
+        <div className="space-y-1.5">
+          <label
+            className="block text-sm font-bold text-slate-700"
+            htmlFor="email"
+          >
+            Email Address
+          </label>
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] pointer-events-none">
+              mail
+            </span>
+            <input
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrors((p) => ({ ...p, email: "" }));
+              }}
+              className={`w-full h-12 pl-11 pr-4 rounded-xl border bg-white text-slate-900 placeholder:text-slate-400 text-sm font-medium transition-all outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary ${
+                errors.email ? "border-red-400 bg-red-50" : "border-slate-200"
+              }`}
+            />
+          </div>
+          {errors.email && (
+            <p className="text-red-500 text-xs font-semibold flex items-center gap-1">
+              <span className="material-symbols-outlined text-[12px]">
+                error
+              </span>
+              {errors.email}
+            </p>
+          )}
         </div>
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          {error && (
-            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm font-medium">
-              {error}
-            </div>
-          )}
-
-          {/* Email Field */}
-          <div className="space-y-2">
+        {/* Password */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
             <label
-              className="block text-sm font-semibold text-slate-700"
-              htmlFor="email"
-            >
-              Email Address
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="material-symbols-outlined text-slate-400 text-[20px]">
-                  mail
-                </span>
-              </div>
-              <input
-                className={`w-full pl-10 pr-4 py-3 rounded-xl border ${errors.email ? "border-red-400" : "border-slate-200"} bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none`}
-                id="email"
-                placeholder="name@example.com"
-                type="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setErrors((prev) => ({ ...prev, email: "" }));
-                }}
-              />
-            </div>
-            {errors.email && (
-              <p className="text-red-500 text-xs font-medium">{errors.email}</p>
-            )}
-          </div>
-
-          {/* Password Field */}
-          <div className="space-y-2">
-            <label
-              className="block text-sm font-semibold text-slate-700"
+              className="block text-sm font-bold text-slate-700"
               htmlFor="password"
             >
               Password
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <span className="material-symbols-outlined text-slate-400 text-[20px]">
-                  lock
-                </span>
-              </div>
-              <input
-                className={`w-full pl-10 pr-12 py-3 rounded-xl border ${errors.password ? "border-red-400" : "border-slate-200"} bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none`}
-                id="password"
-                placeholder="Enter your password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setErrors((prev) => ({ ...prev, password: "" }));
-                }}
-              />
-              <button
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                <span className="material-symbols-outlined text-[20px]">
-                  {showPassword ? "visibility" : "visibility_off"}
-                </span>
-              </button>
-            </div>
-            {errors.password && (
-              <p className="text-red-500 text-xs font-medium">
-                {errors.password}
-              </p>
-            )}
+            <span className="text-xs text-primary font-semibold cursor-pointer hover:underline">
+              Forgot password?
+            </span>
           </div>
-
-          {/* Submit */}
-          <div className="pt-2">
+          <div className="relative">
+            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] pointer-events-none">
+              lock
+            </span>
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setErrors((p) => ({ ...p, password: "" }));
+              }}
+              className={`w-full h-12 pl-11 pr-12 rounded-xl border bg-white text-slate-900 placeholder:text-slate-400 text-sm font-medium transition-all outline-none focus:ring-2 focus:ring-primary/15 focus:border-primary ${
+                errors.password
+                  ? "border-red-400 bg-red-50"
+                  : "border-slate-200"
+              }`}
+            />
             <button
-              className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-primary/20 transition-all transform active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-              type="submit"
-              disabled={isLoading}
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
             >
-              {isLoading ? (
-                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-              ) : (
-                <>
-                  <span>Sign In</span>
-                  <span className="material-symbols-outlined text-sm">
-                    arrow_forward
-                  </span>
-                </>
-              )}
+              <span className="material-symbols-outlined text-[20px]">
+                {showPassword ? "visibility" : "visibility_off"}
+              </span>
             </button>
           </div>
-        </form>
+          {errors.password && (
+            <p className="text-red-500 text-xs font-semibold flex items-center gap-1">
+              <span className="material-symbols-outlined text-[12px]">
+                error
+              </span>
+              {errors.password}
+            </p>
+          )}
+        </div>
 
-        <p className="mt-8 text-center text-sm text-slate-500">
-          Don&apos;t have an account?{" "}
-          <Link
-            className="font-bold text-primary hover:text-primary/80 transition-colors"
-            to="/register"
-          >
-            Create account
-          </Link>
-        </p>
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full h-12 bg-primary hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 mt-2"
+        >
+          {isLoading ? (
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <>
+              Sign In
+              <span className="material-symbols-outlined text-[18px]">
+                arrow_forward
+              </span>
+            </>
+          )}
+        </button>
+      </form>
+
+      {/* Divider */}
+      <div className="flex items-center gap-3 my-6">
+        <div className="flex-1 h-px bg-slate-200" />
+        <span className="text-slate-400 text-xs font-medium">
+          or continue with
+        </span>
+        <div className="flex-1 h-px bg-slate-200" />
       </div>
-      <div className="h-2 w-full bg-gradient-to-r from-primary/40 via-primary to-primary/40"></div>
+
+      {/* Social (UI only — no functionality) */}
+      <div className="grid grid-cols-2 gap-3">
+        {[
+          { icon: "g_translate", label: "Google" },
+          { icon: "public", label: "Apple" },
+        ].map((s) => (
+          <button
+            key={s.label}
+            type="button"
+            className="flex items-center justify-center gap-2 h-11 border border-slate-200 rounded-xl text-slate-700 text-sm font-semibold hover:bg-slate-50 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              {s.icon}
+            </span>
+            {s.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Sign up link */}
+      <p className="mt-8 text-center text-sm text-slate-500">
+        Don&apos;t have an account?{" "}
+        <Link to="/register" className="font-bold text-primary hover:underline">
+          Create one free
+        </Link>
+      </p>
     </div>
   );
 }
