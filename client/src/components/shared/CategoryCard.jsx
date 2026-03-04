@@ -1,3 +1,5 @@
+import { motion as Motion } from "framer-motion";
+
 const CATEGORY_ICONS = {
   Plumbing: "plumbing",
   Cleaning: "cleaning_services",
@@ -22,31 +24,34 @@ const CATEGORY_COLORS = {
 
 export default function CategoryCard({ category, onClick }) {
   const icon = CATEGORY_ICONS[category.name] || "home_repair_service";
-  const color = CATEGORY_COLORS[category.name] || "bg-primary/8 text-primary";
+  const color =
+    CATEGORY_COLORS[category.name] ||
+    "bg-[color:var(--primary-100)] text-[color:var(--primary-500)]";
 
   return (
-    <button
+    <Motion.button
       onClick={onClick}
-      className="group card-premium p-5 flex flex-col items-center gap-3 text-center cursor-pointer w-full"
+      className="group surface-card w-full text-left"
+      whileHover={{ y: -3, transition: { duration: 0.16 } }}
     >
-      <div
-        className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${color} group-hover:opacity-90`}
-      >
-        <span className="material-symbols-outlined text-[28px]">{icon}</span>
+      <div className="flex items-start gap-3">
+        <div
+          className={`w-12 h-12 rounded-[14px] flex items-center justify-center transition-colors ${color} group-hover:opacity-90`}
+        >
+          <span className="material-symbols-outlined text-[24px]">{icon}</span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="card-title group-hover:[color:var(--primary-500)] transition-colors">
+            {category.name}
+          </h3>
+          {category.description && (
+            <p className="caption-text mt-1 line-clamp-2">{category.description}</p>
+          )}
+        </div>
+        <span className="material-symbols-outlined text-[18px] [color:var(--text-muted)] group-hover:[color:var(--primary-500)] transition-colors">
+          arrow_forward
+        </span>
       </div>
-      <div>
-        <h3 className="text-sm font-bold text-slate-900 group-hover:text-primary transition-colors">
-          {category.name}
-        </h3>
-        {category.description && (
-          <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">
-            {category.description}
-          </p>
-        )}
-      </div>
-      <span className="material-symbols-outlined text-slate-200 group-hover:text-primary transition-colors text-[16px]">
-        arrow_forward
-      </span>
-    </button>
+    </Motion.button>
   );
 }

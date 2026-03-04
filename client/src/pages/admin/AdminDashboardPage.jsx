@@ -1,41 +1,52 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
 } from "recharts";
 import { adminApi } from "../../api/admin";
-import StatCard from "../../components/shared/StatCard";
+import Button from "../../components/ui/Button";
 import Spinner from "../../components/ui/Spinner";
+import StatCard from "../../components/shared/StatCard";
 
 const MONTH_NAMES = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
-function buildMonthlyChartData(monthlyBookings, monthlyRevenue) {
+function buildChartData(monthlyBookings, monthlyRevenue) {
   const map = {};
-  (monthlyBookings || []).forEach((m) => {
-    const key = `${m.year}-${m.month}`;
+  (monthlyBookings || []).forEach((item) => {
+    const key = `${item.year}-${item.month}`;
     map[key] = {
-      name: `${MONTH_NAMES[m.month - 1]}`,
-      bookings: m.count,
+      month: MONTH_NAMES[item.month - 1],
+      bookings: item.count,
       revenue: 0,
     };
   });
-  (monthlyRevenue || []).forEach((m) => {
-    const key = `${m.year}-${m.month}`;
+  (monthlyRevenue || []).forEach((item) => {
+    const key = `${item.year}-${item.month}`;
     if (!map[key]) {
-      map[key] = { name: `${MONTH_NAMES[m.month - 1]}`, bookings: 0, revenue: 0 };
+      map[key] = { month: MONTH_NAMES[item.month - 1], bookings: 0, revenue: 0 };
     }
-    map[key].revenue = m.revenue;
+    map[key].revenue = item.revenue;
   });
   return Object.values(map);
 }
@@ -51,163 +62,141 @@ export default function AdminDashboardPage() {
         const { data } = await adminApi.getAnalytics();
         setAnalytics(data.data);
       } catch {
-        /* ignore */
+        // show fallback empty state
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     load();
   }, []);
 
   if (loading) return <Spinner />;
 
-  const chartData = buildMonthlyChartData(
+  const chartData = buildChartData(
     analytics?.monthlyBookings,
-    analytics?.monthlyRevenue
+    analytics?.monthlyRevenue,
   );
 
   return (
-    <div className="px-4 py-6 md:px-8 lg:px-10">
-      <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">
-          Dashboard
-        </h1>
-        <p className="text-slate-500 mt-1">Platform overview and key metrics</p>
-      </div>
+    <div className="page-shell">
+      <section className="surface-card-static p-5 md:p-6">
+        <h1 className="page-title !text-3xl">Admin dashboard</h1>
+        <p className="caption-text mt-1">
+          Monitor platform health, growth, and operational metrics.
+        </p>
+      </section>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <section className="mt-6 grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <StatCard
           icon="people"
-          label="Total Users"
+          label="Total users"
           value={analytics?.totalUsers || 0}
-          iconColor="text-primary bg-primary/10"
+          iconColor="var(--primary-500)"
         />
         <StatCard
           icon="groups"
           label="Providers"
           value={analytics?.totalProviders || 0}
-          iconColor="text-indigo-600 bg-indigo-50"
+          iconColor="#4f46e5"
         />
         <StatCard
           icon="calendar_month"
-          label="Total Bookings"
+          label="Bookings"
           value={analytics?.totalBookings || 0}
-          iconColor="text-emerald-600 bg-emerald-50"
+          iconColor="var(--success-500)"
         />
         <StatCard
           icon="payments"
           label="Revenue"
           value={`₹${(analytics?.totalRevenue || 0).toLocaleString("en-IN")}`}
-          iconColor="text-amber-600 bg-amber-50"
+          iconColor="#d97706"
         />
-      </div>
+      </section>
 
-      {/* Charts */}
-      <div className="grid lg:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
-          <h3 className="text-lg font-bold text-slate-900 mb-4">
-            Booking Trends
-          </h3>
+      <section className="mt-6 grid xl:grid-cols-2 gap-4">
+        <article className="surface-card-static p-4 md:p-5">
+          <h2 className="section-title">Booking trend</h2>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#64748b" }} />
-                <YAxis tick={{ fontSize: 12, fill: "#64748b" }} />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: "12px",
-                    border: "1px solid #e2e8f0",
-                  }}
-                />
-                <Bar dataKey="bookings" fill="#1121d4" radius={[6, 6, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="month" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+                <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+                <Tooltip />
+                <Bar dataKey="bookings" fill="var(--primary-500)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] flex items-center justify-center text-slate-400 text-sm">
-              No booking data available yet
+            <div className="h-[280px] empty-state">
+              <p className="caption-text">No booking trend data yet.</p>
             </div>
           )}
-        </div>
-        <div className="bg-white rounded-2xl border border-slate-200 p-6">
-          <h3 className="text-lg font-bold text-slate-900 mb-4">
-            Revenue Trends
-          </h3>
+        </article>
+
+        <article className="surface-card-static p-4 md:p-5">
+          <h2 className="section-title">Revenue trend</h2>
           {chartData.length > 0 ? (
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="name" tick={{ fontSize: 12, fill: "#64748b" }} />
-                <YAxis tick={{ fontSize: 12, fill: "#64748b" }} />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: "12px",
-                    border: "1px solid #e2e8f0",
-                  }}
-                  formatter={(v) => [`₹${v.toLocaleString("en-IN")}`, "Revenue"]}
-                />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis dataKey="month" tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+                <YAxis tick={{ fill: "var(--text-muted)", fontSize: 12 }} />
+                <Tooltip />
                 <Line
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#1121d4"
+                  stroke="var(--success-500)"
                   strokeWidth={2}
-                  dot={{ fill: "#1121d4", r: 4 }}
+                  dot={{ fill: "var(--success-500)", r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] flex items-center justify-center text-slate-400 text-sm">
-              No revenue data available yet
+            <div className="h-[280px] empty-state">
+              <p className="caption-text">No revenue trend data yet.</p>
             </div>
           )}
-        </div>
-      </div>
+        </article>
+      </section>
 
-      {/* Quick Actions */}
-      <div className="grid sm:grid-cols-3 gap-4">
-        <button
-          onClick={() => navigate("/admin/providers")}
-          className="bg-white rounded-2xl border border-slate-200 p-5 text-left hover:shadow-md transition-shadow group"
-        >
-          <span className="material-symbols-outlined text-primary text-2xl mb-3 block">
-            groups
-          </span>
-          <h3 className="font-bold text-slate-900 group-hover:text-primary transition-colors">
-            Manage Providers
-          </h3>
-          <p className="text-sm text-slate-500 mt-1">
-            Approve or reject provider applications
-          </p>
-        </button>
-        <button
-          onClick={() => navigate("/admin/categories")}
-          className="bg-white rounded-2xl border border-slate-200 p-5 text-left hover:shadow-md transition-shadow group"
-        >
-          <span className="material-symbols-outlined text-primary text-2xl mb-3 block">
-            category
-          </span>
-          <h3 className="font-bold text-slate-900 group-hover:text-primary transition-colors">
-            Manage Categories
-          </h3>
-          <p className="text-sm text-slate-500 mt-1">
-            Add or edit service categories
-          </p>
-        </button>
-        <button
-          onClick={() => navigate("/admin/analytics")}
-          className="bg-white rounded-2xl border border-slate-200 p-5 text-left hover:shadow-md transition-shadow group"
-        >
-          <span className="material-symbols-outlined text-primary text-2xl mb-3 block">
-            analytics
-          </span>
-          <h3 className="font-bold text-slate-900 group-hover:text-primary transition-colors">
-            View Analytics
-          </h3>
-          <p className="text-sm text-slate-500 mt-1">
-            Detailed platform analytics and trends
-          </p>
-        </button>
-      </div>
+      <section className="mt-6 grid sm:grid-cols-3 gap-4">
+        <article className="surface-card p-4">
+          <h3 className="card-title">Provider approvals</h3>
+          <p className="caption-text mt-1">Review pending provider requests.</p>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="mt-4"
+            onClick={() => navigate("/admin/providers")}
+          >
+            Open providers
+          </Button>
+        </article>
+        <article className="surface-card p-4">
+          <h3 className="card-title">Category management</h3>
+          <p className="caption-text mt-1">Add or update service categories.</p>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="mt-4"
+            onClick={() => navigate("/admin/categories")}
+          >
+            Open categories
+          </Button>
+        </article>
+        <article className="surface-card p-4">
+          <h3 className="card-title">Moderation</h3>
+          <p className="caption-text mt-1">Review and remove flagged feedback.</p>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="mt-4"
+            onClick={() => navigate("/admin/reviews")}
+          >
+            Open reviews
+          </Button>
+        </article>
+      </section>
     </div>
   );
 }

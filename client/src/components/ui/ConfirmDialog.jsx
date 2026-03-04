@@ -1,4 +1,5 @@
 import Modal from "./Modal";
+import Button from "./Button";
 
 export default function ConfirmDialog({
   isOpen,
@@ -7,24 +8,18 @@ export default function ConfirmDialog({
   title,
   message,
   confirmText = "Confirm",
-  confirmClass = "bg-red-500 hover:bg-red-600",
+  confirmVariant = "danger",
 }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title} maxWidth="max-w-md">
-      <p className="text-slate-600 text-sm mb-6">{message}</p>
+      <p className="body-text mb-6">{message}</p>
       <div className="flex justify-end gap-3">
-        <button
-          onClick={onClose}
-          className="px-4 py-2 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors"
-        >
+        <Button onClick={onClose} variant="secondary" size="md">
           Cancel
-        </button>
-        <button
-          onClick={onConfirm}
-          className={`px-4 py-2 rounded-xl text-sm font-semibold text-white transition-colors ${confirmClass}`}
-        >
+        </Button>
+        <Button onClick={onConfirm} variant={confirmVariant} size="md">
           {confirmText}
-        </button>
+        </Button>
       </div>
     </Modal>
   );

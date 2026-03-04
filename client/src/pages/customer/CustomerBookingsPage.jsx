@@ -3,25 +3,26 @@ import toast from "react-hot-toast";
 import useBookingStore from "../../stores/useBookingStore";
 import { bookingsApi } from "../../api/bookings";
 import Badge from "../../components/ui/Badge";
-import Pagination from "../../components/ui/Pagination";
-import Spinner from "../../components/ui/Spinner";
-import EmptyState from "../../components/ui/EmptyState";
+import BookingTimeline from "../../components/ui/BookingTimeline";
 import ConfirmDialog from "../../components/ui/ConfirmDialog";
+import EmptyState from "../../components/ui/EmptyState";
+import Pagination from "../../components/ui/Pagination";
 import ReviewModal from "../../components/modals/ReviewModal";
 import RescheduleModal from "../../components/modals/RescheduleModal";
-import { formatDateTime, formatCurrency } from "../../utils/formatters";
+import Spinner from "../../components/ui/Spinner";
+import Button from "../../components/ui/Button";
+import { formatCurrency, formatDateTime } from "../../utils/formatters";
 
 const TABS = [
   { label: "All", value: "" },
   { label: "Upcoming", value: "requested,confirmed" },
-  { label: "In Progress", value: "in-progress" },
+  { label: "In progress", value: "in-progress" },
   { label: "Completed", value: "completed" },
   { label: "Cancelled", value: "cancelled" },
 ];
 
 export default function CustomerBookingsPage() {
-  const { bookings, pagination, fetchMyBookings, isLoading } =
-    useBookingStore();
+  const { bookings, pagination, fetchMyBookings, isLoading } = useBookingStore();
   const [activeTab, setActiveTab] = useState("");
   const [cancelId, setCancelId] = useState(null);
   const [rescheduleId, setRescheduleId] = useState(null);
@@ -35,6 +36,7 @@ export default function CustomerBookingsPage() {
 
   useEffect(() => {
     loadBookings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handleCancel = async () => {
@@ -43,148 +45,132 @@ export default function CustomerBookingsPage() {
       toast.success("Booking cancelled");
       setCancelId(null);
       loadBookings();
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to cancel");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to cancel booking");
     }
   };
 
   return (
-    <div className="px-4 py-6 md:px-10 lg:px-20">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-          My Bookings
-        </h1>
-        <p className="text-slate-500 mt-1">
-          Track and manage your service bookings
+    <div className="page-shell">
+      <section className="surface-card-static p-5 md:p-6">
+        <h1 className="page-title !text-3xl">My bookings</h1>
+        <p className="caption-text mt-1">
+          Track each booking from request to completion.
         </p>
-      </div>
 
-      {/* Filter Tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
-        {TABS.map((tab) => (
-          <button
-            key={tab.value}
-            onClick={() => setActiveTab(tab.value)}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors ${
-              activeTab === tab.value
-                ? "bg-primary text-white"
-                : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Bookings List */}
-      {isLoading ? (
-        <Spinner />
-      ) : bookings.length > 0 ? (
-        <div className="space-y-4">
-          {bookings.map((booking) => (
-            <div
-              key={booking._id}
-              className="bg-white rounded-2xl border border-slate-200 p-5"
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+          {TABS.map((tab) => (
+            <Button
+              key={tab.value}
+              variant={activeTab === tab.value ? "primary" : "secondary"}
+              size="sm"
+              onClick={() => setActiveTab(tab.value)}
             >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-primary text-[20px]">
-                      home_repair_service
-                    </span>
-                  </div>
+              {tab.label}
+            </Button>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-6">
+        {isLoading ? (
+          <Spinner />
+        ) : bookings.length > 0 ? (
+          <div className="space-y-4">
+            {bookings.map((booking) => (
+              <article key={booking._id} className="surface-card-static p-5">
+                <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <h3 className="font-bold text-slate-900">
-                      {booking.categoryId?.name || "Service"}
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                      Provider: {booking.providerId?.name || "N/A"}
-                    </p>
-                    <p className="text-sm text-slate-500">
+                    <h2 className="card-title">
+                      {booking.categoryId?.name || "Service booking"}
+                    </h2>
+                    <p className="caption-text mt-1">
                       {formatDateTime(booking.scheduledDateTime)}
                     </p>
-                    <p className="text-sm text-slate-500">
+                    <p className="caption-text mt-1">
                       {booking.address}, {booking.city}
                     </p>
                   </div>
+                  <div className="text-right">
+                    <Badge status={booking.status} />
+                    <p className="text-lg font-semibold mt-2 text-[color:var(--primary-500)]">
+                      {formatCurrency(booking.priceSnapshot)}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex flex-col items-end gap-2">
-                  <Badge status={booking.status} />
-                  <span className="text-lg font-bold text-primary">
-                    {formatCurrency(booking.priceSnapshot)}
-                  </span>
+
+                <div className="mt-4">
+                  <BookingTimeline status={booking.status} />
                 </div>
-              </div>
 
-              {/* Actions */}
-              <div className="flex gap-2 mt-4 pt-4 border-t border-slate-100">
-                {(booking.status === "requested" ||
-                  booking.status === "confirmed") && (
-                  <>
-                    <button
-                      onClick={() => setRescheduleId(booking._id)}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition-colors"
+                <div className="mt-4 pt-4 border-t [border-color:var(--border)] flex flex-wrap gap-2">
+                  {(booking.status === "requested" ||
+                    booking.status === "confirmed") && (
+                    <>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setRescheduleId(booking._id)}
+                      >
+                        Reschedule
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCancelId(booking._id)}
+                      >
+                        Cancel booking
+                      </Button>
+                    </>
+                  )}
+                  {booking.status === "completed" ? (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setReviewBooking(booking)}
                     >
-                      Reschedule
-                    </button>
-                    <button
-                      onClick={() => setCancelId(booking._id)}
-                      className="px-3 py-1.5 rounded-lg border border-red-200 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </>
-                )}
-                {booking.status === "completed" && (
-                  <button
-                    onClick={() => setReviewBooking(booking)}
-                    className="px-3 py-1.5 rounded-lg bg-primary/10 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
-                  >
-                    Leave Review
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+                      Leave review
+                    </Button>
+                  ) : null}
+                </div>
+              </article>
+            ))}
 
-          <Pagination
-            page={pagination.page}
-            pages={pagination.pages}
-            total={pagination.total}
-            onPageChange={(p) => {
-              loadBookings(activeTab, p);
-            }}
+            <Pagination
+              page={pagination.page}
+              pages={pagination.pages}
+              total={pagination.total}
+              onPageChange={(page) => loadBookings(activeTab, page)}
+            />
+          </div>
+        ) : (
+          <EmptyState
+            icon="calendar_month"
+            title="No bookings yet"
+            description="Book a provider to get started."
           />
-        </div>
-      ) : (
-        <EmptyState
-          icon="calendar_month"
-          title="No bookings found"
-          description="You haven't made any bookings yet. Browse services to get started!"
-        />
-      )}
+        )}
+      </section>
 
-      {/* Cancel Dialog */}
       <ConfirmDialog
-        isOpen={!!cancelId}
+        isOpen={Boolean(cancelId)}
         onClose={() => setCancelId(null)}
         onConfirm={handleCancel}
-        title="Cancel Booking"
-        message="Are you sure you want to cancel this booking? This action cannot be undone."
-        confirmText="Cancel Booking"
+        title="Cancel booking?"
+        message="This will cancel the booking request."
+        confirmText="Cancel booking"
+        confirmVariant="danger"
       />
 
-      {/* Reschedule Modal */}
       <RescheduleModal
-        isOpen={!!rescheduleId}
+        isOpen={Boolean(rescheduleId)}
         onClose={() => setRescheduleId(null)}
         bookingId={rescheduleId}
         onSuccess={() => loadBookings()}
       />
 
-      {/* Review Modal */}
       <ReviewModal
-        isOpen={!!reviewBooking}
+        isOpen={Boolean(reviewBooking)}
         onClose={() => {
           setReviewBooking(null);
           loadBookings();

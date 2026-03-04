@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import useCategoryStore from "../../stores/useCategoryStore";
 import { providersApi } from "../../api/providers";
 import { bookingsApi } from "../../api/bookings";
 import Spinner from "../../components/ui/Spinner";
+import Button from "../../components/ui/Button";
 import { formatCurrency } from "../../utils/formatters";
-import { validateRequired, validateFutureDate } from "../../utils/validators";
+import { validateFutureDate, validateRequired } from "../../utils/validators";
 
 export default function ScheduleServicePage() {
   const { providerId } = useParams();
@@ -16,6 +17,7 @@ export default function ScheduleServicePage() {
   const [provider, setProvider] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
   const [form, setForm] = useState({
     categoryId: "",
     address: "",
@@ -24,7 +26,6 @@ export default function ScheduleServicePage() {
     time: "",
     notes: "",
   });
-  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     fetchCategories();
@@ -32,50 +33,52 @@ export default function ScheduleServicePage() {
       try {
         const { data } = await providersApi.getProviders();
         const found = data.data?.find(
-          (p) => (p.userId?._id || p._id) === providerId,
+          (item) => (item.userId?._id || item._id) === providerId,
         );
         if (found) setProvider(found);
       } catch {
-        /* ignore */
+        // ignore and show fallback
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     loadProvider();
-  }, [providerId, fetchCategories]);
+  }, [fetchCategories, providerId]);
 
-  const updateField = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: "" }));
+  const updateField = (key, value) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => ({ ...prev, [key]: "" }));
   };
 
   const validate = () => {
-    const e = {};
-    if (validateRequired(form.categoryId, "Category"))
-      e.categoryId = validateRequired(form.categoryId, "Category");
-    if (validateRequired(form.address, "Address"))
-      e.address = validateRequired(form.address, "Address");
-    if (validateRequired(form.city, "City"))
-      e.city = validateRequired(form.city, "City");
-    if (validateRequired(form.date, "Date"))
-      e.date = validateRequired(form.date, "Date");
-    if (validateRequired(form.time, "Time"))
-      e.time = validateRequired(form.time, "Time");
+    const next = {};
+    const categoryError = validateRequired(form.categoryId, "Category");
+    const addressError = validateRequired(form.address, "Address");
+    const cityError = validateRequired(form.city, "City");
+    const dateError = validateRequired(form.date, "Date");
+    const timeError = validateRequired(form.time, "Time");
+
+    if (categoryError) next.categoryId = categoryError;
+    if (addressError) next.address = addressError;
+    if (cityError) next.city = cityError;
+    if (dateError) next.date = dateError;
+    if (timeError) next.time = timeError;
+
     if (form.date && form.time) {
-      const dateErr = validateFutureDate(`${form.date}T${form.time}`);
-      if (dateErr) e.date = dateErr;
+      const futureError = validateFutureDate(`${form.date}T${form.time}`);
+      if (futureError) next.date = futureError;
     }
-    setErrors(e);
-    return Object.keys(e).length === 0;
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
     if (!validate()) return;
     setSubmitting(true);
     try {
-      const scheduledDateTime = new Date(
-        `${form.date}T${form.time}`,
-      ).toISOString();
+      const scheduledDateTime = new Date(`${form.date}T${form.time}`).toISOString();
       await bookingsApi.createBooking({
         providerId,
         categoryId: form.categoryId,
@@ -84,10 +87,10 @@ export default function ScheduleServicePage() {
         scheduledDateTime,
         notes: form.notes || undefined,
       });
-      toast.success("Booking created successfully!");
+      toast.success("Booking created successfully");
       navigate("/bookings");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to create booking");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to create booking");
     } finally {
       setSubmitting(false);
     }
@@ -95,194 +98,153 @@ export default function ScheduleServicePage() {
 
   if (loading) return <Spinner />;
 
-  const user = provider?.userId || provider;
   const profile = provider?.profile || provider;
-
-  const selectedCat = categories.find((c) => c._id === form.categoryId);
+  const user = provider?.userId || provider;
+  const selectedCategory = categories.find((item) => item._id === form.categoryId);
 
   return (
-    <div className="px-4 py-6 md:px-10 lg:px-20 max-w-5xl mx-auto">
-      <button
-        onClick={() => navigate(-1)}
-        className="flex items-center gap-1 text-sm font-semibold text-slate-500 hover:text-primary mb-6 transition-colors"
-      >
-        <span className="material-symbols-outlined text-[18px]">
-          arrow_back
-        </span>
-        Back
-      </button>
+    <div className="page-shell">
+      <div className="mb-4">
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          Back
+        </Button>
+      </div>
 
-      <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-6">
-        Schedule a Service
-      </h1>
+      <div className="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
+        <section className="surface-card-static p-5 md:p-6">
+          <h1 className="page-title !text-3xl">Schedule service</h1>
+          <p className="caption-text mt-1">
+            Fill in the booking details. You can reschedule later if needed.
+          </p>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 space-y-5"
-        >
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Service Category
-            </label>
-            <select
-              className={`w-full h-12 px-4 rounded-xl border ${errors.categoryId ? "border-red-400" : "border-slate-200"} bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all`}
-              value={form.categoryId}
-              onChange={(e) => updateField("categoryId", e.target.value)}
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <div>
+              <label className="input-label">Service category</label>
+              <select
+                className={`input-field ${errors.categoryId ? "is-error" : ""}`}
+                value={form.categoryId}
+                onChange={(event) => updateField("categoryId", event.target.value)}
+              >
+                <option value="">Select a category</option>
+                {categories.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.name} - {formatCurrency(category.basePrice)}
+                  </option>
+                ))}
+              </select>
+              {errors.categoryId ? <p className="input-error">{errors.categoryId}</p> : null}
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className="input-label">Date</label>
+                <input
+                  type="date"
+                  className={`input-field ${errors.date ? "is-error" : ""}`}
+                  value={form.date}
+                  onChange={(event) => updateField("date", event.target.value)}
+                  min={new Date().toISOString().split("T")[0]}
+                />
+                {errors.date ? <p className="input-error">{errors.date}</p> : null}
+              </div>
+              <div>
+                <label className="input-label">Time</label>
+                <input
+                  type="time"
+                  className={`input-field ${errors.time ? "is-error" : ""}`}
+                  value={form.time}
+                  onChange={(event) => updateField("time", event.target.value)}
+                />
+                {errors.time ? <p className="input-error">{errors.time}</p> : null}
+              </div>
+            </div>
+
+            <div>
+              <label className="input-label">Address</label>
+              <input
+                className={`input-field ${errors.address ? "is-error" : ""}`}
+                value={form.address}
+                onChange={(event) => updateField("address", event.target.value)}
+                placeholder="Enter service address"
+              />
+              {errors.address ? <p className="input-error">{errors.address}</p> : null}
+            </div>
+
+            <div>
+              <label className="input-label">City</label>
+              <input
+                className={`input-field ${errors.city ? "is-error" : ""}`}
+                value={form.city}
+                onChange={(event) => updateField("city", event.target.value)}
+                placeholder="Enter city"
+              />
+              {errors.city ? <p className="input-error">{errors.city}</p> : null}
+            </div>
+
+            <div>
+              <label className="input-label">Notes</label>
+              <textarea
+                rows={4}
+                className="input-field !h-auto py-3"
+                value={form.notes}
+                onChange={(event) => updateField("notes", event.target.value)}
+                placeholder="Anything the provider should know?"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              size="lg"
+              className="w-full"
+              loading={submitting}
             >
-              <option value="">Select a service</option>
-              {categories.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name} - {formatCurrency(c.basePrice)}
-                </option>
-              ))}
-            </select>
-            {errors.categoryId && (
-              <p className="text-red-500 text-xs mt-1">{errors.categoryId}</p>
-            )}
-          </div>
+              Confirm booking
+            </Button>
+          </form>
+        </section>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Date
-              </label>
-              <input
-                type="date"
-                className={`w-full h-12 px-4 rounded-xl border ${errors.date ? "border-red-400" : "border-slate-200"} bg-slate-50 text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all`}
-                value={form.date}
-                onChange={(e) => updateField("date", e.target.value)}
-                min={new Date().toISOString().split("T")[0]}
-              />
-              {errors.date && (
-                <p className="text-red-500 text-xs mt-1">{errors.date}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">
-                Time
-              </label>
-              <input
-                type="time"
-                className={`w-full h-12 px-4 rounded-xl border ${errors.time ? "border-red-400" : "border-slate-200"} bg-slate-50 text-slate-900 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all`}
-                value={form.time}
-                onChange={(e) => updateField("time", e.target.value)}
-              />
-              {errors.time && (
-                <p className="text-red-500 text-xs mt-1">{errors.time}</p>
-              )}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Address
-            </label>
-            <input
-              type="text"
-              className={`w-full h-12 px-4 rounded-xl border ${errors.address ? "border-red-400" : "border-slate-200"} bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all`}
-              placeholder="Enter service address"
-              value={form.address}
-              onChange={(e) => updateField("address", e.target.value)}
-            />
-            {errors.address && (
-              <p className="text-red-500 text-xs mt-1">{errors.address}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              City
-            </label>
-            <input
-              type="text"
-              className={`w-full h-12 px-4 rounded-xl border ${errors.city ? "border-red-400" : "border-slate-200"} bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all`}
-              placeholder="Enter city"
-              value={form.city}
-              onChange={(e) => updateField("city", e.target.value)}
-            />
-            {errors.city && (
-              <p className="text-red-500 text-xs mt-1">{errors.city}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1.5">
-              Notes (optional)
-            </label>
-            <textarea
-              className="w-full p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none resize-none transition-all"
-              rows={3}
-              placeholder="Any special instructions..."
-              value={form.notes}
-              onChange={(e) => updateField("notes", e.target.value)}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold transition-all shadow-lg shadow-primary/20 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {submitting ? "Creating Booking..." : "Confirm Booking"}
-          </button>
-        </form>
-
-        {/* Provider Summary Sidebar */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 h-fit">
-          <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">
-            Provider Details
-          </h3>
+        <aside className="surface-card-static p-5 md:p-6 h-fit">
+          <h2 className="section-title">Booking summary</h2>
           {provider ? (
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg">
-                  {user?.name?.charAt(0)?.toUpperCase()}
-                </div>
+            <>
+              <div className="mt-4 flex items-center gap-3">
+                <span className="inline-flex size-12 items-center justify-center rounded-full bg-[color:var(--primary-100)] text-[color:var(--primary-500)] font-semibold text-lg">
+                  {user?.name?.[0]?.toUpperCase() || "P"}
+                </span>
                 <div>
-                  <p className="font-bold text-slate-900">{user?.name}</p>
-                  <p className="text-sm text-slate-500">{user?.city}</p>
+                  <p className="card-title">{user?.name}</p>
+                  <p className="caption-text">{user?.city}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1 mb-4">
-                <span
-                  className="material-symbols-outlined text-amber-400 text-[16px]"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
-                >
-                  star
-                </span>
-                <span className="text-sm font-semibold">
-                  {profile?.ratingAverage?.toFixed(1) || "0.0"}
-                </span>
-                <span className="text-sm text-slate-400">
-                  ({profile?.totalReviews || 0})
-                </span>
-              </div>
-              {profile?.bio && (
-                <p className="text-sm text-slate-600 mb-4">{profile.bio}</p>
-              )}
-              {selectedCat && (
-                <div className="pt-4 border-t border-slate-100">
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-slate-500">Service</span>
-                    <span className="font-medium text-slate-900">
-                      {selectedCat.name}
+              <p className="caption-text mt-3">
+                Rating {profile?.ratingAverage?.toFixed(1) || "0.0"} (
+                {profile?.totalReviews || 0} reviews)
+              </p>
+              {profile?.bio ? <p className="body-text mt-3">{profile.bio}</p> : null}
+
+              {selectedCategory ? (
+                <div className="mt-5 pt-4 border-t [border-color:var(--border)]">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="caption-text">Category</span>
+                    <span className="font-medium [color:var(--text)]">
+                      {selectedCategory.name}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-slate-500">Estimated Price</span>
-                    <span className="font-bold text-primary">
-                      {formatCurrency(selectedCat.basePrice)}
+                  <div className="flex items-center justify-between text-sm mt-2">
+                    <span className="caption-text">Base price</span>
+                    <span className="font-semibold text-[color:var(--primary-500)]">
+                      {formatCurrency(selectedCategory.basePrice)}
                     </span>
                   </div>
                 </div>
-              )}
-            </div>
+              ) : null}
+            </>
           ) : (
-            <p className="text-sm text-slate-500">Provider not found</p>
+            <p className="caption-text mt-3">Provider details unavailable.</p>
           )}
-        </div>
+        </aside>
       </div>
     </div>
   );
