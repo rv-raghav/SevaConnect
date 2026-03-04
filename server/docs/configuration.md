@@ -1,53 +1,66 @@
-## Configuration & Environment
+# Backend Configuration and Environment
 
-This document describes how to configure and run the SevaConnect backend.
-
----
-
-## Environment Variables
-
-Environment variables are loaded via `dotenv` and validated in `src/config/env.js`.
-
-Create a `.env` file in the `server` directory with the following variables:
-
-```env
-PORT=5000
-MONGO_URI=mongodb://localhost:27017/seva-connect
-JWT_SECRET=your-secret-key
-
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
-
-CORS_ORIGIN=http://localhost:3000
-NODE_ENV=development
-```
-
-### Key Variables
-
-- **`PORT`**: Port on which the Express server listens.
-- **`MONGO_URI`**: MongoDB connection string (local or Atlas).
-- **`JWT_SECRET`**: Secret used to sign and verify JWT tokens.
-- **`CLOUDINARY_*`**: Credentials for Cloudinary media storage.
-- **`CORS_ORIGIN`**: Comma-separated list of allowed origins for CORS.
-- **`NODE_ENV`**: Typical values: `development`, `production`, `test`.
+This document explains backend setup, required env variables, local development, and production configuration considerations.
 
 ---
 
-## Installation
+## 1) Runtime Requirements
 
-From the project root:
+- Node.js 18+ (Node 20+ recommended)
+- npm 9+
+- MongoDB (local or Atlas)
+- Cloudinary account for media uploads
+
+---
+
+## 2) Install Dependencies
 
 ```bash
 cd server
 npm install
 ```
 
-Node.js 18+ is recommended.
+---
+
+## 3) Environment Variables
+
+Create `server/.env`.
+
+Example:
+
+```env
+NODE_ENV=development
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/seva-connect
+JWT_SECRET=replace-with-a-long-random-secret
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=your-api-key
+CLOUDINARY_API_SECRET=your-api-secret
+CORS_ORIGIN=http://localhost:5173
+```
 
 ---
 
-## Running the Server
+## 4) Env Variable Reference
+
+| Variable | Required | Example | Purpose |
+|---|---|---|---|
+| `NODE_ENV` | No (default `development`) | `development` | Runtime mode (`development`, `test`, `production`) |
+| `PORT` | No (default `5000`) | `5000` | HTTP port |
+| `MONGO_URI` | Yes | `mongodb://localhost:27017/seva-connect` | Mongo connection string |
+| `JWT_SECRET` | Yes | `long-secret-value` | JWT signing key |
+| `CLOUDINARY_CLOUD_NAME` | Yes | `abc123` | Cloudinary cloud config |
+| `CLOUDINARY_API_KEY` | Yes | `123456789` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Yes | `secret` | Cloudinary API secret |
+| `CORS_ORIGIN` | Optional | `http://localhost:5173,http://localhost:4173` | Allowed origins list (comma-separated) |
+
+Validation is enforced in `server/src/config/env.js` at startup.
+
+If validation fails, server exits with a clear error message.
+
+---
+
+## 5) Local Run Modes
 
 ### Development
 
@@ -56,82 +69,113 @@ cd server
 npm run dev
 ```
 
-This uses `nodemon` to auto-restart on file changes.
+- Uses `nodemon`
+- Hot restart on file changes
 
-### Production
+### Standard Runtime
 
 ```bash
 cd server
 npm start
 ```
 
-Ensure `NODE_ENV=production` and that your `.env` values are set appropriately.
+---
+
+## 6) Startup Sequence
+
+When `src/index.js` runs:
+
+1. `dotenv` loads `.env`.
+2. Env schema validation runs.
+3. Express app is loaded.
+4. MongoDB connection is established.
+5. HTTP server starts only after DB connection succeeds.
+
+If DB connection fails, process exits non-zero.
 
 ---
 
-## MongoDB Setup
+## 7) MongoDB Notes
 
-- For local development, run a MongoDB instance (e.g., via Docker or a local install).
-- For production, use a managed MongoDB service (e.g., MongoDB Atlas).
-
-### Example Docker Compose Snippet (Optional)
-
-```yaml
-version: "3.8"
-services:
-  mongo:
-    image: mongo:7
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo-data:/data/db
-
-volumes:
-  mongo-data: {}
-```
-
-Then set:
+For local MongoDB:
 
 ```env
 MONGO_URI=mongodb://localhost:27017/seva-connect
 ```
 
----
+For Atlas, use SRV URI:
 
-## Cloudinary Setup
+```env
+MONGO_URI=mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=majority
+```
 
-1. Create a Cloudinary account.
-2. Create a new Cloud name and API keys.
-3. Set `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and `CLOUDINARY_API_SECRET` in `.env`.
+Production recommendation:
 
-The backend uses the configured Cloudinary client in `src/config/cloudinary.js` for file uploads.
-
----
-
-## CORS Configuration
-
-- `CORS_ORIGIN` can be:
-  - A single origin: `http://localhost:3000`
-  - Multiple origins, comma-separated: `http://localhost:3000,http://localhost:4173`
-
-The value is split and applied in `src/app.js`:
-
-- If one or more origins are provided, only those origins are allowed.
-- If `CORS_ORIGIN` is empty, all origins are allowed (development convenience).
-
-For security in production, always set explicit allowed origins.
+- use dedicated DB user with least privilege
+- enable IP/network restrictions
+- rotate credentials regularly
 
 ---
 
-## Logging
+## 8) Cloudinary Notes
 
-Logging is handled via `src/utils/logger.js` and used in:
+Image uploads (`POST /api/bookings/:id/work`) depend on Cloudinary configuration in:
 
-- `src/index.js` for startup and DB connection logs.
-- `src/middlewares/errorHandler.js` for error logs.
+- `server/src/config/cloudinary.js`
 
-You can later swap `logger` to use more advanced transports (e.g., Winston, pino).
+Upload constraints:
 
-For security-related config details, see the [Security Model](./security.md).
+- max 5 files per request (multer route-level)
+- max 5MB per file
+- in-memory upload buffer
 
+If Cloudinary credentials are invalid, upload endpoints will fail with 5xx/operational error responses.
+
+---
+
+## 9) CORS Behavior
+
+`CORS_ORIGIN` is parsed as comma-separated origins in `app.js`.
+
+- If list is non-empty: only listed origins allowed.
+- If empty/missing: CORS allows all origins (dev convenience).
+
+Production recommendation:
+
+- always define explicit origins.
+
+---
+
+## 10) Logging
+
+Current logging abstraction is in `server/src/utils/logger.js`.
+
+- Startup logs
+- DB connection logs
+- Error logs (through middleware/controller handling paths)
+
+For advanced observability, logger can be swapped with `pino` or `winston` with minimal code changes.
+
+---
+
+## 11) Seed Script
+
+Seed realistic data:
+
+```bash
+cd server
+node src/seed.js
+```
+
+Important:
+
+- Seed script clears existing collections before insertion.
+- Use only in development/non-production environments.
+
+---
+
+## 12) Related Docs
+
+- [Architecture](./architecture.md)
+- [Security](./security.md)
+- [Testing](./testing.md)

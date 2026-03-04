@@ -1,143 +1,177 @@
-## Database Model
+# Database Model (MongoDB + Mongoose)
 
-SevaConnect uses **MongoDB** with **Mongoose** ODM.
+SevaConnect backend persists data in MongoDB via Mongoose models.
 
-This document summarizes the main collections and their relations.
-
----
-
-## Users (`User`)
-
-Represents platform users of different roles.
-
-Key fields (conceptual):
-
-- `_id: ObjectId`
-- `name: string`
-- `email: string` (unique)
-- `passwordHash: string`
-- `role: "customer" | "provider" | "admin"`
-- `city: string`
-- `isApproved: boolean` (for providers)
-- `createdAt`, `updatedAt`
-
-Relations:
-
-- Providers link to `ProviderProfile`.
-- Customers and providers are referenced in `Booking` and `Review`.
+This document describes schema fields, relationships, and indexing.
 
 ---
 
-## Service Categories (`ServiceCategory`)
+## 1) User (`User`)
 
-Represents types of services the platform offers.
+File: `server/src/models/User.js`
 
-Key fields:
+### Fields
 
-- `_id: ObjectId`
-- `name: string` (unique)
-- `description: string`
-- `basePrice: number`
-- `isActive: boolean`
-- `createdAt`, `updatedAt`
+- `name` (String, required, trimmed)
+- `email` (String, required, unique, lowercase, regex-validated)
+- `password` (String, required, min 6, `select: false`)
+- `role` (Enum: `customer | provider | admin`, default `customer`)
+- `city` (String, required)
+- `isApproved` (Boolean, default `false`)
+- `approvalStatus` (Enum: `pending | approved | rejected`, default `pending`)
+- `createdAt`, `updatedAt` (timestamps)
 
-Relations:
+### Hooks and Methods
 
-- Referenced by `ProviderProfile` and `Booking`.
+- Pre-save hook hashes password with bcrypt when modified.
+- Instance method `comparePassword(candidatePassword)`.
 
----
+### Notes
 
-## Provider Profiles (`ProviderProfile`)
-
-Provider-specific profile and marketplace metadata.
-
-Key fields:
-
-- `_id: ObjectId`
-- `user: ObjectId` (ref: `User`)
-- `categories: ObjectId[]` (ref: `ServiceCategory`)
-- `bio: string`
-- `experienceYears: number`
-- `availabilityStatus: "available" | "busy" | "offline"` (typical values)
-- `avgRating: number`
-- `ratingCount: number`
-- `city: string`
-- `createdAt`, `updatedAt`
-
-Relations:
-
-- One-to-one with a provider `User`.
-- Many-to-many with `ServiceCategory`.
-- Aggregated rating from `Review`.
+- Provider approval flow uses both `isApproved` and `approvalStatus`.
+- Public registration in service layer prevents creation as admin.
 
 ---
 
-## Bookings (`Booking`)
+## 2) ServiceCategory (`ServiceCategory`)
 
-Represents a service booking between a customer and provider.
+File: `server/src/models/ServiceCategory.js`
 
-Key fields:
+### Fields
 
-- `_id: ObjectId`
-- `customer: ObjectId` (ref: `User`)
-- `provider: ObjectId` (ref: `User` or `ProviderProfile`, depending on implementation)
-- `category: ObjectId` (ref: `ServiceCategory`)
-- `address: string`
-- `city: string`
-- `scheduledDateTime: Date`
-- `status: "requested" | "confirmed" | "in-progress" | "completed" | "cancelled"`
-- `notes: string`
-- `workLogs`: array of:
-  - `type: "before" | "after"`
-  - `notes: string`
-  - `images: string[]` (Cloudinary URLs)
-- `createdAt`, `updatedAt`
-
-Relations:
-
-- References `User`, `ProviderProfile`, and `ServiceCategory`.
-- Referenced by `Review`.
-
-Constraints/Logic:
-
-- Conflict detection ensures providers are not double-booked for overlapping times.
-- State transitions governed by `bookingTransitions`.
+- `name` (String, required, unique, trimmed)
+- `description` (String, required)
+- `basePrice` (Number, required, min 0)
+- `isActive` (Boolean, default `true`)
+- `icon` (String, optional)
+- timestamps
 
 ---
 
-## Reviews (`Review`)
+## 3) ProviderProfile (`ProviderProfile`)
 
-Customer feedback for completed bookings.
+File: `server/src/models/ProviderProfile.js`
 
-Key fields:
+### Fields
 
-- `_id: ObjectId`
-- `booking: ObjectId` (ref: `Booking`)
-- `customer: ObjectId` (ref: `User`)
-- `provider: ObjectId` (ref: `User` or `ProviderProfile`)
-- `rating: number` (e.g., 1–5)
-- `comment: string`
-- `createdAt`, `updatedAt`
+- `userId` (ObjectId ref `User`, required, unique)
+- `categories` (ObjectId[] ref `ServiceCategory`)
+- `bio` (String, optional)
+- `experienceYears` (Number, min 0)
+- `availabilityStatus` (Enum: `available | unavailable`, default `available`)
+- `ratingAverage` (Number, default `0`)
+- `totalReviews` (Number, default `0`)
+- timestamps
 
-Relations:
+### Indexes
 
-- Linked to `Booking`, `User`, and possibly `ProviderProfile`.
-- Used to compute `avgRating` and `ratingCount` on `ProviderProfile`.
+- `categories`
+- `availabilityStatus`
+
+### Notes
+
+- Ratings are denormalized and maintained by review aggregation logic in `reviewService`.
 
 ---
 
-## Indexing & Performance (Conceptual)
+## 4) Booking (`Booking`)
 
-Typical indexes to consider (implementation may exist in schemas):
+File: `server/src/models/Booking.js`
 
-- `User.email` – unique.
-- `ProviderProfile.user` – unique (one profile per provider).
-- `ProviderProfile.city`, `ProviderProfile.categories` – for efficient search.
-- `Booking.provider`, `Booking.scheduledDateTime`, `Booking.status` – for conflict lookup and calendars.
-- `Review.provider` – for analytics and listing.
+### Core Fields
 
-For details on how the models are used in business logic, see:
+- `customerId` (ObjectId ref `User`, required)
+- `providerId` (ObjectId ref `User`, required)
+- `categoryId` (ObjectId ref `ServiceCategory`, required)
+- `address` (String, required)
+- `city` (String, required)
+- `scheduledDateTime` (Date, required)
+- `priceSnapshot` (Number, required, min 0)
+- `status` (Enum: `requested | confirmed | in-progress | completed | cancelled`)
+- `notes` (String, optional)
+- `cancelledBy` (Enum: `customer | provider`)
+- `workNotes` (String, optional)
+- timestamps
 
-- [Architecture](./architecture.md)
-- [API Reference](./api-reference.md)
+### Embedded Arrays
 
+- `statusHistory[]`
+  - `status`
+  - `changedAt` (default now)
+  - `changedBy` (ObjectId ref `User`)
+
+- `beforeImages[]`
+  - `publicId`
+  - `url`
+
+- `afterImages[]`
+  - `publicId`
+  - `url`
+
+### Indexes
+
+- `{ providerId: 1, scheduledDateTime: 1 }`
+- `{ customerId: 1 }`
+- `{ status: 1 }`
+
+### Notes
+
+- `priceSnapshot` stores category price at booking time to preserve historical billing.
+- State transitions are validated in service layer via transition utility.
+
+---
+
+## 5) Review (`Review`)
+
+File: `server/src/models/Review.js`
+
+### Fields
+
+- `bookingId` (ObjectId ref `Booking`, required, unique)
+- `customerId` (ObjectId ref `User`, required)
+- `providerId` (ObjectId ref `User`, required)
+- `rating` (Number, required, min 1, max 5)
+- `comment` (String, optional)
+- timestamps
+
+### Indexes
+
+- `providerId`
+
+### Notes
+
+- Unique `bookingId` ensures one review per booking.
+
+---
+
+## 6) Relationship Overview
+
+- `User (provider)` -> one `ProviderProfile`
+- `ProviderProfile` -> many `ServiceCategory`
+- `Booking` references `customer User`, `provider User`, `ServiceCategory`
+- `Review` references `Booking`, `customer User`, `provider User`
+
+---
+
+## 7) Derived Data and Aggregations
+
+- Provider ratings are recalculated from `Review` collection (aggregate pipeline).
+- Admin analytics aggregate totals and monthly trends from `User`, `Booking`, `Review`.
+
+---
+
+## 8) Data Integrity Rules Enforced in Services
+
+- Booking creation requires:
+  - provider exists and is approved
+  - provider profile exists and is available
+  - category exists and is active
+  - schedule in future
+
+- Review creation requires:
+  - booking exists
+  - booking belongs to customer
+  - booking status is `completed`
+  - no previous review for booking
+
+For behavior-level details, see [API Reference](./api-reference.md).

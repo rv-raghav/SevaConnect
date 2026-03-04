@@ -1,119 +1,149 @@
-## Testing & Quality
+# Testing Guide
 
-SevaConnect includes end-to-end and integration-style test scripts that exercise the main flows of the platform.
+SevaConnect backend currently uses executable Node scripts for integration-style phase testing.
 
-This document explains how tests are organized and how to run them.
-
----
-
-## Test Phases
-
-Existing tests are located in the `server` root:
-
-- `test-auth.js` – **Phase 1**: Authentication & security.
-- `test-phase2.js` – **Phase 2**: Marketplace structure (categories, providers, filtering).
-- `test-phase3-e2e.js` – **Phase 3-4**: End-to-end booking workflow.
-- `test-phase6-7.js` – **Phase 6-7**: Admin features & hardening checks.
-
-Each script:
-
-- Uses Node's `http` module to make real HTTP requests to `http://localhost:5000`.
-- Asserts on HTTP status codes and response payloads.
-- Prints a summary of passed/failed assertions.
+These scripts call real HTTP endpoints and validate expected behavior.
 
 ---
 
-## Prerequisites for Testing
+## 1) Test Files
 
-Before running tests, ensure:
+Located in `server/tests/`:
 
-1. MongoDB is running and accessible via `MONGO_URI` in `.env`.
-2. The backend server is running on `PORT` (default `5000`):
-
-   ```bash
-   cd server
-   npm run dev
-   # or
-   npm start
-   ```
-
-3. Your `.env` is correctly configured (see [Configuration & Environment](./configuration.md)).
+- `tests/test-auth.js` - auth and role-injection protection
+- `tests/test-phase2.js` - category/provider profile/filtering flows
+- `tests/test-phase3-e2e.js` - booking lifecycle and review flow
+- `tests/test-phase6-7.js` - admin approvals, booking ownership checks, analytics, review moderation
 
 ---
 
-## Running Tests
+## 2) Prerequisites Before Running Tests
 
-You can run individual phase scripts:
+1. Configure `server/.env` with valid DB and auth settings.
+2. Ensure MongoDB is running and reachable.
+3. Start backend API (`npm run dev` or `npm start`) on expected port.
+4. For upload-related behavior, ensure Cloudinary env vars are valid.
+
+---
+
+## 3) Run Commands
+
+From `server/`:
 
 ```bash
-cd server
-
-# Phase 1 - Auth
-node test-auth.js
-
-# Phase 2 - Marketplace
-node test-phase2.js
-
-# Phase 3-4 - E2E Workflow
-node test-phase3-e2e.js
-
-# Phase 6-7 - Admin & Hardening
-node test-phase6-7.js
+npm run test:auth
+npm run test:phase2
+npm run test:phase3
+npm run test:phase6-7
+npm run test:all
 ```
 
-Or, using the `npm test` script (see `package.json`):
+Each script prints assertion-level pass/fail output and a summary.
+
+Direct node equivalents:
 
 ```bash
-cd server
-npm test
+node tests/test-auth.js
+node tests/test-phase2.js
+node tests/test-phase3-e2e.js
+node tests/test-phase6-7.js
 ```
 
 ---
 
-## What Is Covered
+## 4) Coverage by Phase
 
-- **Authentication & Security**
-  - User registration for customers and providers.
-  - Password validation (minimum length).
-  - Duplicate email handling.
-  - Login success and failure paths.
-  - Protected `/me` endpoint behavior.
-  - Admin role injection prevention.
+### Phase 1 (`tests/test-auth.js`)
 
-- **Marketplace**
-  - ServiceCategory CRUD with admin-only access.
-  - Duplicate category protection.
-  - Public category listing.
-  - Provider profile creation, upsert, and validation.
-  - Provider search and filtering by city and category.
+- Customer and provider registration
+- Duplicate email conflict handling
+- Password minimum length enforcement
+- Login success/failure
+- `/auth/me` protected route checks
+- Admin role injection prevention
 
-- **Bookings & Workflow**
-  - Booking creation by customers with valid provider/category.
-  - Provider acceptance and status transitions.
-  - Conflict detection (in phase workflow tests).
-  - Work logs and image uploads (where configured).
+### Phase 2 (`tests/test-phase2.js`)
 
-- **Admin & Hardening**
-  - Provider approval and rejection.
-  - Admin-only review deletion.
-  - Analytics endpoint sanity.
+- Admin-only category write access
+- Category create/update/list behavior
+- Provider profile create/update/get
+- Category validation in profile update
+- Provider search filtering (city/category)
+
+### Phase 3-4 (`tests/test-phase3-e2e.js`)
+
+- End-to-end booking creation
+- Provider transition path: accept -> start -> complete
+- Invalid transition rejection
+- Review submission and duplicate review rejection
+- Customer/provider dashboard booking listing
+
+### Phase 6-7 (`tests/test-phase6-7.js`)
+
+- Admin provider listing and approval/rejection
+- Booking GET by ID ownership checks for customer/provider/admin
+- Review deletion impact on provider rating recalculation
+- Analytics endpoint shape and access control
 
 ---
 
-## Extending Tests
+## 5) Test Data Strategy
 
-To add more tests:
+Scripts generally:
 
-- Create new scripts (e.g., `test-validation.js`) following the existing pattern:
-  - Reuse the `request` helper.
-  - Group tests with clear labels and assertions.
-- Alternatively, introduce a test framework (e.g., Jest) and place tests in a `tests/` directory, while keeping current scripts for black-box end-to-end checks.
+- generate timestamp-based unique emails
+- create users dynamically through API
+- in some phases update admin role directly in DB for setup
 
-When adding new features, aim to:
+This reduces collisions across repeated runs.
 
-- Cover both **happy paths** and **edge/error cases**.
-- Exercise role-based access control and security constraints.
-- Validate data integrity (e.g., invalid IDs, missing fields, boundary values).
+---
 
-For specific HTTP details of each endpoint, see the [API Reference](./api-reference.md) and [API Usage Examples](./api-usage-examples.md).
+## 6) Typical Failure Categories
 
+- Env/config issues:
+  - missing `.env`
+  - invalid `MONGO_URI`
+  - invalid `JWT_SECRET`
+
+- Authorization mismatches:
+  - wrong token role for route
+  - missing token
+
+- Business rule violations:
+  - invalid booking transitions
+  - duplicate review submission
+  - reschedule/cancel in disallowed status
+
+---
+
+## 7) Recommended Additional Tests
+
+To expand quality coverage, add scripts or migrate to a framework (Jest/Vitest + Supertest):
+
+- negative validation matrix for all endpoints
+- upload boundary tests (file count, size, content-type)
+- pagination and sorting edge cases
+- concurrent booking acceptance conflict race tests
+- token expiry and rotation behavior
+
+---
+
+## 8) CI Recommendation
+
+Current scripts are CLI-based and suitable for CI job steps.
+
+Typical pipeline order:
+
+1. install dependencies
+2. start Mongo service
+3. start API
+4. run `npm run test:all`
+5. fail pipeline if any script exits non-zero
+
+---
+
+## 9) Related Docs
+
+- [API Reference](./api-reference.md)
+- [Security](./security.md)

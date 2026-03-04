@@ -1,7 +1,7 @@
 /**
  * Phase 2 Marketplace Structure Tests
  * Tests: ServiceCategory CRUD + ProviderProfile + Filtering
- * Run: node test-phase2.js
+ * Run: node tests/test-phase2.js
  */
 const http = require("http");
 
@@ -132,10 +132,10 @@ async function runTests() {
 
   const mongoose = require("mongoose");
   const dotenv = require("dotenv");
-  dotenv.config({ path: require("path").resolve(__dirname, ".env") });
+  dotenv.config({ path: require("path").resolve(__dirname, "..", ".env") });
 
   await mongoose.connect(process.env.MONGO_URI);
-  const User = require("./src/models/User");
+  const User = require("../src/models/User");
 
   // Create admin user by updating role directly in DB
   const adminUser = await User.findOneAndUpdate(
