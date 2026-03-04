@@ -17,20 +17,33 @@ const app = express();
 
 const normalizeOrigin = (origin = "") => origin.trim().replace(/\/+$/, "");
 
-const allowedOrigins = env.CORS_ORIGIN
+const allowedOriginMatchers = env.CORS_ORIGIN
   ? env.CORS_ORIGIN.split(",")
       .map((origin) => normalizeOrigin(origin))
       .filter(Boolean)
+      .map((origin) => {
+        if (origin.includes("*.")) {
+          const wildcardPattern = origin
+            .replace(/[.+?^${}()|[\]\\]/g, "\\$&")
+            .replace("\\*\\.", "([a-z0-9-]+\\.)*");
+          const wildcardRegex = new RegExp(`^${wildcardPattern}$`, "i");
+          return (candidate) => wildcardRegex.test(candidate);
+        }
+        return (candidate) => candidate === origin;
+      })
   : [];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.length === 0) {
+    if (!origin || allowedOriginMatchers.length === 0) {
       callback(null, true);
       return;
     }
 
-    const isAllowed = allowedOrigins.includes(normalizeOrigin(origin));
+    const normalizedOrigin = normalizeOrigin(origin);
+    const isAllowed = allowedOriginMatchers.some((match) =>
+      match(normalizedOrigin)
+    );
     callback(null, isAllowed);
   },
 };
