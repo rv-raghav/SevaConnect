@@ -52,6 +52,7 @@ const AdminCategoriesPage = lazy(
   () => import("../pages/admin/AdminCategoriesPage"),
 );
 const AdminReviewsPage = lazy(() => import("../pages/admin/AdminReviewsPage"));
+const AdminBookingsPage = lazy(() => import("../pages/admin/AdminBookingsPage"));
 
 export default function AppRouter() {
   return (
@@ -107,6 +108,7 @@ export default function AppRouter() {
                 element={<AdminCategoriesPage />}
               />
               <Route path="/admin/reviews" element={<AdminReviewsPage />} />
+              <Route path="/admin/bookings" element={<AdminBookingsPage />} />
             </Route>
           </Route>
         </Route>

@@ -189,10 +189,36 @@ const listReviews = async () => {
 
   return reviews;
 };
+const listBookings = async ({ status, page = 1, limit = 20 } = {}) => {
+  const query = {};
+  if (status) query.status = status;
+
+  const skip = (page - 1) * limit;
+
+  const [bookings, total] = await Promise.all([
+    Booking.find(query)
+      .populate("customerId", "name email city")
+      .populate("providerId", "name email city")
+      .populate("categoryId", "name")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select("-__v"),
+    Booking.countDocuments(query),
+  ]);
+
+  return {
+    total,
+    page,
+    pages: Math.ceil(total / limit),
+    bookings,
+  };
+};
 
 module.exports = {
   listProviders,
   updateProviderApproval,
   getAnalytics,
   listReviews,
+  listBookings,
 };

@@ -6,4 +6,5 @@ export const adminApi = {
   rejectProvider: (id) => api.patch(`/admin/providers/${id}/reject`),
   getAnalytics: () => api.get('/admin/analytics'),
   getReviews: () => api.get('/admin/reviews'),
+  getBookings: (params) => api.get('/admin/bookings', { params }),
 }

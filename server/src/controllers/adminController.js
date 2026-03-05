@@ -48,10 +48,25 @@ const listReviews = asyncHandler(async (req, res) => {
   });
 });
 
+const listBookings = asyncHandler(async (req, res) => {
+  const { status, page, limit } = req.query;
+  const data = await adminService.listBookings({
+    status,
+    page: Number(page) || 1,
+    limit: Number(limit) || 20,
+  });
+
+  res.status(200).json({
+    success: true,
+    data,
+  });
+});
+
 module.exports = {
   listProviders,
   approveProvider,
   rejectProvider,
   getAnalytics,
   listReviews,
+  listBookings,
 };

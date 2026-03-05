@@ -46,10 +46,26 @@ const corsOptions = {
     );
     callback(null, isAllowed);
   },
+  credentials: true,
+  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-app.use(helmet());
+// ── CORS ────────────────────────────────────────────────
+// Explicit preflight handler — must come before everything else.
+// The cors() middleware alone doesn't reliably set Allow-Methods on OPTIONS.
+app.options("*", (req, res) => {
+  const origin = req.headers.origin;
+  if (origin) res.setHeader("Access-Control-Allow-Origin", origin);
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Max-Age", "86400"); // cache preflight for 24h
+  return res.sendStatus(204);
+});
+
 app.use(cors(corsOptions));
+app.use(helmet());
 app.use(express.json());
 
 app.get("/", (req, res) => {

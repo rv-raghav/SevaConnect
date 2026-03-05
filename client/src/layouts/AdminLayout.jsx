@@ -7,11 +7,12 @@ import Button from "../components/ui/Button";
 import PageTransitionOutlet from "../components/ui/PageTransitionOutlet";
 
 const NAV_ITEMS = [
-  { to: "/admin", icon: "dashboard", label: "Dashboard", end: true },
-  { to: "/admin/providers", icon: "groups", label: "Providers" },
-  { to: "/admin/categories", icon: "category", label: "Categories" },
-  { to: "/admin/reviews", icon: "reviews", label: "Reviews" },
-  { to: "/admin/analytics", icon: "analytics", label: "Analytics" },
+  { to: "/admin",            icon: "dashboard",      label: "Dashboard",  end: true },
+  { to: "/admin/providers",  icon: "groups",         label: "Providers" },
+  { to: "/admin/bookings",   icon: "calendar_month", label: "Bookings" },
+  { to: "/admin/categories", icon: "category",       label: "Categories" },
+  { to: "/admin/reviews",    icon: "reviews",        label: "Reviews" },
+  { to: "/admin/analytics",  icon: "analytics",      label: "Analytics" },
 ];
 
 export default function AdminLayout() {

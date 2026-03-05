@@ -12,6 +12,7 @@ const {
   rejectProvider,
   getAnalytics,
   listReviews,
+  listBookings,
 } = require("../controllers/adminController");
 
 const router = express.Router();
@@ -37,7 +38,8 @@ router.patch(
 );
 
 router.get("/admin/analytics", getAnalytics);
-
 router.get("/admin/reviews", listReviews);
+router.get("/admin/bookings", listBookings);
 
 module.exports = router;
+

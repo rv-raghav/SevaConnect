@@ -5,6 +5,7 @@ const ProviderProfile = require("../models/ProviderProfile");
 const AppError = require("../utils/AppError");
 const cloudinary = require("../config/cloudinary");
 const { validateTransition } = require("../utils/bookingTransitions");
+const logger = require("../utils/logger");
 
 const MAX_IMAGES_PER_REQUEST = 5;
 
@@ -29,17 +30,16 @@ const checkConflict = async (providerId, scheduledDateTime) => {
 const uploadImageBuffer = (fileBuffer) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
-      { folder: "seva-bookings" },
+      { folder: "seva-bookings", resource_type: "image" },
       (error, result) => {
         if (error) {
-          reject(error);
+          logger.error("Cloudinary upload error:", error);
+          reject(new AppError(`Image upload failed: ${error.message}`, 500));
           return;
         }
-
         resolve(result);
       }
     );
-
     stream.end(fileBuffer);
   });
 };
@@ -367,12 +367,12 @@ const addWorkUpdate = async ({
     );
   }
 
-  if (type === "before" && booking.status !== "in-progress") {
-    throw new AppError("Before images allowed only in-progress", 400);
+  if (type === "before" && !["confirmed", "in-progress"].includes(booking.status)) {
+    throw new AppError("Before images can only be uploaded for confirmed or in-progress bookings", 400);
   }
 
   if (type === "after" && booking.status !== "completed") {
-    throw new AppError("After images allowed only after completion", 400);
+    throw new AppError("After images can only be uploaded once the booking is completed", 400);
   }
 
   const uploadedImages = await uploadImages(files || []);
