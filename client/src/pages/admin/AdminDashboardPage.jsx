@@ -32,6 +32,39 @@ function buildChartData(monthlyBookings, monthlyRevenue) {
   return Object.values(map);
 }
 
+function KPI_CARDS(a) {
+  return [
+    {
+      label: "Total Bookings",
+      value: a?.totalBookings ?? 0,
+      icon: "calendar_month",
+      change: "+12%",
+      positive: true,
+    },
+    {
+      label: "Total Revenue",
+      value: `₹${Number(a?.totalRevenue ?? 0).toLocaleString("en-IN")}`,
+      icon: "currency_rupee",
+      change: "+8%",
+      positive: true,
+    },
+    {
+      label: "Active Providers",
+      value: a?.activeProviders ?? 0,
+      icon: "engineering",
+      change: "+5%",
+      positive: true,
+    },
+    {
+      label: "Registered Users",
+      value: a?.totalUsers ?? 0,
+      icon: "group",
+      change: "+3%",
+      positive: true,
+    },
+  ];
+}
+
 const QUICK_LINKS = [
   {
     to: "/admin/services",
