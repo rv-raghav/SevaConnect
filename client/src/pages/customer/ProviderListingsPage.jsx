@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { motion as Motion } from "framer-motion";
 import useProviderStore from "../../stores/useProviderStore";
 import useCategoryStore from "../../stores/useCategoryStore";
 import ProviderCard from "../../components/shared/ProviderCard";
 import EmptyState from "../../components/ui/EmptyState";
 import useDebounce from "../../hooks/useDebounce";
 import Button from "../../components/ui/Button";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (i = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] },
+  }),
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06 } },
+};
 
 export default function ProviderListingsPage() {
   const { providers, fetchProviders, isLoading } = useProviderStore();
@@ -32,69 +47,130 @@ export default function ProviderListingsPage() {
 
   return (
     <div className="page-shell">
-      <section className="surface-card-static p-5 md:p-6">
+      {/* ─── Header & Filters ─── */}
+      <Motion.section
+        className="glass-card p-6 md:p-8"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        style={{ cursor: "default" }}
+        whileHover={{}}
+      >
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="page-title !text-3xl">Providers</h1>
-            <p className="caption-text mt-1">
-              {isLoading
-                ? "Searching providers..."
-                : `${providers.length} provider${providers.length === 1 ? "" : "s"} found`}
-            </p>
+          <div className="flex items-center gap-3">
+            <div
+              className="icon-badge"
+              style={{ width: 44, height: 44, borderRadius: 14 }}
+            >
+              <span className="material-symbols-outlined text-[22px]">groups</span>
+            </div>
+            <div>
+              <h1
+                className="font-bold"
+                style={{
+                  fontSize: "clamp(1.4rem, 2.5vw, 1.8rem)",
+                  color: "var(--text)",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                Providers
+              </h1>
+              <p className="caption-text">
+                {isLoading
+                  ? "Searching providers..."
+                  : `${providers.length} provider${providers.length === 1 ? "" : "s"} found`}
+              </p>
+            </div>
           </div>
-        </div>
-
-        <div className="mt-4 grid sm:grid-cols-[1fr_220px_auto] gap-3">
-          <input
-            className="input-field"
-            placeholder="Search by city"
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
-          />
-          <select
-            className="input-field"
-            value={category}
-            onChange={(event) => setCategory(event.target.value)}
-          >
-            <option value="">All categories</option>
-            {categories.map((item) => (
-              <option key={item._id} value={item._id}>
-                {item.name}
-              </option>
-            ))}
-          </select>
-          {hasFilters ? (
+          {hasFilters && (
             <Button
-              variant="secondary"
-              size="md"
+              variant="outline"
+              size="sm"
               onClick={() => {
                 setCity("");
                 setCategory("");
               }}
             >
+              <span className="material-symbols-outlined text-[16px]">filter_alt_off</span>
               Clear filters
             </Button>
-          ) : null}
+          )}
         </div>
-      </section>
 
+        {/* Filters */}
+        <div className="mt-5 grid sm:grid-cols-2 gap-3">
+          <div className="relative">
+            <span
+              className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px]"
+              style={{ color: "var(--text-muted)" }}
+            >
+              location_on
+            </span>
+            <input
+              className="input-field !pl-10"
+              placeholder="Search by city..."
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+            />
+          </div>
+          <div className="relative">
+            <span
+              className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-[18px] z-10 pointer-events-none"
+              style={{ color: "var(--text-muted)" }}
+            >
+              category
+            </span>
+            <select
+              className="input-field !pl-10 appearance-none"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              style={{ cursor: "pointer" }}
+            >
+              <option value="">All categories</option>
+              {categories.map((item) => (
+                <option key={item._id} value={item._id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+            <span
+              className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-[18px] pointer-events-none"
+              style={{ color: "var(--text-muted)" }}
+            >
+              expand_more
+            </span>
+          </div>
+        </div>
+      </Motion.section>
+
+      {/* ─── Provider Grid ─── */}
       <section className="mt-6">
         {isLoading ? (
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
             {Array.from({ length: 9 }).map((_, idx) => (
-              <div key={idx} className="h-52 rounded-[16px] skeleton" />
+              <div key={idx} className="h-52 rounded-[18px] skeleton" />
             ))}
           </div>
         ) : providers.length > 0 ? (
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {providers.map((provider) => (
-              <ProviderCard
+          <Motion.div
+            className="grid md:grid-cols-2 xl:grid-cols-3 gap-4"
+            variants={stagger}
+            initial="hidden"
+            animate="visible"
+          >
+            {providers.map((provider, i) => (
+              <Motion.div
                 key={provider._id || provider.userId?._id}
-                provider={provider}
-                onBook={(item) => navigate(`/book/${item.userId?._id || item._id}`)}
-              />
+                variants={fadeUp}
+                custom={i}
+              >
+                <ProviderCard
+                  provider={provider}
+                  onBook={(item) => navigate(`/book/${item.userId?._id || item._id}`)}
+                />
+              </Motion.div>
             ))}
-          </div>
+          </Motion.div>
         ) : (
           <EmptyState
             icon="person_search"
@@ -114,6 +190,7 @@ export default function ProviderListingsPage() {
                     setCategory("");
                   }}
                 >
+                  <span className="material-symbols-outlined text-[16px]">refresh</span>
                   Reset search
                 </Button>
               ) : null
