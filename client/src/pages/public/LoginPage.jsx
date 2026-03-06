@@ -35,9 +35,9 @@ export default function LoginPage() {
     clearError();
     if (!validate()) return;
     try {
-      const user = await login(email, password);
+      await login(email, password);
       const from = location.state?.from?.pathname;
-      navigate(from || ROLE_HOME[user.role] || "/home", { replace: true });
+      navigate(from || "/", { replace: true });
     } catch {
       // handled by store
     }
@@ -47,7 +47,9 @@ export default function LoginPage() {
     <div className="animate-fade-up">
       <div className="mb-6">
         <h1 className="page-title !text-3xl">Welcome back</h1>
-        <p className="body-text mt-2">Sign in to manage bookings and profile settings.</p>
+        <p className="body-text mt-2">
+          Sign in to manage bookings and profile settings.
+        </p>
       </div>
 
       <form className="space-y-4" onSubmit={handleSubmit}>
@@ -56,7 +58,8 @@ export default function LoginPage() {
             className="rounded-[14px] border px-3 py-2 text-sm"
             style={{
               color: "var(--error-500)",
-              borderColor: "color-mix(in srgb, var(--error-500) 35%, var(--border))",
+              borderColor:
+                "color-mix(in srgb, var(--error-500) 35%, var(--border))",
               background:
                 "color-mix(in srgb, var(--error-500) 12%, transparent)",
             }}
@@ -123,17 +126,28 @@ export default function LoginPage() {
               </span>
             </button>
           </div>
-          {errors.password ? <p className="input-error">{errors.password}</p> : null}
+          {errors.password ? (
+            <p className="input-error">{errors.password}</p>
+          ) : null}
         </div>
 
-        <Button type="submit" variant="primary" size="lg" className="w-full" loading={isLoading}>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className="w-full"
+          loading={isLoading}
+        >
           Sign in
         </Button>
       </form>
 
       <p className="body-text text-center mt-6">
         New to SevaConnect?{" "}
-        <Link to="/register" className="text-[color:var(--primary-500)] font-semibold hover:underline">
+        <Link
+          to="/register"
+          className="text-[color:var(--primary-500)] font-semibold hover:underline"
+        >
           Create account
         </Link>
       </p>

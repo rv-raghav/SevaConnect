@@ -1,5 +1,7 @@
 # SevaConnect - Local Services Marketplace (MERN)
 
+**Live:** [https://sevaconnect.online](https://sevaconnect.online)
+
 SevaConnect is a full-stack local services marketplace where:
 
 - Customers discover providers, book services, track status, and submit reviews.
@@ -176,6 +178,10 @@ Default URLs:
 
 - Frontend: `http://localhost:5173`
 - Backend API: `http://localhost:5000/api`
+
+Production URL:
+
+- Live site: [https://sevaconnect.online](https://sevaconnect.online)
 
 ---
 
@@ -400,6 +406,8 @@ curl -i https://<your-render-service>/api/health
 curl -i https://<your-render-service>/api/ready
 curl -i https://<your-render-service>/api/categories
 ```
+
+Live frontend: [https://sevaconnect.online](https://sevaconnect.online)
 
 ### Rollout checklist
 
