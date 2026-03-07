@@ -269,7 +269,8 @@ const getCustomerBookings = async (customerId, { status, page = 1, limit = 10 })
   const query = { customerId };
 
   if (status) {
-    query.status = status;
+    const statuses = status.split(",").map((s) => s.trim()).filter(Boolean);
+    query.status = statuses.length === 1 ? statuses[0] : { $in: statuses };
   }
 
   const skip = (page - 1) * limit;
@@ -296,7 +297,8 @@ const getProviderBookings = async (providerId, { status, page = 1, limit = 10 })
   const query = { providerId };
 
   if (status) {
-    query.status = status;
+    const statuses = status.split(",").map((s) => s.trim()).filter(Boolean);
+    query.status = statuses.length === 1 ? statuses[0] : { $in: statuses };
   }
 
   const skip = (page - 1) * limit;

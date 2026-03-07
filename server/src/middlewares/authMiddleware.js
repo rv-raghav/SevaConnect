@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const AppError = require("../utils/AppError");
 const asyncHandler = require("../utils/asyncHandler");
 const User = require("../models/User");
+const env = require("../config/env");
 
 /**
  * Auth middleware: verifies JWT from Authorization header
@@ -15,7 +16,7 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
   }
 
   const token = authHeader.split(" ")[1];
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const decoded = jwt.verify(token, env.JWT_SECRET);
 
   // Verify user still exists in DB
   const user = await User.findById(decoded.userId);

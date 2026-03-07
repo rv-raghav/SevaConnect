@@ -1,5 +1,4 @@
 const express = require("express");
-const cors = require("cors");
 const helmet = require("helmet");
 const mongoose = require("mongoose");
 const env = require("./config/env");
@@ -15,58 +14,50 @@ const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
+// ── Build allowed-origin list from env ───────────────────
 const normalizeOrigin = (origin = "") => origin.trim().replace(/\/+$/, "");
 
-const allowedOriginMatchers = env.CORS_ORIGIN
-  ? env.CORS_ORIGIN.split(",")
-      .map((origin) => normalizeOrigin(origin))
-      .filter(Boolean)
-      .map((origin) => {
-        if (origin.includes("*.")) {
-          const wildcardPattern = origin
-            .replace(/[.+?^${}()|[\]\\]/g, "\\$&")
-            .replace("\\*\\.", "([a-z0-9-]+\\.)*");
-          const wildcardRegex = new RegExp(`^${wildcardPattern}$`, "i");
-          return (candidate) => wildcardRegex.test(candidate);
-        }
-        return (candidate) => candidate === origin;
-      })
+const allowedOrigins = env.CORS_ORIGIN
+  ? env.CORS_ORIGIN.split(",").map(normalizeOrigin).filter(Boolean)
   : [];
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOriginMatchers.length === 0) {
-      callback(null, true);
-      return;
+function isOriginAllowed(origin) {
+  if (!origin || allowedOrigins.length === 0) return true;
+  const normalized = normalizeOrigin(origin);
+  return allowedOrigins.some((allowed) => {
+    if (allowed.includes("*.")) {
+      const pattern = allowed
+        .replace(/[.+?^${}()|[\]\\]/g, "\\$&")
+        .replace("\\*\\.", "([a-z0-9-]+\\.)*");
+      return new RegExp(`^${pattern}$`, "i").test(normalized);
     }
+    return normalized === allowed;
+  });
+}
 
-    const normalizedOrigin = normalizeOrigin(origin);
-    const isAllowed = allowedOriginMatchers.some((match) =>
-      match(normalizedOrigin)
-    );
-    callback(null, isAllowed);
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-// ── CORS ────────────────────────────────────────────────
-// Explicit preflight handler — must come before everything else.
-// The cors() middleware alone doesn't reliably set Allow-Methods on OPTIONS.
-app.options("*", (req, res) => {
+// ── CORS — applied on EVERY request (including errors) ──
+app.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin) res.setHeader("Access-Control-Allow-Origin", origin);
+  if (origin && isOriginAllowed(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PATCH,PUT,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Max-Age", "86400"); // cache preflight for 24h
-  return res.sendStatus(204);
+
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Max-Age", "600");
+    return res.sendStatus(204);
+  }
+  next();
 });
 
-app.use(cors(corsOptions));
-app.use(helmet());
-app.use(express.json());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+app.use(express.json({ limit: "1mb" }));
 
 app.get("/", (req, res) => {
   res.json({ success: true, message: "API is running" });

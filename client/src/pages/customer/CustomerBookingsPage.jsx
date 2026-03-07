@@ -23,11 +23,26 @@ const TABS = [
 ];
 
 const STATUS_ICON_STYLES = {
-  requested: { bg: "linear-gradient(135deg, var(--text-muted), var(--text-soft))", icon: "pending_actions" },
-  confirmed: { bg: "linear-gradient(135deg, #3b82f6, #6366f1)", icon: "event_available" },
-  "in-progress": { bg: "linear-gradient(135deg, #f59e0b, #d97706)", icon: "construction" },
-  completed: { bg: "linear-gradient(135deg, #10b981, #059669)", icon: "check_circle" },
-  cancelled: { bg: "linear-gradient(135deg, #ef4444, #dc2626)", icon: "cancel" },
+  requested: {
+    bg: "linear-gradient(135deg, var(--text-muted), var(--text-soft))",
+    icon: "pending_actions",
+  },
+  confirmed: {
+    bg: "linear-gradient(135deg, #3b82f6, #6366f1)",
+    icon: "event_available",
+  },
+  "in-progress": {
+    bg: "linear-gradient(135deg, #f59e0b, #d97706)",
+    icon: "construction",
+  },
+  completed: {
+    bg: "linear-gradient(135deg, #10b981, #059669)",
+    icon: "check_circle",
+  },
+  cancelled: {
+    bg: "linear-gradient(135deg, #ef4444, #dc2626)",
+    icon: "cancel",
+  },
 };
 
 const fadeUp = {
@@ -35,7 +50,11 @@ const fadeUp = {
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.4, delay: i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] },
+    transition: {
+      duration: 0.4,
+      delay: i * 0.06,
+      ease: [0.25, 0.46, 0.45, 0.94],
+    },
   }),
 };
 
@@ -45,7 +64,8 @@ const stagger = {
 };
 
 export default function CustomerBookingsPage() {
-  const { bookings, pagination, fetchMyBookings, isLoading } = useBookingStore();
+  const { bookings, pagination, fetchMyBookings, isLoading } =
+    useBookingStore();
   const [activeTab, setActiveTab] = useState("");
   const [cancelId, setCancelId] = useState(null);
   const [rescheduleId, setRescheduleId] = useState(null);
@@ -53,7 +73,7 @@ export default function CustomerBookingsPage() {
 
   const loadBookings = (tab = activeTab, page = 1) => {
     const params = { page, limit: 10 };
-    if (tab) params.status = tab.split(",")[0];
+    if (tab) params.status = tab;
     fetchMyBookings(params);
   };
 
@@ -91,7 +111,9 @@ export default function CustomerBookingsPage() {
                 className="icon-badge"
                 style={{ width: 44, height: 44, borderRadius: 14 }}
               >
-                <span className="material-symbols-outlined text-[22px]">calendar_month</span>
+                <span className="material-symbols-outlined text-[22px]">
+                  calendar_month
+                </span>
               </div>
               <div>
                 <h1
@@ -114,9 +136,11 @@ export default function CustomerBookingsPage() {
             <span
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
               style={{
-                background: "color-mix(in srgb, var(--primary-500) 10%, transparent)",
+                background:
+                  "color-mix(in srgb, var(--primary-500) 10%, transparent)",
                 color: "var(--primary-500)",
-                border: "1px solid color-mix(in srgb, var(--primary-500) 20%, var(--border))",
+                border:
+                  "1px solid color-mix(in srgb, var(--primary-500) 20%, var(--border))",
               }}
             >
               {pagination.total} total
@@ -149,7 +173,9 @@ export default function CustomerBookingsPage() {
                     : "none",
               }}
             >
-              <span className="material-symbols-outlined text-[16px]">{tab.icon}</span>
+              <span className="material-symbols-outlined text-[16px]">
+                {tab.icon}
+              </span>
               {tab.label}
             </button>
           ))}
@@ -169,105 +195,113 @@ export default function CustomerBookingsPage() {
           >
             <AnimatePresence mode="popLayout">
               {bookings.map((booking, i) => {
-                const iconStyle = STATUS_ICON_STYLES[booking.status] || STATUS_ICON_STYLES.requested;
+                const iconStyle =
+                  STATUS_ICON_STYLES[booking.status] ||
+                  STATUS_ICON_STYLES.requested;
                 return (
-                <Motion.article
-                  key={booking._id}
-                  className="glass-card p-5 md:p-6"
-                  variants={fadeUp}
-                  custom={i}
-                  layout
-                  style={{ cursor: "default" }}
-                  whileHover={{}}
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <div
-                        className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
-                        style={{
-                          background: iconStyle.bg,
-                          color: "white",
-                        }}
-                      >
-                        <span className="material-symbols-outlined text-[20px]">
-                          {iconStyle.icon}
-                        </span>
-                      </div>
-                      <div>
-                        <h2 className="card-title">
-                          {booking.categoryId?.name || "Service booking"}
-                        </h2>
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                          <span className="caption-text flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[14px]">
-                              schedule
-                            </span>
-                            {formatDateTime(booking.scheduledDateTime)}
-                          </span>
-                          <span className="caption-text flex items-center gap-1">
-                            <span className="material-symbols-outlined text-[14px]">
-                              location_on
-                            </span>
-                            {booking.address}, {booking.city}
+                  <Motion.article
+                    key={booking._id}
+                    className="glass-card p-5 md:p-6"
+                    variants={fadeUp}
+                    custom={i}
+                    layout
+                    style={{ cursor: "default" }}
+                    whileHover={{}}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <div
+                          className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0"
+                          style={{
+                            background: iconStyle.bg,
+                            color: "white",
+                          }}
+                        >
+                          <span className="material-symbols-outlined text-[20px]">
+                            {iconStyle.icon}
                           </span>
                         </div>
+                        <div>
+                          <h2 className="card-title">
+                            {booking.categoryId?.name || "Service booking"}
+                          </h2>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                            <span className="caption-text flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[14px]">
+                                schedule
+                              </span>
+                              {formatDateTime(booking.scheduledDateTime)}
+                            </span>
+                            <span className="caption-text flex items-center gap-1">
+                              <span className="material-symbols-outlined text-[14px]">
+                                location_on
+                              </span>
+                              {booking.address}, {booking.city}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1.5">
+                        <Badge status={booking.status} />
+                        <p
+                          className="text-lg font-bold"
+                          style={{ color: "var(--primary-500)" }}
+                        >
+                          {formatCurrency(booking.priceSnapshot)}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1.5">
-                      <Badge status={booking.status} />
-                      <p
-                        className="text-lg font-bold"
-                        style={{ color: "var(--primary-500)" }}
-                      >
-                        {formatCurrency(booking.priceSnapshot)}
-                      </p>
+
+                    <div
+                      className="mt-4 pt-4"
+                      style={{ borderTop: "1px solid var(--border)" }}
+                    >
+                      <BookingTimeline status={booking.status} />
                     </div>
-                  </div>
 
-                  <div
-                    className="mt-4 pt-4"
-                    style={{ borderTop: "1px solid var(--border)" }}
-                  >
-                    <BookingTimeline status={booking.status} />
-                  </div>
-
-                  <div
-                    className="mt-4 pt-4 flex flex-wrap gap-2"
-                    style={{ borderTop: "1px solid var(--border)" }}
-                  >
-                    {(booking.status === "requested" ||
-                      booking.status === "confirmed") && (
-                      <>
+                    <div
+                      className="mt-4 pt-4 flex flex-wrap gap-2"
+                      style={{ borderTop: "1px solid var(--border)" }}
+                    >
+                      {booking.status === "requested" && (
                         <Button
                           variant="secondary"
                           size="sm"
                           onClick={() => setRescheduleId(booking._id)}
                         >
-                          <span className="material-symbols-outlined text-[16px]">edit_calendar</span>
+                          <span className="material-symbols-outlined text-[16px]">
+                            edit_calendar
+                          </span>
                           Reschedule
                         </Button>
+                      )}
+                      {(booking.status === "requested" ||
+                        booking.status === "confirmed") && (
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => setCancelId(booking._id)}
                         >
-                          <span className="material-symbols-outlined text-[16px]">close</span>
+                          <span className="material-symbols-outlined text-[16px]">
+                            close
+                          </span>
                           Cancel
                         </Button>
-                      </>
-                    )}
-                    {booking.status === "completed" && (
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setReviewBooking(booking)}
-                      >
-                        <span className="material-symbols-outlined text-[16px]">rate_review</span>
-                        Leave review
-                      </Button>
-                    )}
-                  </div>
-                </Motion.article>
+                      )}
+                      {booking.status === "completed" && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => setReviewBooking(booking)}
+                        >
+                          <span className="material-symbols-outlined text-[16px]">
+                            rate_review
+                          </span>
+                          Leave review
+                        </Button>
+                      )}
+                    </div>
+                  </Motion.article>
                 );
               })}
             </AnimatePresence>

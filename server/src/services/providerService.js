@@ -1,6 +1,7 @@
 const ProviderProfile = require("../models/ProviderProfile");
 const ServiceCategory = require("../models/ServiceCategory");
 const User = require("../models/User");
+const Booking = require("../models/Booking");
 const AppError = require("../utils/AppError");
 
 /**
@@ -80,7 +81,8 @@ const getProviders = async ({ city, category }) => {
     ],
   };
   if (city) {
-    userFilter.city = { $regex: new RegExp(`^${city}$`, "i") };
+    const escapedCity = city.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    userFilter.city = { $regex: new RegExp(`^${escapedCity}$`, "i") };
   }
 
   // Find matching user IDs
@@ -91,7 +93,7 @@ const getProviders = async ({ city, category }) => {
     return [];
   }
 
-  // Build profile filter
+  // Build profile filter — only show providers marked as "available"
   const profileFilter = {
     userId: { $in: userIds },
     availabilityStatus: "available",
@@ -108,4 +110,57 @@ const getProviders = async ({ city, category }) => {
   return providers;
 };
 
-module.exports = { createOrUpdateProfile, getMyProfile, getProviders };
+/**
+ * Get a single provider profile by userId.
+ */
+const getProviderById = async (userId) => {
+  const profile = await ProviderProfile.findOne({ userId })
+    .populate("userId", "name city")
+    .populate("categories", "name")
+    .select("-__v");
+
+  if (!profile) {
+    throw new AppError("Provider not found", 404);
+  }
+
+  return profile;
+};
+
+/**
+ * Get dashboard stats for a provider (accurate, DB-level aggregation).
+ */
+const getProviderStats = async (providerId) => {
+  const [stats] = await Booking.aggregate([
+    { $match: { providerId: new (require("mongoose").Types.ObjectId)(providerId) } },
+    {
+      $group: {
+        _id: null,
+        totalBookings: { $sum: 1 },
+        completedBookings: {
+          $sum: { $cond: [{ $eq: ["$status", "completed"] }, 1, 0] },
+        },
+        upcomingBookings: {
+          $sum: {
+            $cond: [
+              { $in: ["$status", ["requested", "confirmed", "in-progress"]] },
+              1,
+              0,
+            ],
+          },
+        },
+        totalEarnings: {
+          $sum: { $cond: [{ $eq: ["$status", "completed"] }, "$priceSnapshot", 0] },
+        },
+      },
+    },
+  ]);
+
+  return {
+    totalBookings: stats?.totalBookings || 0,
+    completedBookings: stats?.completedBookings || 0,
+    upcomingBookings: stats?.upcomingBookings || 0,
+    totalEarnings: stats?.totalEarnings || 0,
+  };
+};
+
+module.exports = { createOrUpdateProfile, getMyProfile, getProviders, getProviderById, getProviderStats };

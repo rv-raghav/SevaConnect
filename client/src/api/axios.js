@@ -24,8 +24,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      removeToken()
-      window.location.href = '/login'
+      const url = error.config?.url || ''
+      // Don't force redirect for /auth/me — let the auth store handle it gracefully
+      if (!url.includes('/auth/me')) {
+        removeToken()
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }

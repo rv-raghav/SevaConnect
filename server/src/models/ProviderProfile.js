@@ -25,8 +25,8 @@ const providerProfileSchema = new mongoose.Schema(
     availabilityStatus: {
       type: String,
       enum: {
-        values: ["available", "unavailable"],
-        message: "Availability must be available or unavailable",
+        values: ["available", "busy", "offline"],
+        message: "Availability must be available, busy, or offline",
       },
       default: "available",
     },

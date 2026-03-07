@@ -32,11 +32,8 @@ export default function ScheduleServicePage() {
     fetchCategories();
     const loadProvider = async () => {
       try {
-        const { data } = await providersApi.getProviders();
-        const found = data.data?.find(
-          (item) => (item.userId?._id || item._id) === providerId,
-        );
-        if (found) setProvider(found);
+        const { data } = await providersApi.getProviderById(providerId);
+        if (data.data) setProvider(data.data);
       } catch {
         // ignore and show fallback
       } finally {
@@ -79,7 +76,9 @@ export default function ScheduleServicePage() {
     if (!validate()) return;
     setSubmitting(true);
     try {
-      const scheduledDateTime = new Date(`${form.date}T${form.time}`).toISOString();
+      const scheduledDateTime = new Date(
+        `${form.date}T${form.time}`,
+      ).toISOString();
       await bookingsApi.createBooking({
         providerId,
         categoryId: form.categoryId,
@@ -101,7 +100,9 @@ export default function ScheduleServicePage() {
 
   const profile = provider?.profile || provider;
   const user = provider?.userId || provider;
-  const selectedCategory = categories.find((item) => item._id === form.categoryId);
+  const selectedCategory = categories.find(
+    (item) => item._id === form.categoryId,
+  );
 
   return (
     <div className="page-shell">
@@ -113,7 +114,9 @@ export default function ScheduleServicePage() {
         transition={{ duration: 0.3 }}
       >
         <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span className="material-symbols-outlined text-[18px]">
+            arrow_back
+          </span>
           Back
         </Button>
       </Motion.div>
@@ -132,11 +135,14 @@ export default function ScheduleServicePage() {
             <div
               className="w-11 h-11 rounded-2xl flex items-center justify-center"
               style={{
-                background: "linear-gradient(135deg, var(--primary-500), #6366f1)",
+                background:
+                  "linear-gradient(135deg, var(--primary-500), #6366f1)",
                 color: "white",
               }}
             >
-              <span className="material-symbols-outlined text-[22px]">edit_calendar</span>
+              <span className="material-symbols-outlined text-[22px]">
+                edit_calendar
+              </span>
             </div>
             <div>
               <h1
@@ -159,7 +165,10 @@ export default function ScheduleServicePage() {
             {/* Category */}
             <div>
               <label className="input-label flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]" style={{ color: "var(--primary-500)" }}>
+                <span
+                  className="material-symbols-outlined text-[16px]"
+                  style={{ color: "var(--primary-500)" }}
+                >
                   category
                 </span>
                 Service category
@@ -185,14 +194,19 @@ export default function ScheduleServicePage() {
                   expand_more
                 </span>
               </div>
-              {errors.categoryId && <p className="input-error">{errors.categoryId}</p>}
+              {errors.categoryId && (
+                <p className="input-error">{errors.categoryId}</p>
+              )}
             </div>
 
             {/* Date & Time */}
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label className="input-label flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]" style={{ color: "var(--primary-500)" }}>
+                  <span
+                    className="material-symbols-outlined text-[16px]"
+                    style={{ color: "var(--primary-500)" }}
+                  >
                     calendar_today
                   </span>
                   Date
@@ -208,7 +222,10 @@ export default function ScheduleServicePage() {
               </div>
               <div>
                 <label className="input-label flex items-center gap-1.5">
-                  <span className="material-symbols-outlined text-[16px]" style={{ color: "var(--primary-500)" }}>
+                  <span
+                    className="material-symbols-outlined text-[16px]"
+                    style={{ color: "var(--primary-500)" }}
+                  >
                     schedule
                   </span>
                   Time
@@ -226,7 +243,10 @@ export default function ScheduleServicePage() {
             {/* Address */}
             <div>
               <label className="input-label flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]" style={{ color: "var(--primary-500)" }}>
+                <span
+                  className="material-symbols-outlined text-[16px]"
+                  style={{ color: "var(--primary-500)" }}
+                >
                   home
                 </span>
                 Address
@@ -237,13 +257,18 @@ export default function ScheduleServicePage() {
                 onChange={(e) => updateField("address", e.target.value)}
                 placeholder="Enter service address"
               />
-              {errors.address && <p className="input-error">{errors.address}</p>}
+              {errors.address && (
+                <p className="input-error">{errors.address}</p>
+              )}
             </div>
 
             {/* City */}
             <div>
               <label className="input-label flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]" style={{ color: "var(--primary-500)" }}>
+                <span
+                  className="material-symbols-outlined text-[16px]"
+                  style={{ color: "var(--primary-500)" }}
+                >
                   location_city
                 </span>
                 City
@@ -260,11 +285,19 @@ export default function ScheduleServicePage() {
             {/* Notes */}
             <div>
               <label className="input-label flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]" style={{ color: "var(--primary-500)" }}>
+                <span
+                  className="material-symbols-outlined text-[16px]"
+                  style={{ color: "var(--primary-500)" }}
+                >
                   notes
                 </span>
                 Notes
-                <span className="text-xs font-normal" style={{ color: "var(--text-muted)" }}>(optional)</span>
+                <span
+                  className="text-xs font-normal"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  (optional)
+                </span>
               </label>
               <textarea
                 rows={4}
@@ -282,7 +315,9 @@ export default function ScheduleServicePage() {
               className="w-full"
               loading={submitting}
             >
-              <span className="material-symbols-outlined text-[18px]">check_circle</span>
+              <span className="material-symbols-outlined text-[18px]">
+                check_circle
+              </span>
               Confirm booking
             </Button>
           </form>
@@ -298,7 +333,10 @@ export default function ScheduleServicePage() {
           whileHover={{}}
         >
           <h2 className="section-title flex items-center gap-2">
-            <span className="material-symbols-outlined text-[20px]" style={{ color: "var(--primary-500)" }}>
+            <span
+              className="material-symbols-outlined text-[20px]"
+              style={{ color: "var(--primary-500)" }}
+            >
               receipt_long
             </span>
             Booking summary
@@ -308,18 +346,26 @@ export default function ScheduleServicePage() {
             <>
               <div
                 className="mt-5 flex items-center gap-3 p-3 rounded-2xl"
-                style={{ background: "color-mix(in srgb, var(--surface-soft) 80%, transparent)" }}
+                style={{
+                  background:
+                    "color-mix(in srgb, var(--surface-soft) 80%, transparent)",
+                }}
               >
                 <div
                   className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-semibold text-lg shrink-0"
-                  style={{ background: "linear-gradient(135deg, var(--primary-500), #6366f1)" }}
+                  style={{
+                    background:
+                      "linear-gradient(135deg, var(--primary-500), #6366f1)",
+                  }}
                 >
                   {user?.name?.[0]?.toUpperCase() || "P"}
                 </div>
                 <div className="min-w-0">
                   <p className="card-title truncate">{user?.name}</p>
                   <p className="caption-text flex items-center gap-1">
-                    <span className="material-symbols-outlined text-[13px]">location_on</span>
+                    <span className="material-symbols-outlined text-[13px]">
+                      location_on
+                    </span>
                     {user?.city}
                   </p>
                 </div>
@@ -332,7 +378,10 @@ export default function ScheduleServicePage() {
                       key={s}
                       className="material-symbols-outlined text-[14px]"
                       style={{
-                        color: s <= Math.round(profile?.ratingAverage || 0) ? "#f59e0b" : "var(--border)",
+                        color:
+                          s <= Math.round(profile?.ratingAverage || 0)
+                            ? "#f59e0b"
+                            : "var(--border)",
                         fontVariationSettings: "'FILL' 1",
                       }}
                     >
@@ -340,10 +389,15 @@ export default function ScheduleServicePage() {
                     </span>
                   ))}
                 </div>
-                <span className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                <span
+                  className="text-sm font-semibold"
+                  style={{ color: "var(--text)" }}
+                >
                   {(profile?.ratingAverage || 0).toFixed(1)}
                 </span>
-                <span className="caption-text">({profile?.totalReviews || 0} reviews)</span>
+                <span className="caption-text">
+                  ({profile?.totalReviews || 0} reviews)
+                </span>
               </div>
 
               {profile?.bio && (
@@ -357,16 +411,23 @@ export default function ScheduleServicePage() {
                 >
                   <div className="flex items-center justify-between text-sm">
                     <span className="caption-text flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[16px]">category</span>
+                      <span className="material-symbols-outlined text-[16px]">
+                        category
+                      </span>
                       Category
                     </span>
-                    <span className="font-medium" style={{ color: "var(--text)" }}>
+                    <span
+                      className="font-medium"
+                      style={{ color: "var(--text)" }}
+                    >
                       {selectedCategory.name}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="caption-text flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[16px]">payments</span>
+                      <span className="material-symbols-outlined text-[16px]">
+                        payments
+                      </span>
                       Base price
                     </span>
                     <span
@@ -383,8 +444,10 @@ export default function ScheduleServicePage() {
               <div
                 className="mt-5 p-3 rounded-2xl flex items-center gap-3"
                 style={{
-                  background: "color-mix(in srgb, var(--success-500) 8%, transparent)",
-                  border: "1px solid color-mix(in srgb, var(--success-500) 20%, var(--border))",
+                  background:
+                    "color-mix(in srgb, var(--success-500) 8%, transparent)",
+                  border:
+                    "1px solid color-mix(in srgb, var(--success-500) 20%, var(--border))",
                 }}
               >
                 <span
@@ -394,7 +457,10 @@ export default function ScheduleServicePage() {
                   verified_user
                 </span>
                 <div>
-                  <p className="text-xs font-semibold" style={{ color: "var(--success-500)" }}>
+                  <p
+                    className="text-xs font-semibold"
+                    style={{ color: "var(--success-500)" }}
+                  >
                     Secure booking
                   </p>
                   <p className="text-xs" style={{ color: "var(--text-muted)" }}>

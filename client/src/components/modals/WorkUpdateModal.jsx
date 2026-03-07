@@ -40,8 +40,8 @@ export default function WorkUpdateModal({
   const addFiles = (selectedFiles) => {
     if (!selectedFiles.length) return;
 
-    if (files.length + selectedFiles.length > 8) {
-      toast.error("You can upload up to 8 images");
+    if (files.length + selectedFiles.length > 5) {
+      toast.error("You can upload up to 5 images");
       return;
     }
 
@@ -95,14 +95,21 @@ export default function WorkUpdateModal({
       setNotes("");
       setFiles([]);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to upload work update");
+      toast.error(
+        error.response?.data?.message || "Failed to upload work update",
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Upload work updates" maxWidth="max-w-2xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Upload work updates"
+      maxWidth="max-w-2xl"
+    >
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="input-label">Update category</label>
@@ -140,7 +147,9 @@ export default function WorkUpdateModal({
               cloud_upload
             </span>
             <p className="body-text mt-2">Drag and drop images here</p>
-            <p className="caption-text">PNG, JPG up to 5MB each (max 8 files)</p>
+            <p className="caption-text">
+              PNG, JPG up to 5MB each (max 5 files)
+            </p>
             <Button
               type="button"
               variant="secondary"
@@ -178,7 +187,9 @@ export default function WorkUpdateModal({
                     onClick={() => removeFile(item.id)}
                     aria-label={`Remove ${item.file.name}`}
                   >
-                    <span className="material-symbols-outlined text-[14px]">close</span>
+                    <span className="material-symbols-outlined text-[14px]">
+                      close
+                    </span>
                   </button>
                 </div>
               ))}

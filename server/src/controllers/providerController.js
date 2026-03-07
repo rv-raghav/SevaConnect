@@ -44,4 +44,30 @@ const getProviders = asyncHandler(async (req, res) => {
   });
 });
 
-module.exports = { createOrUpdateProfile, getMyProfile, getProviders };
+/**
+ * GET /api/providers/:id
+ * Get a single provider profile by user ID.
+ */
+const getProviderById = asyncHandler(async (req, res) => {
+  const profile = await providerService.getProviderById(req.params.id);
+
+  res.status(200).json({
+    success: true,
+    data: profile,
+  });
+});
+
+/**
+ * GET /api/provider/stats
+ * Get dashboard stats for current provider.
+ */
+const getProviderStats = asyncHandler(async (req, res) => {
+  const stats = await providerService.getProviderStats(req.user.userId);
+
+  res.status(200).json({
+    success: true,
+    data: stats,
+  });
+});
+
+module.exports = { createOrUpdateProfile, getMyProfile, getProviders, getProviderById, getProviderStats };

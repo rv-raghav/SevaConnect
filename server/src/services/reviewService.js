@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Review = require("../models/Review");
 const Booking = require("../models/Booking");
 const ProviderProfile = require("../models/ProviderProfile");
@@ -10,10 +11,12 @@ const recalculateProviderRating = async (providerId) => {
     throw new AppError("Provider profile not found", 404);
   }
 
+  const providerObjectId = new mongoose.Types.ObjectId(providerId);
+
   const stats = await Review.aggregate([
     {
       $match: {
-        providerId,
+        providerId: providerObjectId,
       },
     },
     {

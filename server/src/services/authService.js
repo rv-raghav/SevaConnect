@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const AppError = require("../utils/AppError");
+const env = require("../config/env");
 
 /**
  * Generate JWT with userId and role, expires in 7 days.
@@ -8,7 +9,7 @@ const AppError = require("../utils/AppError");
 const generateToken = (user) => {
   return jwt.sign(
     { userId: user._id, role: user.role },
-    process.env.JWT_SECRET,
+    env.JWT_SECRET,
     { expiresIn: "7d" }
   );
 };
